@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>D&D Portal – Login & Register</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #1b1b1f;
+      --bg-card: #26262b;
+      --primary: #8b1e1e;
+      --gold: #d4af37;
+      --text-light: #f5f5f5;
+      --text-muted: #b5b5b5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #2a1a1a, var(--bg-dark));
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ====== HERO ====== */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      padding: 3rem 2rem;
+      gap: 3rem;
+      text-align: center;
+    }
+
+    .hero-text {
+      text-align: center;
+      max-width: 700px;
+    }
+
+    .hero-text h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-text p {
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.6;
+      margin: 0 auto;
+    }
+
+    /* ====== D20 ====== */
+    .d20-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #d20-canvas {
+      width: 300px;
+      height: 300px;
+      cursor: pointer;
+      filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
+    }
+
+    /* ====== AUTH CARD ====== */
+    .auth {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      padding: 2.5rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      animation: fadeIn 1s ease;
+    }
+
+    .card h3 {
+      font-family: 'Cinzel', serif;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: var(--gold);
+    }
+
+    .card input {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: none;
+      background: #1e1e23;
+      color: var(--text-light);
+    }
+
+    .card input::placeholder {
+      color: #777;
+    }
+
+    .card button {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(139, 30, 30, 0.6);
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .toggle span {
+      color: var(--gold);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ====== RESPONSIVE ====== */
+    @media (max-width: 900px) {
+      .hero-text h2 {
+        font-size: 2rem;
+      }
+    }
+
+    /* ====== MAGIC PARTICLES ====== */
+    .magic-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .magic-particles span {
+      position: absolute;
+      bottom: -10px;
+      display: block;
+      background: radial-gradient(circle, var(--gold), transparent);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: rise linear infinite;
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    @keyframes rise {
+      0% {
+        bottom: -10px;
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        bottom: 110vh;
+        opacity: 0;
+      }
+    }
+
+    /* Ensure content stays above particles */
+    .hero, .auth {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="magic-particles"></div>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h2>Enter the Realm of Adventure</h2>
+      <p>
+        Create your hero, roll the dice, and begin your journey in a world
+        of magic, dragons, and epic stories.
+      </p>
+    </div>
+
+    <div class="d20-container">
+      <canvas id="d20-canvas"></canvas>
+    </div>
+  </section>
+
+  <section class="auth">
+    <div class="card" id="authCard">
+      <h3>Login</h3>
+      <input type="email" placeholder="Email">
+      <input type="password" placeholder="Password">
+      <button>Enter the Tavern</button>
+      <div class="toggle" onclick="toggleForm()">
+        Don’t have an account? <span>Register</span>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ====== FORM TOGGLE ======
+    const card = document.getElementById("authCard");
+    let isLogin = true;
+
+    function toggleForm() {
+      isLogin = !isLogin;
+      card.innerHTML = isLogin
+        ? `
+          <h3>Login</h3>
+          <input type="email" placeholder="Email">
+          <input type="password" placeholder="Password">
+          <button>Enter the Tavern</button>
+          <div class="toggle" onclick="toggleForm()">
+            Don't have an account? <span>Register</span>
+          </div>
+        `
+        : `
+          <h3>Register</h3>
+          <input type="text" placeholder="Character Name">
+          <input type="email" placeholder="Email">
+          <input type="password" placeholder="Password">
+          <button>Create Your Legend</button>
+          <div class="toggle" onclick="toggleForm()">
+            Already have an account? <span>Login</span>
+          </div>
+        `;
+    }
+
+    // ====== MAGIC PARTICLES ======
+    const magicContainer = document.querySelector(".magic-particles");
+    const PARTICLE_COUNT = 40;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const particle = document.createElement("span");
+
+      const size = Math.random() * 3 + 2;
+      const duration = Math.random() * 10 + 8;
+      const delay = Math.random() * 10;
+      const left = Math.random() * 100;
+
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${left}%`;
+      particle.style.animationDuration = `${duration}s`;
+      particle.style.animationDelay = `${delay}s`;
+
+      magicContainer.appendChild(particle);
+    }
+
+    // ====== 3D D20 ICOSAHEDRON ======
+    const canvas = document.getElementById("d20-canvas");
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      alpha: true,
+      antialias: true
+    });
+
+    renderer.setSize(300, 300);
+    camera.position.z = 5;
+
+    // Create D20 as a group of 20 triangular faces
+    const d20Group = new THREE.Group();
+
+    // Function to create texture with number
+    function createNumberTexture(number) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 512;
+      canvas.height = 512;
+
+      // Fill with red background
+      ctx.fillStyle = '#8b1e1e';
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Draw subtle gradient for depth (centered lower for triangular mapping)
+      const gradient = ctx.createRadialGradient(256, 340, 0, 256, 340, 200);
+      gradient.addColorStop(0, 'rgba(139, 30, 30, 1)');
+      gradient.addColorStop(1, 'rgba(92, 18, 18, 1)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Draw number in gold (positioned lower to center on triangular face)
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 180px Cinzel, serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(number.toString(), 256, 340);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.flipY = false; // Prevent vertical flipping
+      return texture;
+    }
+
+    // Get template geometry for vertices
+    const templateGeometry = new THREE.IcosahedronGeometry(1.5, 0);
+    const positions = templateGeometry.attributes.position;
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+    // Create 20 individual triangular faces
+    for (let i = 0; i < 20; i++) {
+      const i1 = i * 3;
+      const i2 = i * 3 + 1;
+      const i3 = i * 3 + 2;
+
+      // Get the 3 vertices of this face
+      const vertices = new Float32Array([
+        positions.getX(i1), positions.getY(i1), positions.getZ(i1),
+        positions.getX(i2), positions.getY(i2), positions.getZ(i2),
+        positions.getX(i3), positions.getY(i3), positions.getZ(i3)
+      ]);
+
+      // UV coordinates for texture mapping (triangle)
+      const uvs = new Float32Array([
+        0.5, 0,    // top center
+        0, 1,      // bottom left
+        1, 1       // bottom right
+      ]);
+
+      // Create custom triangular geometry
+      const faceGeometry = new THREE.BufferGeometry();
+      faceGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      faceGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+      faceGeometry.computeVertexNormals();
+
+      // Create material with number texture
+      const faceMaterial = new THREE.MeshPhongMaterial({
+        map: createNumberTexture(numbers[i]),
+        shininess: 80,
+        flatShading: true
+      });
+
+      // Create mesh and add to group
+      const faceMesh = new THREE.Mesh(faceGeometry, faceMaterial);
+      d20Group.add(faceMesh);
+    }
+
+    // Add golden edge lines
+    const edges = new THREE.EdgesGeometry(templateGeometry);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xd4af37, linewidth: 2 });
+    const wireframe = new THREE.LineSegments(edges, lineMaterial);
+    d20Group.add(wireframe);
+
+    // Add the group to the scene
+    scene.add(d20Group);
+
+    // Add lighting
+    const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+    light1.position.set(1, 1, 1);
+    scene.add(light1);
+
+    const light2 = new THREE.DirectionalLight(0xd4af37, 0.4);
+    light2.position.set(-1, -1, -1);
+    scene.add(light2);
+
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+
+    // Animation variables
+    let floatOffset = 0;
+    let isHovered = false;
+    let rotationSpeed = 0.005;
+
+    // Mouse interaction
+    canvas.addEventListener('mouseenter', () => {
+      isHovered = true;
+      rotationSpeed = 0.05;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      isHovered = false;
+      rotationSpeed = 0.005;
+    });
+
+    canvas.addEventListener('click', () => {
+      // Add spinning animation on click
+      rotationSpeed = 0.2;
+      setTimeout(() => {
+        rotationSpeed = isHovered ? 0.05 : 0.005;
+      }, 1000);
+    });
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Rotation
+      d20Group.rotation.x += rotationSpeed;
+      d20Group.rotation.y += rotationSpeed;
+
+      // Floating effect
+      floatOffset += 0.02;
+      d20Group.position.y = Math.sin(floatOffset) * 0.2;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+</script>
+
+</body>
+</html>

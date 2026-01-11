@@ -1,0 +1,112 @@
+/* ====== BACKGROUND TEXTURE ====== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("assets/parchment-texture.png");
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+/* ====== CHARACTER ILLUSTRATIONS ====== */
+.character {
+  position: absolute;
+  bottom: 0;
+  max-height: 520px;
+  opacity: 0.85;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
+  animation: slowFloat 6s ease-in-out infinite;
+}
+
+.character.left {
+  left: -40px;
+}
+
+.character.right {
+  right: -40px;
+}
+
+@keyframes slowFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* ====== HERO OVERLAY ====== */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, #000 100%);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ====== MOBILE HIDE CHARACTERS ====== */
+@media (max-width: 900px) {
+  .character {
+    display: none;
+  }
+}
+
+/* ====== MAGIC PARTICLES BACKGROUND ====== */
+.magic-particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.magic-particles span {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #d4af37, transparent);
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: floatMagic linear infinite;
+}
+
+/* Floating magic animation */
+@keyframes floatMagic {
+  from {
+    transform: translateY(100vh) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-10vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* ====== D20 MAGIC AURA ====== */
+.d20::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,175,55,0.35), transparent 70%);
+  filter: blur(10px);
+  opacity: 0.8;
+  animation: pulse 3s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
