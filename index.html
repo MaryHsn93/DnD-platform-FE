@@ -179,6 +179,25 @@
       background: rgba(255, 255, 255, 0.08) !important;
     }
 
+    /* ====== CAPS LOCK ====== */
+
+\    .caps-warning {
+      display: none;
+      color: #ffcc00;
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
+      margin-bottom: 0.5rem;
+      padding: 0.3rem 0.5rem;
+      background: rgba(255, 204, 0, 0.1);
+      border-left: 2px solid #ffcc00;
+      border-radius: 4px;
+    }
+
+    .caps-warning.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
     .card button {
       width: 100%;
       padding: 0.9rem;
@@ -330,6 +349,13 @@
         padding: 0.65rem;
         font-size: 0.9rem;
       }
+
+    
+
+      .caps-warning {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.4rem;
+      }
     }
 
     /* ====== MAGIC PARTICLES ====== */
@@ -446,7 +472,11 @@
       <h3>Login</h3>
       <div id="loginErrorContainer"></div>
       <input type="text" id="loginEmail" placeholder="Email o Username" required>
-      <input type="password" id="loginPassword" placeholder="Password" required>
+      <div class="input-wrapper">
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        
+      </div>
+    
       <button id="loginButton" type="button">Enter the Tavern</button>
       <div class="toggle" onclick="toggleForm()">
         Don't have an account? <span>Register</span>
@@ -466,8 +496,11 @@
           <h3>Login</h3>
           <div id="loginErrorContainer"></div>
           <input type="text" id="loginEmail" placeholder="Email o Username" required>
-          <input type="password" id="loginPassword" placeholder="Password" required>
-          <button id="loginButton" type="button">Enter the Tavern</button>
+          <div class="input-wrapper">
+            <input type="password" id="loginPassword" placeholder="Password" required>
+          
+          </div>
+            <button id="loginButton" type="button">Enter the Tavern</button>
           <div class="toggle" onclick="toggleForm()">
             Don't have an account? <span>Register</span>
           </div>
@@ -477,7 +510,9 @@
           <div id="registerErrorContainer"></div>
           <input type="text" id="registerUsername" placeholder="Username" required>
           <input type="email" id="registerEmail" placeholder="Email" required>
-          <input type="password" id="registerPassword" placeholder="Password" required>
+          <div class="input-wrapper">
+            <input type="password" id="registerPassword" placeholder="Password" required>
+          </div>
           <button id="registerButton" type="button">Create Your Legend</button>
           <div class="toggle" onclick="toggleForm()">
             Already have an account? <span>Login</span>
@@ -488,7 +523,45 @@
       if (typeof reattachListeners === 'function') {
         reattachListeners();
       }
+
+      // Re-attach caps lock listeners
+      attachCapsLockListeners();
     }
+
+    
+
+    // ====== CAPS LOCK DETECTION ======
+    function attachCapsLockListeners() {
+      const loginPassword = document.getElementById('loginPassword');
+      const registerPassword = document.getElementById('registerPassword');
+      const capsWarning = document.getElementById('capsWarning');
+      const capsWarningRegister = document.getElementById('capsWarningRegister');
+
+      if (loginPassword && capsWarning) {
+        loginPassword.addEventListener('keyup', (e) => {
+          if (e.getModifierState && e.getModifierState('CapsLock')) {
+            capsWarning.classList.add('show');
+          } else {
+            capsWarning.classList.remove('show');
+          }
+        });
+      }
+
+      if (registerPassword && capsWarningRegister) {
+        registerPassword.addEventListener('keyup', (e) => {
+          if (e.getModifierState && e.getModifierState('CapsLock')) {
+            capsWarningRegister.classList.add('show');
+          } else {
+            capsWarningRegister.classList.remove('show');
+          }
+        });
+      }
+    }
+
+    // Initialize caps lock listeners on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      attachCapsLockListeners();
+    });
 
     // ====== MAGIC PARTICLES ======
     const magicContainer = document.querySelector(".magic-particles");

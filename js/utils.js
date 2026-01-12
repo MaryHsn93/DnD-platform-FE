@@ -162,6 +162,12 @@ function getErrorMessage(error) {
 
   // HTTP status errors
   switch (error.status) {
+    case 400:
+      // Extract message from violations array if present
+      if (error.data?.violations?.length > 0) {
+        return error.data.violations[0].message;
+      }
+      return error.data?.message || 'Invalid request. Please check your input.';
     case 401:
       return 'Invalid credentials. Check your Email/Username and Password.';
     case 409:
@@ -169,6 +175,6 @@ function getErrorMessage(error) {
     case 500:
       return 'The tavern keeper is unavailable. Please try again later.';
     default:
-      return error.message || 'An unexpected error occurred. Please try again.';
+      return 'An unexpected error occurred. Please try again.';
   }
 }
