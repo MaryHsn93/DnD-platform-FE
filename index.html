@@ -41,9 +41,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
-      padding: 3rem 2rem;
-      gap: 3rem;
+      min-height: 50vh;
+      padding: 2rem 2rem 1rem;
+      gap: 1.5rem;
       text-align: center;
     }
 
@@ -83,17 +83,47 @@
     .auth {
       display: flex;
       justify-content: center;
-      padding: 2rem;
+      padding: 0 2rem 2rem;
+      margin-top: -1rem;
     }
 
     .card {
-      background: var(--bg-card);
-      padding: 2.5rem;
-      border-radius: 16px;
+      /* Pure Glass Effect - Fantasy Glassmorphism */
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      padding: 2rem;
+      border-radius: 20px;
       width: 100%;
-      max-width: 420px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      max-width: 360px;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 60px rgba(212, 175, 55, 0.2);
       animation: fadeIn 1s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(212, 175, 55, 0.1),
+        transparent
+      );
+      transition: left 0.5s;
+    }
+
+    .card:hover::before {
+      left: 100%;
     }
 
     .card h3 {
@@ -101,37 +131,80 @@
       margin-bottom: 1.5rem;
       text-align: center;
       color: var(--gold);
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
     }
 
     .card input {
       width: 100%;
       padding: 0.8rem;
       margin-bottom: 1rem;
-      border-radius: 8px;
-      border: none;
-      background: #1e1e23;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: rgba(255, 255, 255, 0.04) !important;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       color: var(--text-light);
+      transition: all 0.3s ease;
+    }
+
+    .card input:focus {
+      outline: none;
+      border-color: rgba(212, 175, 55, 0.8);
+      background: rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
     }
 
     .card input::placeholder {
-      color: #777;
+      color: rgba(181, 181, 181, 0.7);
+    }
+
+    /* Rimuovi qualsiasi sfondo applicato dal browser */
+    .card input:-webkit-autofill,
+    .card input:-webkit-autofill:hover,
+    .card input:-webkit-autofill:focus,
+    .card input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px rgba(38, 38, 43, 0.3) inset !important;
+      -webkit-text-fill-color: var(--text-light) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Forza lo stesso stile per tutti gli stati del password field */
+    .card input[type="password"],
+    .card input[type="text"] {
+      background: rgba(255, 255, 255, 0.04) !important;
+    }
+
+    .card input[type="password"]:focus,
+    .card input[type="text"]:focus {
+      background: rgba(255, 255, 255, 0.08) !important;
     }
 
     .card button {
       width: 100%;
       padding: 0.9rem;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: none;
-      border-radius: 8px;
+      background: linear-gradient(135deg,
+        rgba(139, 30, 30, 0.8),
+        rgba(90, 20, 20, 0.8));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
       font-weight: 600;
       color: white;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .card button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(139, 30, 30, 0.6);
+      background: linear-gradient(135deg,
+        rgba(139, 30, 30, 1),
+        rgba(90, 20, 20, 1));
+      box-shadow:
+        0 5px 20px rgba(139, 30, 30, 0.6),
+        0 0 30px rgba(212, 175, 55, 0.3);
+      border-color: rgba(212, 175, 55, 0.5);
     }
 
     .toggle {
@@ -139,10 +212,24 @@
       margin-top: 1rem;
       color: var(--text-muted);
       cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .toggle:hover {
+      color: var(--text-light);
     }
 
     .toggle span {
       color: var(--gold);
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .toggle span:hover {
+      color: #f0d060;
+      text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
     }
 
     @keyframes fadeIn {
@@ -160,6 +247,88 @@
     @media (max-width: 900px) {
       .hero-text h2 {
         font-size: 2rem;
+      }
+
+      .hero {
+        min-height: 45vh;
+        padding: 1.5rem 1.5rem 0.5rem;
+        gap: 1.2rem;
+      }
+
+      .auth {
+        margin-top: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        min-height: 40vh;
+        padding: 1rem 1rem 0.5rem;
+        gap: 1rem;
+      }
+
+      .auth {
+        margin-top: 0.5rem;
+      }
+
+      .hero-text h2 {
+        font-size: 1.6rem;
+      }
+
+      .hero-text p {
+        font-size: 0.9rem;
+      }
+
+      .d20-container {
+        transform: scale(0.8);
+      }
+
+      .auth {
+        padding: 1rem;
+      }
+
+      .card {
+        max-width: 100%;
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px) saturate(170%);
+        -webkit-backdrop-filter: blur(25px) saturate(170%);
+      }
+
+      .card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .card input {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+      }
+
+      .card button {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+      }
+
+      .toggle {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .card {
+        padding: 1.2rem;
+      }
+
+      .card h3 {
+        font-size: 1.2rem;
+      }
+
+      .card input,
+      .card button {
+        padding: 0.65rem;
+        font-size: 0.9rem;
       }
     }
 
@@ -205,6 +374,54 @@
       position: relative;
       z-index: 1;
     }
+
+    /* ====== ERROR MESSAGES ====== */
+    .error-message {
+      background: rgba(255, 100, 100, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: #ffcccc;
+      padding: 0.8rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 100, 100, 0.4);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      animation: slideDown 0.3s ease;
+      box-shadow:
+        0 4px 16px rgba(255, 100, 100, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+      position: relative;
+      background: rgba(255, 255, 255, 0.1) !important;
+      backdrop-filter: blur(15px);
+    }
+
+    .loading::after {
+      content: ' ...';
+      animation: dots 1.5s infinite;
+      text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ' .'; }
+      40% { content: ' ..'; }
+      60%, 100% { content: ' ...'; }
+    }
   </style>
 </head>
 <body>
@@ -227,11 +444,12 @@
   <section class="auth">
     <div class="card" id="authCard">
       <h3>Login</h3>
-      <input type="email" placeholder="Email">
-      <input type="password" placeholder="Password">
-      <button>Enter the Tavern</button>
+      <div id="loginErrorContainer"></div>
+      <input type="text" id="loginEmail" placeholder="Email o Username" required>
+      <input type="password" id="loginPassword" placeholder="Password" required>
+      <button id="loginButton" type="button">Enter the Tavern</button>
       <div class="toggle" onclick="toggleForm()">
-        Don’t have an account? <span>Register</span>
+        Don't have an account? <span>Register</span>
       </div>
     </div>
   </section>
@@ -246,23 +464,30 @@
       card.innerHTML = isLogin
         ? `
           <h3>Login</h3>
-          <input type="email" placeholder="Email">
-          <input type="password" placeholder="Password">
-          <button>Enter the Tavern</button>
+          <div id="loginErrorContainer"></div>
+          <input type="text" id="loginEmail" placeholder="Email o Username" required>
+          <input type="password" id="loginPassword" placeholder="Password" required>
+          <button id="loginButton" type="button">Enter the Tavern</button>
           <div class="toggle" onclick="toggleForm()">
             Don't have an account? <span>Register</span>
           </div>
         `
         : `
           <h3>Register</h3>
-          <input type="text" placeholder="Character Name">
-          <input type="email" placeholder="Email">
-          <input type="password" placeholder="Password">
-          <button>Create Your Legend</button>
+          <div id="registerErrorContainer"></div>
+          <input type="text" id="registerUsername" placeholder="Username" required>
+          <input type="email" id="registerEmail" placeholder="Email" required>
+          <input type="password" id="registerPassword" placeholder="Password" required>
+          <button id="registerButton" type="button">Create Your Legend</button>
           <div class="toggle" onclick="toggleForm()">
             Already have an account? <span>Login</span>
           </div>
         `;
+
+      // Re-attach event listeners after DOM replacement
+      if (typeof reattachListeners === 'function') {
+        reattachListeners();
+      }
     }
 
     // ====== MAGIC PARTICLES ======
@@ -437,6 +662,11 @@
 
     animate();
 </script>
+
+<!-- Authentication Scripts -->
+<script src="js/api.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
 
 </body>
 </html>

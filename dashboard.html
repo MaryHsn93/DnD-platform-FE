@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome to the Tavern - D&D Platform</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #1b1b1f;
+      --bg-card: #26262b;
+      --primary: #8b1e1e;
+      --gold: #d4af37;
+      --text-light: #f5f5f5;
+      --text-muted: #b5b5b5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #2a1a1a, var(--bg-dark));
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    /* ====== CONTAINER ====== */
+    .dashboard-container {
+      max-width: 600px;
+      width: 100%;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ====== HEADER ====== */
+    .hero-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .hero-header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--gold);
+    }
+
+    .hero-header .character-name {
+      color: var(--text-light);
+      font-weight: 700;
+    }
+
+    .hero-header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* ====== USER INFO CARD ====== */
+    .user-info-card {
+      background: var(--bg-card);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      margin-bottom: 2rem;
+    }
+
+    .user-info-card h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .info-value {
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .token-status {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      background: linear-gradient(135deg, #1e5e1e, #0f3d0f);
+      color: #7dff7d;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* ====== BUTTON ====== */
+    .logout-button {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 1rem;
+    }
+
+    .logout-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(139, 30, 30, 0.6);
+    }
+
+    /* ====== MAGIC PARTICLES ====== */
+    .magic-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .magic-particles span {
+      position: absolute;
+      bottom: -10px;
+      display: block;
+      background: radial-gradient(circle, var(--gold), transparent);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: rise linear infinite;
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    @keyframes rise {
+      0% {
+        bottom: -10px;
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        bottom: 110vh;
+        opacity: 0;
+      }
+    }
+
+    /* Ensure content stays above particles */
+    .dashboard-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ====== RESPONSIVE ====== */
+    @media (max-width: 600px) {
+      .hero-header h1 {
+        font-size: 2rem;
+      }
+
+      .info-row {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="magic-particles"></div>
+
+  <div class="dashboard-container">
+    <div class="hero-header">
+      <h1>Welcome, <span class="character-name" id="characterName">Adventurer</span>!</h1>
+      <p>Your adventure begins now...</p>
+    </div>
+
+    <div class="user-info-card">
+      <h3>Character Details</h3>
+
+      <div class="info-row">
+        <span class="info-label">Username</span>
+        <span class="info-value" id="userName">-</span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Email</span>
+        <span class="info-value" id="userEmail">-</span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Session Status</span>
+        <span class="token-status" id="tokenStatus">Active</span>
+      </div>
+    </div>
+
+    <button class="logout-button" id="logoutButton">Leave the Tavern</button>
+  </div>
+
+  <script>
+    // ====== AUTHENTICATION GUARD ======
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.log('No auth token found, redirecting to login...');
+      window.location.href = 'index.html';
+    }
+
+    // ====== DISPLAY USER INFO ======
+    const username = localStorage.getItem('username') || 'Adventurer';
+    const email = localStorage.getItem('userEmail') || 'No email';
+
+    document.getElementById('characterName').textContent = username;
+    document.getElementById('userName').textContent = username;
+    document.getElementById('userEmail').textContent = email;
+
+    // ====== LOGOUT HANDLER ======
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      console.log('Logging out...');
+
+      // Clear localStorage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('loginTimestamp');
+
+      // Redirect to login page
+      window.location.href = 'index.html';
+    });
+
+    // ====== MAGIC PARTICLES ======
+    const magicContainer = document.querySelector(".magic-particles");
+    const PARTICLE_COUNT = 30;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const particle = document.createElement("span");
+
+      const size = Math.random() * 3 + 2;
+      const duration = Math.random() * 10 + 8;
+      const delay = Math.random() * 10;
+      const left = Math.random() * 100;
+
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${left}%`;
+      particle.style.animationDuration = `${duration}s`;
+      particle.style.animationDelay = `${delay}s`;
+
+      magicContainer.appendChild(particle);
+    }
+  </script>
+</body>
+</html>
