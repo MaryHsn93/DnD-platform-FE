@@ -179,25 +179,6 @@
       background: rgba(255, 255, 255, 0.08) !important;
     }
 
-    /* ====== CAPS LOCK ====== */
-
-\    .caps-warning {
-      display: none;
-      color: #ffcc00;
-      font-size: 0.75rem;
-      margin-top: 0.3rem;
-      margin-bottom: 0.5rem;
-      padding: 0.3rem 0.5rem;
-      background: rgba(255, 204, 0, 0.1);
-      border-left: 2px solid #ffcc00;
-      border-radius: 4px;
-    }
-
-    .caps-warning.show {
-      display: block;
-      animation: slideDown 0.3s ease;
-    }
-
     .card button {
       width: 100%;
       padding: 0.9rem;
@@ -349,13 +330,6 @@
         padding: 0.65rem;
         font-size: 0.9rem;
       }
-
-    
-
-      .caps-warning {
-        font-size: 0.7rem;
-        padding: 0.25rem 0.4rem;
-      }
     }
 
     /* ====== MAGIC PARTICLES ====== */
@@ -449,24 +423,40 @@
       60%, 100% { content: ' ...'; }
     }
 
+    
     .input-wrapper {
       position: relative;
     }
     .input-wrapper input[type="password"],
     .input-wrapper input[type="text"] {
-      padding-right: 2.5rem;
+      padding-right: 3.5rem;
     }
-    .eye-toggle {
+    .password-icons {
       position: absolute;
       right: 0.75rem;
       top: 50%;
       transform: translateY(-100%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .eye-toggle {
       cursor: pointer;
       opacity: 0.5;
       transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
     }
     .eye-toggle:hover {
       opacity: 1;
+    }
+    .caps-icon {
+      display: none;
+      color: #ffcc00;
+    }
+    .caps-icon.show {
+      display: flex;
+      align-items: center;
     }
   </style>
 </head>
@@ -552,51 +542,63 @@
     
 
     // ====== CAPS LOCK DETECTION ======
+    // Caps lock detection is now handled in setupPasswordToggle()
     function attachCapsLockListeners() {
-      const loginPassword = document.getElementById('loginPassword');
-      const registerPassword = document.getElementById('registerPassword');
-      const capsWarning = document.getElementById('capsWarning');
-      const capsWarningRegister = document.getElementById('capsWarningRegister');
-
-      if (loginPassword && capsWarning) {
-        loginPassword.addEventListener('keyup', (e) => {
-          if (e.getModifierState && e.getModifierState('CapsLock')) {
-            capsWarning.classList.add('show');
-          } else {
-            capsWarning.classList.remove('show');
-          }
-        });
-      }
-
-      if (registerPassword && capsWarningRegister) {
-        registerPassword.addEventListener('keyup', (e) => {
-          if (e.getModifierState && e.getModifierState('CapsLock')) {
-            capsWarningRegister.classList.add('show');
-          } else {
-            capsWarningRegister.classList.remove('show');
-          }
-        });
-      }
+      // Kept for compatibility with toggleForm()
     }
 
     // ====== PASSWORD VISIBILITY TOGGLE ======
-    const eyeClosed = `<svg class="eye-toggle" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
-    const eyeOpen = `<svg class="eye-toggle" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const eyeClosed = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+    const eyeOpen = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const capsLockIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 14h5v8h6v-8h5L12 2z"/></svg>`;
 
     function setupPasswordToggle() {
       document.querySelectorAll('.input-wrapper').forEach(wrapper => {
         const input = wrapper.querySelector('input[type="password"], input[type="text"][data-password]');
-        if (!input || wrapper.querySelector('.eye-toggle')) return;
+        if (!input || wrapper.querySelector('.password-icons')) return;
 
-        const icon = document.createElement('span');
-        icon.innerHTML = eyeClosed;
-        icon.addEventListener('click', () => {
+        // Create container for icons
+        const iconsContainer = document.createElement('span');
+        iconsContainer.className = 'password-icons';
+
+        // Create caps lock icon
+        const capsIcon = document.createElement('span');
+        capsIcon.className = 'caps-icon';
+        capsIcon.innerHTML = capsLockIcon;
+        capsIcon.title = 'Caps Lock attivo';
+
+        // Create eye toggle icon
+        const eyeIcon = document.createElement('span');
+        eyeIcon.className = 'eye-toggle';
+        eyeIcon.innerHTML = eyeClosed;
+        eyeIcon.addEventListener('click', () => {
           const isPassword = input.type === 'password';
           input.type = isPassword ? 'text' : 'password';
           input.dataset.password = 'true';
-          icon.innerHTML = isPassword ? eyeOpen : eyeClosed;
+          eyeIcon.innerHTML = isPassword ? eyeOpen : eyeClosed;
         });
-        wrapper.appendChild(icon);
+
+        // Append icons to container
+        iconsContainer.appendChild(capsIcon);
+        iconsContainer.appendChild(eyeIcon);
+        wrapper.appendChild(iconsContainer);
+
+        // Attach caps lock listener to input
+        input.addEventListener('keyup', (e) => {
+          if (e.getModifierState && e.getModifierState('CapsLock')) {
+            capsIcon.classList.add('show');
+          } else {
+            capsIcon.classList.remove('show');
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.getModifierState && e.getModifierState('CapsLock')) {
+            capsIcon.classList.add('show');
+          } else {
+            capsIcon.classList.remove('show');
+          }
+        });
       });
     }
 
