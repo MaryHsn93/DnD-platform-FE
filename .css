@@ -110,3 +110,10 @@ body::before {
     opacity: 1;
   }
 }
+
+/* Previeni effetti touch indesiderati su mobile */
+.d20-container,
+.d20-container * {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}

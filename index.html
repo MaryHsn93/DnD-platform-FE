@@ -76,14 +76,24 @@
       width: 300px;
       height: 300px;
       cursor: pointer;
+      /* Bagliore fisso - non cambia mai su interazione */
       filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
-      transition: transform 0.3s ease, filter 0.3s ease;
+      /* Previeni effetti touch su mobile */
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      outline: none;
     }
 
+    /* Mantieni bagliore identico su tutte le interazioni */
+    #d20-canvas:hover,
+    #d20-canvas:focus,
+    #d20-canvas:active,
+    #d20-canvas:focus-visible,
     #d20-canvas.d20-active {
-      transform: scale(1.15);
-      filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.8))
-              drop-shadow(0 0 80px rgba(212, 175, 55, 0.5));
+      filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4)) !important;
+      transform: none !important;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* ====== AUTH CARD ====== */
@@ -751,29 +761,30 @@
     let isHovered = false;
     let rotationSpeed = 0.005;
 
+    // Touch control variables
+    let isTouching = false;
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+    let touchRotationX = 0;
+    let touchRotationY = 0;
+
     // Activate D20 animation (hover/touch)
     function activateD20() {
       isHovered = true;
       rotationSpeed = 0.05;
-      canvas.classList.add('d20-active');
     }
 
     // Deactivate D20 animation
     function deactivateD20() {
       isHovered = false;
       rotationSpeed = 0.005;
-      canvas.classList.remove('d20-active');
     }
 
     // Spin D20 on click/tap
     function spinD20() {
       rotationSpeed = 0.2;
-      canvas.classList.add('d20-active');
       setTimeout(() => {
         rotationSpeed = isHovered ? 0.05 : 0.005;
-        if (!isHovered) {
-          canvas.classList.remove('d20-active');
-        }
       }, 1000);
     }
 
@@ -782,27 +793,52 @@
     canvas.addEventListener('mouseleave', deactivateD20);
     canvas.addEventListener('click', spinD20);
 
-    // Mobile touch events
+    // Mobile touch events - drag to rotate
     canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault(); // Prevent mouse event emulation
-      activateD20();
+      e.preventDefault();
+      isTouching = true;
+      const touch = e.touches[0];
+      lastTouchX = touch.clientX;
+      lastTouchY = touch.clientY;
+      // Salva la rotazione attuale come base
+      touchRotationX = d20Group.rotation.x;
+      touchRotationY = d20Group.rotation.y;
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!isTouching) return;
+      e.preventDefault();
+
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - lastTouchX;
+      const deltaY = touch.clientY - lastTouchY;
+
+      // Ruota il dado in base al movimento del dito
+      // Movimento orizzontale -> rotazione su asse Y
+      // Movimento verticale -> rotazione su asse X
+      const sensitivity = 0.01;
+      d20Group.rotation.y = touchRotationY + (deltaX * sensitivity);
+      d20Group.rotation.x = touchRotationX + (deltaY * sensitivity);
     }, { passive: false });
 
     canvas.addEventListener('touchend', (e) => {
       e.preventDefault();
-      // Keep active briefly then deactivate (simulates hover duration)
-      setTimeout(deactivateD20, 300);
+      isTouching = false;
     }, { passive: false });
 
-    canvas.addEventListener('touchcancel', deactivateD20);
+    canvas.addEventListener('touchcancel', () => {
+      isTouching = false;
+    });
 
     // Animation loop
     function animate() {
       requestAnimationFrame(animate);
 
-      // Rotation
-      d20Group.rotation.x += rotationSpeed;
-      d20Group.rotation.y += rotationSpeed;
+      // Rotation - solo se non si sta toccando
+      if (!isTouching) {
+        d20Group.rotation.x += rotationSpeed;
+        d20Group.rotation.y += rotationSpeed;
+      }
 
       // Floating effect
       floatOffset += 0.02;
