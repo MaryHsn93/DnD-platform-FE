@@ -8,9 +8,6 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <!-- Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
   <style>
     :root {
       --bg-dark: #1b1b1f;
@@ -30,10 +27,34 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at top, #2a1a1a, var(--bg-dark));
       color: var(--text-light);
       min-height: 100vh;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('assets/background.jpg') no-repeat 75% center fixed;
+      background-size: cover;
+      filter: blur(3px) brightness(0.4);
+      z-index: -2;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+      z-index: -1;
     }
 
     /* ====== LAYOUT CONTAINER ====== */
@@ -53,7 +74,7 @@
         0 8px 32px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.15),
         0 0 60px rgba(212, 175, 55, 0.1);
-      padding: 2rem 1.5rem;
+      padding: 1rem 1.5rem 0.5rem 1.5rem;
       display: flex;
       flex-direction: column;
       position: fixed;
@@ -231,10 +252,11 @@
     }
 
     .sidebar-footer {
-      padding-top: 1.5rem;
+      padding-top: 1rem;
       border-top: 1px solid rgba(212, 175, 55, 0.2);
       position: relative;
       z-index: 1;
+      margin-top: auto;
     }
 
     .logout-btn {
@@ -281,120 +303,6 @@
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
-    }
-
-    /* ====== D20 WITH RINGS ====== */
-    .d20-container {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 2rem;
-      width: 350px;
-      height: 350px;
-    }
-
-    .d20-rings {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .ring {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 2px solid rgba(212, 175, 55, 0.3);
-    }
-
-    .ring-1 {
-      width: 320px;
-      height: 320px;
-      animation: ringPulse 3s ease-in-out infinite;
-    }
-
-    .ring-1::before {
-      content: '';
-      position: absolute;
-      top: -5px;
-      left: -5px;
-      right: -5px;
-      bottom: -5px;
-      border: 2px solid transparent;
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: ringRotate 4s linear infinite;
-    }
-
-    .ring-2 {
-      width: 360px;
-      height: 360px;
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      animation: ringPulse 3s ease-in-out infinite 0.5s;
-    }
-
-    .ring-2::before {
-      content: '';
-      position: absolute;
-      top: -3px;
-      left: -3px;
-      right: -3px;
-      bottom: -3px;
-      border: 1px solid transparent;
-      border-bottom-color: var(--gold);
-      border-radius: 50%;
-      animation: ringRotate 6s linear infinite reverse;
-    }
-
-    .ring-3 {
-      width: 400px;
-      height: 400px;
-      border: 1px solid rgba(212, 175, 55, 0.1);
-      animation: ringPulse 4s ease-in-out infinite 1s;
-    }
-
-    @keyframes ringRotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes ringPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-      50% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }
-    }
-
-    .d20-glow {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-      animation: glowPulse 3s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-    }
-
-    #d20-canvas {
-      position: relative;
-      z-index: 2;
-      width: 300px;
-      height: 300px;
-      cursor: pointer;
-      filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
-      -webkit-tap-highlight-color: transparent;
-      outline: none;
     }
 
     /* Welcome Text */
@@ -893,21 +801,11 @@
     }
 
     @media (max-width: 768px) {
-      .d20-container { width: 300px; height: 300px; }
-      .ring-1 { width: 270px; height: 270px; }
-      .ring-2 { width: 300px; height: 300px; }
-      .ring-3 { width: 330px; height: 330px; }
-      #d20-canvas { width: 250px; height: 250px; }
       .welcome-title { font-size: 2.5rem; }
       .chat-window { width: 320px; height: 480px; right: -0.5rem; }
     }
 
     @media (max-width: 480px) {
-      .d20-container { width: 260px; height: 260px; }
-      .ring-1 { width: 230px; height: 230px; }
-      .ring-2 { width: 260px; height: 260px; }
-      .ring-3 { width: 290px; height: 290px; }
-      #d20-canvas { width: 200px; height: 200px; }
       .welcome-title { font-size: 2rem; }
       .welcome-subtitle { font-size: 1rem; }
       .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; }
@@ -1003,15 +901,6 @@
 
     <main class="main-content">
       <section class="welcome-section">
-        <div class="d20-container">
-          <div class="d20-rings">
-            <div class="ring ring-1"></div>
-            <div class="ring ring-2"></div>
-            <div class="ring ring-3"></div>
-          </div>
-          <div class="d20-glow"></div>
-          <canvas id="d20-canvas"></canvas>
-        </div>
         <h1 class="welcome-title">Welcome</h1>
         <p class="welcome-subtitle">Ready for adventure, <strong id="welcomeUserName">Adventurer</strong>?</p>
         <p class="welcome-tagline">"Roll for initiative..."</p>
@@ -1176,7 +1065,7 @@
 
     // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 60; i++) {
       const p = document.createElement("span");
       p.style.width = p.style.height = `${Math.random() * 3 + 2}px`;
       p.style.left = `${Math.random() * 100}%`;
@@ -1185,80 +1074,6 @@
       magicContainer.appendChild(p);
     }
 
-    // 3D D20
-    const canvas = document.getElementById("d20-canvas");
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(300, 300);
-    camera.position.z = 5;
-
-    const d20Group = new THREE.Group();
-
-    function createNumberTexture(number) {
-      const c = document.createElement('canvas');
-      const ctx = c.getContext('2d');
-      c.width = c.height = 512;
-      ctx.fillStyle = '#8b1e1e';
-      ctx.fillRect(0, 0, 512, 512);
-      const g = ctx.createRadialGradient(256, 340, 0, 256, 340, 200);
-      g.addColorStop(0, 'rgba(139, 30, 30, 1)');
-      g.addColorStop(1, 'rgba(92, 18, 18, 1)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, 512, 512);
-      ctx.fillStyle = '#d4af37';
-      ctx.font = 'bold 180px Cinzel, serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(number.toString(), 256, 340);
-      const t = new THREE.CanvasTexture(c);
-      t.flipY = false;
-      return t;
-    }
-
-    const templateGeometry = new THREE.IcosahedronGeometry(1.5, 0);
-    const positions = templateGeometry.attributes.position;
-    const numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
-
-    for (let i = 0; i < 20; i++) {
-      const i1 = i*3, i2 = i*3+1, i3 = i*3+2;
-      const vertices = new Float32Array([positions.getX(i1), positions.getY(i1), positions.getZ(i1), positions.getX(i2), positions.getY(i2), positions.getZ(i2), positions.getX(i3), positions.getY(i3), positions.getZ(i3)]);
-      const uvs = new Float32Array([0.5, 0, 0, 1, 1, 1]);
-      const faceGeometry = new THREE.BufferGeometry();
-      faceGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-      faceGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-      faceGeometry.computeVertexNormals();
-      const faceMaterial = new THREE.MeshPhongMaterial({ map: createNumberTexture(numbers[i]), shininess: 80, flatShading: true });
-      d20Group.add(new THREE.Mesh(faceGeometry, faceMaterial));
-    }
-
-    const edges = new THREE.EdgesGeometry(templateGeometry);
-    d20Group.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xd4af37, linewidth: 2 })));
-    scene.add(d20Group);
-
-    const light1 = new THREE.DirectionalLight(0xffffff, 0.8); light1.position.set(1, 1, 1); scene.add(light1);
-    const light2 = new THREE.DirectionalLight(0xd4af37, 0.4); light2.position.set(-1, -1, -1); scene.add(light2);
-    scene.add(new THREE.AmbientLight(0x404040));
-
-    let floatOffset = 0, isHovered = false, rotationSpeed = 0.005;
-    let isTouching = false, lastTouchX = 0, lastTouchY = 0, touchRotationX = 0, touchRotationY = 0;
-
-    canvas.addEventListener('mouseenter', () => { isHovered = true; rotationSpeed = 0.05; });
-    canvas.addEventListener('mouseleave', () => { isHovered = false; rotationSpeed = 0.005; });
-    canvas.addEventListener('click', () => { rotationSpeed = 0.2; setTimeout(() => rotationSpeed = isHovered ? 0.05 : 0.005, 1000); });
-
-    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isTouching = true; lastTouchX = e.touches[0].clientX; lastTouchY = e.touches[0].clientY; touchRotationX = d20Group.rotation.x; touchRotationY = d20Group.rotation.y; }, { passive: false });
-    canvas.addEventListener('touchmove', (e) => { if (!isTouching) return; e.preventDefault(); d20Group.rotation.y = touchRotationY + (e.touches[0].clientX - lastTouchX) * 0.01; d20Group.rotation.x = touchRotationX + (e.touches[0].clientY - lastTouchY) * 0.01; }, { passive: false });
-    canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; }, { passive: false });
-
-    function animate() {
-      requestAnimationFrame(animate);
-      if (!isTouching) { d20Group.rotation.x += rotationSpeed; d20Group.rotation.y += rotationSpeed; }
-      floatOffset += 0.02;
-      d20Group.position.y = Math.sin(floatOffset) * 0.2;
-      renderer.render(scene, camera);
-    }
-    animate();
   </script>
 </body>
 </html>
