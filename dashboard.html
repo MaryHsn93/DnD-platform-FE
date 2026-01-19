@@ -730,6 +730,480 @@
       color: var(--gold);
     }
 
+    /* ====== COMPENDIUM BOOK ====== */
+    .compendium-wrapper {
+      perspective: 1500px;
+      margin: 2rem 0;
+    }
+
+    .compendium {
+      position: relative;
+      width: 280px;
+      height: 380px;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .compendium:hover:not(.open) {
+      transform: rotateY(-5deg) rotateX(2deg);
+    }
+
+    /* Book Cover */
+    .book-cover {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #3d1a1a 0%, #2a0f0f 50%, #1a0808 100%);
+      border-radius: 4px 12px 12px 4px;
+      box-shadow:
+        inset 0 0 40px rgba(0,0,0,0.6),
+        inset 3px 0 8px rgba(212, 175, 55, 0.1),
+        0 0 30px rgba(139, 30, 30, 0.4),
+        0 10px 40px rgba(0,0,0,0.5);
+      transform-style: preserve-3d;
+      transform-origin: left center;
+      transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0s 0.4s;
+      z-index: 2;
+    }
+
+    .compendium.open .book-cover {
+      transform: rotateY(-150deg);
+      z-index: 0;
+    }
+
+    /* Cover Back (visible when open) */
+    .book-cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #2a1515 0%, #1a0a0a 100%);
+      border-radius: 4px 12px 12px 4px;
+      transform: rotateY(180deg);
+      backface-visibility: hidden;
+    }
+
+    /* Leather Texture Overlay */
+    .book-cover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.08;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    /* Bronze Corner Plates */
+    .corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 3px solid;
+      border-image: linear-gradient(135deg, #d4af37 0%, #8b6914 50%, #d4af37 100%) 1;
+      filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));
+    }
+
+    .corner-tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+    .corner-tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+    .corner-bl { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+    .corner-br { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+    /* Central Seal */
+    .seal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #2a0f0f 0%, #1a0808 100%);
+      border: 3px solid #8b6914;
+      box-shadow:
+        inset 0 0 20px rgba(0,0,0,0.8),
+        0 0 15px rgba(212, 175, 55, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Ouroboros Dragon */
+    .ouroboros {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border: 2px solid rgba(212, 175, 55, 0.4);
+      border-radius: 50%;
+      animation: ouroboros-glow 4s ease-in-out infinite;
+    }
+
+    .ouroboros::before {
+      content: '◈';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      color: rgba(212, 175, 55, 0.6);
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    }
+
+    @keyframes ouroboros-glow {
+      0%, 100% { border-color: rgba(212, 175, 55, 0.3); box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
+      50% { border-color: rgba(212, 175, 55, 0.7); box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+    }
+
+    /* Runes Circle */
+    .runes {
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      animation: runes-rotate 60s linear infinite;
+    }
+
+    .rune {
+      position: absolute;
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      color: rgba(212, 175, 55, 0.4);
+      transition: all 0.5s ease;
+    }
+
+    .compendium:hover .rune {
+      color: rgba(212, 175, 55, 0.9);
+      text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+    }
+
+    @keyframes runes-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Book Title */
+    .book-title {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #d4af37;
+      text-shadow:
+        0 2px 4px rgba(0,0,0,0.8),
+        0 0 20px rgba(212, 175, 55, 0.3);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .book-subtitle {
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      color: rgba(212, 175, 55, 0.5);
+      letter-spacing: 2px;
+      font-style: italic;
+      white-space: nowrap;
+    }
+
+    /* Spine Ridges */
+    .spine {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 20px;
+      height: 100%;
+      background: linear-gradient(90deg, #1a0808 0%, #2a0f0f 50%, #3d1a1a 100%);
+      border-radius: 4px 0 0 4px;
+    }
+
+    .spine-ridge {
+      position: absolute;
+      left: 5px;
+      width: 10px;
+      height: 3px;
+      background: linear-gradient(90deg, #8b6914, #d4af37, #8b6914);
+      border-radius: 2px;
+      box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+    }
+
+    .spine-ridge:nth-child(1) { top: 50px; }
+    .spine-ridge:nth-child(2) { top: 120px; }
+    .spine-ridge:nth-child(3) { top: 190px; }
+    .spine-ridge:nth-child(4) { top: 260px; }
+    .spine-ridge:nth-child(5) { top: 330px; }
+
+    .spine-symbol {
+      position: absolute;
+      left: 5px;
+      width: 10px;
+      height: 10px;
+      font-size: 0.5rem;
+      color: rgba(212, 175, 55, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spine-symbol:nth-child(6) { top: 80px; }
+    .spine-symbol:nth-child(7) { top: 150px; }
+    .spine-symbol:nth-child(8) { top: 220px; }
+    .spine-symbol:nth-child(9) { top: 290px; }
+
+    /* Book Pages (visible edge) */
+    .book-pages {
+      position: absolute;
+      right: 0;
+      top: 8px;
+      width: 8px;
+      height: calc(100% - 16px);
+      background: repeating-linear-gradient(
+        to bottom,
+        #f5e6c8 0px,
+        #f5e6c8 1px,
+        #e8d4a8 1px,
+        #e8d4a8 2px
+      );
+      border-radius: 0 2px 2px 0;
+      box-shadow: inset -2px 0 4px rgba(0,0,0,0.2);
+    }
+
+    /* Book Interior */
+    .book-interior {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f5e6c8 0%, #e8d4a8 50%, #dcc89a 100%);
+      border-radius: 4px 12px 12px 4px;
+      padding: 30px 25px;
+      box-shadow: inset 0 0 30px rgba(139, 90, 43, 0.3);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s ease 0.3s;
+    }
+
+    .compendium.open .book-interior {
+      opacity: 1;
+    }
+
+    .book-interior::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+    }
+
+    /* Interior Content */
+    .interior-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      color: #5a3825;
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 3px;
+      border-bottom: 1px solid rgba(139, 90, 43, 0.3);
+      padding-bottom: 15px;
+    }
+
+    .interior-title::first-letter {
+      font-size: 1.4rem;
+      color: #8b1e1e;
+    }
+
+    .chapter-list {
+      list-style: none;
+    }
+
+    .chapter-item {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      color: #3d2817;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(139, 90, 43, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+
+    .chapter-numeral {
+      color: #8b1e1e;
+      font-weight: 700;
+      min-width: 25px;
+    }
+
+    .chapter-title {
+      font-weight: 600;
+      color: #3d2817;
+    }
+
+    .chapter-desc {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      font-style: italic;
+      color: rgba(90, 56, 37, 0.7);
+      margin-top: 3px;
+    }
+
+    /* Decorative Elements */
+    .interior-decoration {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      color: rgba(139, 30, 30, 0.3);
+    }
+
+    /* Glow effect on hover */
+    .compendium:hover .seal {
+      box-shadow:
+        inset 0 0 20px rgba(0,0,0,0.8),
+        0 0 30px rgba(212, 175, 55, 0.6);
+    }
+
+    .compendium:hover .book-cover {
+      box-shadow:
+        inset 0 0 40px rgba(0,0,0,0.6),
+        inset 3px 0 8px rgba(212, 175, 55, 0.2),
+        0 0 50px rgba(212, 175, 55, 0.4),
+        0 15px 50px rgba(0,0,0,0.6);
+    }
+
+    /* Dust Particles */
+    .dust-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .compendium:hover .dust-particles {
+      opacity: 1;
+    }
+
+    .dust {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(212, 175, 55, 0.6);
+      border-radius: 50%;
+      animation: dust-float 3s ease-in-out infinite;
+    }
+
+    @keyframes dust-float {
+      0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+      50% { transform: translateY(-20px) translateX(10px); opacity: 1; }
+    }
+
+    /* Click hint */
+    .click-hint {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      color: rgba(212, 175, 55, 0.5);
+      letter-spacing: 2px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .compendium:hover .click-hint {
+      opacity: 1;
+    }
+
+    /* Compendium Responsive */
+    @media (max-width: 600px) {
+      .compendium {
+        width: 220px;
+        height: 300px;
+      }
+
+      .book-title {
+        font-size: 1.1rem;
+        top: 45px;
+        letter-spacing: 2px;
+      }
+
+      .seal {
+        width: 110px;
+        height: 110px;
+      }
+
+      .ouroboros {
+        width: 95px;
+        height: 95px;
+      }
+
+      .ouroboros::before {
+        font-size: 2rem;
+      }
+
+      .runes {
+        width: 105px;
+        height: 105px;
+      }
+
+      .book-subtitle {
+        font-size: 0.5rem;
+        bottom: 55px;
+      }
+
+      .corner {
+        width: 30px;
+        height: 30px;
+      }
+
+      .spine-ridge:nth-child(1) { top: 40px; }
+      .spine-ridge:nth-child(2) { top: 95px; }
+      .spine-ridge:nth-child(3) { top: 150px; }
+      .spine-ridge:nth-child(4) { top: 205px; }
+      .spine-ridge:nth-child(5) { top: 260px; }
+
+      .interior-title {
+        font-size: 0.75rem;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+      }
+
+      .chapter-item {
+        padding: 8px 0;
+        font-size: 0.65rem;
+      }
+
+      .chapter-desc {
+        font-size: 0.5rem;
+      }
+
+      .book-interior {
+        padding: 20px 18px;
+      }
+
+      .click-hint {
+        font-size: 0.6rem;
+        bottom: -25px;
+      }
+    }
+
     /* ====== MAGIC PARTICLES ====== */
     .magic-particles {
       position: fixed;
@@ -904,6 +1378,96 @@
         <h1 class="welcome-title">Welcome</h1>
         <p class="welcome-subtitle">Ready for adventure, <strong id="welcomeUserName">Adventurer</strong>?</p>
         <p class="welcome-tagline">"Roll for initiative..."</p>
+
+        <!-- Compendium Book -->
+        <div class="compendium-wrapper">
+          <div class="compendium" id="compendium">
+            <!-- Book Interior (visible when open) -->
+            <div class="book-interior">
+              <h3 class="interior-title">Index Arcanorum</h3>
+              <ul class="chapter-list">
+                <li class="chapter-item">
+                  <span class="chapter-numeral">I.</span>
+                  <div>
+                    <span class="chapter-title">Incantesimi</span>
+                    <span class="chapter-desc">Le parole che piegano la realtà</span>
+                  </div>
+                </li>
+                <li class="chapter-item">
+                  <span class="chapter-numeral">II.</span>
+                  <div>
+                    <span class="chapter-title">Mostri</span>
+                    <span class="chapter-desc">Creature oltre il velo del mondo</span>
+                  </div>
+                </li>
+                <li class="chapter-item">
+                  <span class="chapter-numeral">III.</span>
+                  <div>
+                    <span class="chapter-title">Classi</span>
+                    <span class="chapter-desc">I sentieri degli eroi e dei dannati</span>
+                  </div>
+                </li>
+                <li class="chapter-item">
+                  <span class="chapter-numeral">IV.</span>
+                  <div>
+                    <span class="chapter-title">Oggetti</span>
+                    <span class="chapter-desc">Artefatti forgiati nel mito</span>
+                  </div>
+                </li>
+                <li class="chapter-item">
+                  <span class="chapter-numeral">V.</span>
+                  <div>
+                    <span class="chapter-title">Regole</span>
+                    <span class="chapter-desc">Le leggi che governano il destino</span>
+                  </div>
+                </li>
+              </ul>
+              <div class="interior-decoration">❧</div>
+            </div>
+
+            <!-- Book Cover -->
+            <div class="book-cover">
+              <!-- Spine -->
+              <div class="spine">
+                <div class="spine-ridge"></div>
+                <div class="spine-ridge"></div>
+                <div class="spine-ridge"></div>
+                <div class="spine-ridge"></div>
+                <div class="spine-ridge"></div>
+                <span class="spine-symbol">✦</span>
+                <span class="spine-symbol">◆</span>
+                <span class="spine-symbol">✦</span>
+                <span class="spine-symbol">◆</span>
+              </div>
+
+              <!-- Bronze Corners -->
+              <div class="corner corner-tl"></div>
+              <div class="corner corner-tr"></div>
+              <div class="corner corner-bl"></div>
+              <div class="corner corner-br"></div>
+
+              <!-- Title -->
+              <h2 class="book-title">Compendium</h2>
+
+              <!-- Central Seal -->
+              <div class="seal">
+                <div class="ouroboros"></div>
+                <div class="runes" id="runes"></div>
+              </div>
+
+              <!-- Subtitle -->
+              <span class="book-subtitle">Omnibus Arcanis et Creaturis</span>
+
+              <!-- Page Edge -->
+              <div class="book-pages"></div>
+
+              <!-- Dust Particles -->
+              <div class="dust-particles" id="dustParticles"></div>
+            </div>
+
+            <span class="click-hint">click to open</span>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -1073,6 +1637,42 @@
       p.style.animationDelay = `${Math.random() * 10}s`;
       magicContainer.appendChild(p);
     }
+
+    // ====== COMPENDIUM BOOK ======
+    const compendium = document.getElementById('compendium');
+    const runesContainer = document.getElementById('runes');
+    const dustContainer = document.getElementById('dustParticles');
+
+    // Generate mystical runes around the seal
+    const runeSymbols = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ'];
+    runeSymbols.forEach((rune, i) => {
+      const runeEl = document.createElement('span');
+      runeEl.className = 'rune';
+      runeEl.textContent = rune;
+      const angle = (i / runeSymbols.length) * 360;
+      const radius = 58;
+      const x = Math.cos((angle - 90) * Math.PI / 180) * radius + 65;
+      const y = Math.sin((angle - 90) * Math.PI / 180) * radius + 65;
+      runeEl.style.left = `${x}px`;
+      runeEl.style.top = `${y}px`;
+      runeEl.style.transform = `rotate(${angle}deg)`;
+      runesContainer.appendChild(runeEl);
+    });
+
+    // Generate dust particles
+    for (let i = 0; i < 15; i++) {
+      const dust = document.createElement('span');
+      dust.className = 'dust';
+      dust.style.left = `${Math.random() * 100}%`;
+      dust.style.top = `${Math.random() * 100}%`;
+      dust.style.animationDelay = `${Math.random() * 3}s`;
+      dustContainer.appendChild(dust);
+    }
+
+    // Toggle book open/close on click
+    compendium.addEventListener('click', () => {
+      compendium.classList.toggle('open');
+    });
 
   </script>
 </body>
