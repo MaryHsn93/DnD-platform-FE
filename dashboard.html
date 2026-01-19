@@ -8,9 +8,6 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <!-- Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
   <style>
     :root {
       --bg-dark: #1b1b1f;
@@ -30,10 +27,34 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at top, #2a1a1a, var(--bg-dark));
       color: var(--text-light);
       min-height: 100vh;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('assets/background.jpg') no-repeat 75% center fixed;
+      background-size: cover;
+      filter: blur(3px) brightness(0.4);
+      z-index: -2;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+      z-index: -1;
     }
 
     /* ====== LAYOUT CONTAINER ====== */
@@ -42,10 +63,9 @@
       min-height: 100vh;
     }
 
-    /* ====== SIDEBAR ====== */
+    /* ====== SIDEBAR (Glassmorphism come login card) ====== */
     .sidebar {
       width: var(--sidebar-width);
-      /* Pure Glass Effect - Fantasy Glassmorphism (come login card) */
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(20px) saturate(160%);
       -webkit-backdrop-filter: blur(20px) saturate(160%);
@@ -54,7 +74,7 @@
         0 8px 32px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.15),
         0 0 60px rgba(212, 175, 55, 0.1);
-      padding: 2rem 1.5rem;
+      padding: 1rem 1.5rem 0.5rem 1.5rem;
       display: flex;
       flex-direction: column;
       position: fixed;
@@ -66,7 +86,6 @@
       overflow: hidden;
     }
 
-    /* Shimmer effect on sidebar */
     .sidebar::before {
       content: '';
       position: absolute;
@@ -74,13 +93,9 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(212, 175, 55, 0.05),
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent);
       animation: sidebarShimmer 8s ease-in-out infinite;
+      pointer-events: none;
     }
 
     @keyframes sidebarShimmer {
@@ -89,14 +104,8 @@
     }
 
     @keyframes slideInLeft {
-      from {
-        opacity: 0;
-        transform: translateX(-100%);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      from { opacity: 0; transform: translateX(-100%); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     .sidebar-header {
@@ -104,13 +113,15 @@
       padding-bottom: 2rem;
       border-bottom: 1px solid rgba(212, 175, 55, 0.2);
       margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .sidebar-logo {
       font-family: 'Cinzel', serif;
       font-size: 1.5rem;
       color: var(--gold);
-      text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
       margin-bottom: 0.5rem;
     }
 
@@ -119,16 +130,17 @@
       color: var(--text-muted);
     }
 
-    /* User Profile in Sidebar */
     .sidebar-user {
       display: flex;
       align-items: center;
       gap: 1rem;
       padding: 1rem;
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.04);
       border-radius: 12px;
-      border: 1px solid rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.2);
       margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .user-avatar {
@@ -147,10 +159,7 @@
       flex-shrink: 0;
     }
 
-    .user-info {
-      overflow: hidden;
-    }
-
+    .user-info { overflow: hidden; }
     .user-name {
       font-weight: 600;
       color: var(--text-light);
@@ -158,20 +167,19 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .user-role {
       font-size: 0.8rem;
       color: var(--text-muted);
     }
 
-    /* Navigation Menu */
+    /* Navigation */
     .nav-menu {
       flex: 1;
+      position: relative;
+      z-index: 1;
     }
 
-    .nav-section {
-      margin-bottom: 1.5rem;
-    }
+    .nav-section { margin-bottom: 1.5rem; }
 
     .nav-section-title {
       font-size: 0.75rem;
@@ -213,16 +221,13 @@
       background: rgba(212, 175, 55, 0.1);
     }
 
-    .nav-item:hover::before {
+    .nav-item:hover::before,
+    .nav-item.active::before {
       transform: scaleY(1);
     }
 
     .nav-item.active {
       background: rgba(212, 175, 55, 0.15);
-    }
-
-    .nav-item.active::before {
-      transform: scaleY(1);
     }
 
     .nav-icon {
@@ -234,9 +239,7 @@
       color: var(--gold);
     }
 
-    .nav-text {
-      font-size: 0.95rem;
-    }
+    .nav-text { font-size: 0.95rem; }
 
     .nav-badge {
       margin-left: auto;
@@ -248,16 +251,18 @@
       font-weight: 600;
     }
 
-    /* Sidebar Footer */
     .sidebar-footer {
-      padding-top: 1.5rem;
+      padding-top: 1rem;
       border-top: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
     }
 
     .logout-btn {
       width: 100%;
       padding: 0.85rem 1rem;
-      background: rgba(139, 30, 30, 0.3);
+      background: rgba(139, 30, 30, 0.4);
       border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 10px;
       color: var(--text-light);
@@ -273,7 +278,7 @@
     .logout-btn:hover {
       background: rgba(139, 30, 30, 0.6);
       border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
     }
 
     /* ====== MAIN CONTENT ====== */
@@ -289,145 +294,15 @@
       position: relative;
     }
 
-    /* ====== WELCOME SECTION ====== */
     .welcome-section {
       text-align: center;
       z-index: 1;
       animation: fadeIn 1s ease;
     }
 
-    /* ====== D20 CONTAINER ====== */
-    .d20-container {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 2rem;
-      width: 350px;
-      height: 350px;
-    }
-
-    /* Animated Rings */
-    .d20-rings {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .ring {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 2px solid rgba(212, 175, 55, 0.3);
-    }
-
-    .ring-1 {
-      width: 320px;
-      height: 320px;
-      animation: ringPulse 3s ease-in-out infinite;
-    }
-
-    .ring-1::before {
-      content: '';
-      position: absolute;
-      top: -5px;
-      left: -5px;
-      right: -5px;
-      bottom: -5px;
-      border: 2px solid transparent;
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: ringRotate 4s linear infinite;
-    }
-
-    .ring-2 {
-      width: 360px;
-      height: 360px;
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      animation: ringPulse 3s ease-in-out infinite 0.5s;
-    }
-
-    .ring-2::before {
-      content: '';
-      position: absolute;
-      top: -3px;
-      left: -3px;
-      right: -3px;
-      bottom: -3px;
-      border: 1px solid transparent;
-      border-bottom-color: var(--gold);
-      border-radius: 50%;
-      animation: ringRotate 6s linear infinite reverse;
-    }
-
-    .ring-3 {
-      width: 400px;
-      height: 400px;
-      border: 1px solid rgba(212, 175, 55, 0.1);
-      animation: ringPulse 4s ease-in-out infinite 1s;
-    }
-
-    @keyframes ringRotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes ringPulse {
-      0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.5;
-      }
-      50% {
-        transform: translate(-50%, -50%) scale(1.03);
-        opacity: 1;
-      }
-    }
-
-    /* Glowing particles around dice */
-    .d20-glow {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-      animation: glowPulse 3s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-    }
-
-    #d20-canvas {
-      position: relative;
-      z-index: 2;
-      width: 300px;
-      height: 300px;
-      cursor: pointer;
-      filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      outline: none;
-    }
-
-    #d20-canvas:hover,
-    #d20-canvas:focus,
-    #d20-canvas:active,
-    #d20-canvas:focus-visible,
-    #d20-canvas.d20-active {
-      filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4)) !important;
-      transform: none !important;
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     /* Welcome Text */
@@ -435,25 +310,14 @@
       font-family: 'Cinzel', serif;
       font-size: 3.5rem;
       color: var(--gold);
-      text-shadow:
-        0 0 40px rgba(212, 175, 55, 0.5),
-        0 0 80px rgba(212, 175, 55, 0.3);
+      text-shadow: 0 0 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.3);
       margin-bottom: 1rem;
       animation: textGlow 3s ease-in-out infinite;
     }
 
     @keyframes textGlow {
-      0%, 100% {
-        text-shadow:
-          0 0 40px rgba(212, 175, 55, 0.5),
-          0 0 80px rgba(212, 175, 55, 0.3);
-      }
-      50% {
-        text-shadow:
-          0 0 60px rgba(212, 175, 55, 0.8),
-          0 0 100px rgba(212, 175, 55, 0.5),
-          0 0 140px rgba(212, 175, 55, 0.3);
-      }
+      0%, 100% { text-shadow: 0 0 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.3); }
+      50% { text-shadow: 0 0 60px rgba(212, 175, 55, 0.8), 0 0 100px rgba(212, 175, 55, 0.5), 0 0 140px rgba(212, 175, 55, 0.3); }
     }
 
     .welcome-subtitle {
@@ -462,9 +326,7 @@
       margin-bottom: 2rem;
     }
 
-    .welcome-subtitle strong {
-      color: var(--gold);
-    }
+    .welcome-subtitle strong { color: var(--gold); }
 
     .welcome-tagline {
       font-family: 'Cinzel', serif;
@@ -492,9 +354,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow:
-        0 5px 30px rgba(0, 0, 0, 0.5),
-        0 0 20px rgba(212, 175, 55, 0.3);
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3);
       transition: all 0.3s ease;
       animation: chatBtnPulse 2s ease-in-out infinite;
       position: relative;
@@ -502,9 +362,7 @@
 
     .chat-toggle-btn:hover {
       transform: scale(1.1);
-      box-shadow:
-        0 5px 40px rgba(0, 0, 0, 0.6),
-        0 0 30px rgba(212, 175, 55, 0.5);
+      box-shadow: 0 5px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.5);
     }
 
     .chat-toggle-btn svg {
@@ -514,9 +372,7 @@
       transition: transform 0.3s ease;
     }
 
-    .chat-toggle-btn.active svg {
-      transform: rotate(180deg);
-    }
+    .chat-toggle-btn.active svg { transform: rotate(180deg); }
 
     .chat-notification {
       position: absolute;
@@ -526,14 +382,13 @@
       height: 22px;
       background: #e53935;
       border-radius: 50%;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       font-size: 0.75rem;
       font-weight: 700;
       color: white;
       border: 2px solid var(--bg-dark);
-      display: none;
     }
 
     .chat-notification.show {
@@ -552,7 +407,6 @@
       50% { box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 35px rgba(212, 175, 55, 0.5); }
     }
 
-    /* Chat Window */
     .chat-window {
       position: absolute;
       bottom: 75px;
@@ -640,7 +494,6 @@
       50% { opacity: 0.5; }
     }
 
-    /* Chat Tabs */
     .chat-tabs {
       display: flex;
       border-bottom: 1px solid rgba(212, 175, 55, 0.15);
@@ -669,28 +522,6 @@
       border-bottom-color: var(--gold);
     }
 
-    .chat-tab .tab-badge {
-      position: absolute;
-      top: 5px;
-      right: 15px;
-      min-width: 18px;
-      height: 18px;
-      background: #e53935;
-      border-radius: 9px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: white;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 0 4px;
-    }
-
-    .chat-tab .tab-badge.show {
-      display: flex;
-    }
-
-    /* Online Users List */
     .online-users {
       padding: 0.75rem;
       border-bottom: 1px solid rgba(212, 175, 55, 0.15);
@@ -700,10 +531,7 @@
       background: rgba(0, 0, 0, 0.15);
     }
 
-    .online-users::-webkit-scrollbar {
-      height: 4px;
-    }
-
+    .online-users::-webkit-scrollbar { height: 4px; }
     .online-users::-webkit-scrollbar-thumb {
       background: rgba(212, 175, 55, 0.3);
       border-radius: 2px;
@@ -721,9 +549,7 @@
       min-width: 60px;
     }
 
-    .online-user:hover {
-      background: rgba(212, 175, 55, 0.1);
-    }
+    .online-user:hover { background: rgba(212, 175, 55, 0.1); }
 
     .online-user-avatar {
       width: 36px;
@@ -762,7 +588,6 @@
       max-width: 55px;
     }
 
-    /* Chat Messages */
     .chat-messages {
       flex: 1;
       padding: 1rem;
@@ -772,15 +597,11 @@
       gap: 0.75rem;
     }
 
-    .chat-messages::-webkit-scrollbar {
-      width: 6px;
-    }
-
+    .chat-messages::-webkit-scrollbar { width: 6px; }
     .chat-messages::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.05);
       border-radius: 3px;
     }
-
     .chat-messages::-webkit-scrollbar-thumb {
       background: rgba(212, 175, 55, 0.3);
       border-radius: 3px;
@@ -792,23 +613,12 @@
     }
 
     @keyframes messageSlide {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .message.received {
-      align-self: flex-start;
-    }
-
-    .message.sent {
-      align-self: flex-end;
-    }
+    .message.received { align-self: flex-start; }
+    .message.sent { align-self: flex-end; }
 
     .message-header {
       display: flex;
@@ -817,9 +627,7 @@
       margin-bottom: 0.3rem;
     }
 
-    .message.sent .message-header {
-      flex-direction: row-reverse;
-    }
+    .message.sent .message-header { flex-direction: row-reverse; }
 
     .message-avatar {
       width: 24px;
@@ -871,7 +679,6 @@
       border-top-right-radius: 4px;
     }
 
-    /* Chat Input */
     .chat-input-area {
       padding: 1rem;
       border-top: 1px solid rgba(212, 175, 55, 0.2);
@@ -896,9 +703,7 @@
       box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
     }
 
-    .chat-input::placeholder {
-      color: var(--text-muted);
-    }
+    .chat-input::placeholder { color: var(--text-muted); }
 
     .chat-send-btn {
       width: 45px;
@@ -949,25 +754,12 @@
     }
 
     @keyframes rise {
-      0% {
-        bottom: -10px;
-        opacity: 0.6;
-      }
-      50% {
-        opacity: 0.8;
-      }
-      100% {
-        bottom: 110vh;
-        opacity: 0;
-      }
+      0% { bottom: -10px; opacity: 0.6; }
+      50% { opacity: 0.8; }
+      100% { bottom: 110vh; opacity: 0; }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* ====== MOBILE SIDEBAR TOGGLE ====== */
+    /* ====== MOBILE ====== */
     .mobile-menu-btn {
       display: none;
       position: fixed;
@@ -984,110 +776,41 @@
       justify-content: center;
     }
 
-    .mobile-menu-btn svg {
-      color: var(--gold);
+    .mobile-menu-btn svg { color: var(--gold); }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 99;
     }
 
-    /* ====== RESPONSIVE ====== */
     @media (max-width: 1024px) {
-      .mobile-menu-btn {
-        display: flex;
-      }
-
+      .mobile-menu-btn { display: flex; }
       .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
       }
-
-      .sidebar.active {
-        transform: translateX(0);
-      }
-
-      .main-content {
-        margin-left: 0;
-      }
-
-      .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 99;
-      }
-
-      .sidebar-overlay.active {
-        display: block;
-      }
+      .sidebar.active { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .sidebar-overlay.active { display: block; }
     }
 
     @media (max-width: 768px) {
-      .d20-container {
-        width: 300px;
-        height: 300px;
-      }
-
-      .ring-1 { width: 270px; height: 270px; }
-      .ring-2 { width: 300px; height: 300px; }
-      .ring-3 { width: 330px; height: 330px; }
-
-      #d20-canvas {
-        width: 250px;
-        height: 250px;
-      }
-
-      .welcome-title {
-        font-size: 2.5rem;
-      }
-
-      .chat-window {
-        width: 320px;
-        height: 480px;
-        right: -0.5rem;
-      }
+      .welcome-title { font-size: 2.5rem; }
+      .chat-window { width: 320px; height: 480px; right: -0.5rem; }
     }
 
     @media (max-width: 480px) {
-      .d20-container {
-        width: 260px;
-        height: 260px;
-      }
-
-      .ring-1 { width: 230px; height: 230px; }
-      .ring-2 { width: 260px; height: 260px; }
-      .ring-3 { width: 290px; height: 290px; }
-
-      #d20-canvas {
-        width: 200px;
-        height: 200px;
-      }
-
-      .welcome-title {
-        font-size: 2rem;
-      }
-
-      .welcome-subtitle {
-        font-size: 1rem;
-      }
-
-      .chat-window {
-        width: calc(100vw - 2rem);
-        right: -1rem;
-        bottom: 70px;
-        height: 450px;
-      }
-
-      .chat-widget {
-        right: 1rem;
-        bottom: 1rem;
-      }
-
-      .chat-toggle-btn {
-        width: 55px;
-        height: 55px;
-      }
+      .welcome-title { font-size: 2rem; }
+      .welcome-subtitle { font-size: 1rem; }
+      .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; }
+      .chat-widget { right: 1rem; bottom: 1rem; }
+      .chat-toggle-btn { width: 55px; height: 55px; }
     }
   </style>
 </head>
@@ -1095,24 +818,19 @@
   <div class="magic-particles"></div>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- Mobile Menu Button -->
   <button class="mobile-menu-btn" id="mobileMenuBtn">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <line x1="3" y1="6" x2="21" y2="6"/>
-      <line x1="3" y1="12" x2="21" y2="12"/>
-      <line x1="3" y1="18" x2="21" y2="18"/>
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
     </svg>
   </button>
 
   <div class="app-container">
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <h1 class="sidebar-logo">The Tavern</h1>
         <p class="sidebar-subtitle">D&D Platform</p>
       </div>
 
-      <!-- User Profile -->
       <div class="sidebar-user">
         <div class="user-avatar" id="userAvatar">A</div>
         <div class="user-info">
@@ -1121,17 +839,11 @@
         </div>
       </div>
 
-      <!-- Navigation Menu -->
       <nav class="nav-menu">
         <div class="nav-section">
           <div class="nav-section-title">Main</div>
           <a href="#" class="nav-item active">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9,22 9,12 15,12 15,22"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
             <span class="nav-text">Dashboard</span>
           </a>
         </div>
@@ -1139,30 +851,16 @@
         <div class="nav-section">
           <div class="nav-section-title">Adventure</div>
           <a href="characters.html" class="nav-item">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
             <span class="nav-text">My Characters</span>
             <span class="nav-badge" id="charCountBadge">0</span>
           </a>
           <a href="campaigns.html" class="nav-item">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
             <span class="nav-text">Campaigns</span>
           </a>
           <a href="chat.html" class="nav-item">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <span class="nav-text">Party Chat</span>
             <span class="nav-badge" id="unreadBadge">0</span>
           </a>
@@ -1171,25 +869,11 @@
         <div class="nav-section">
           <div class="nav-section-title">Tools</div>
           <a href="tools.html" class="nav-item">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="2"/>
-                <circle cx="12" cy="12" r="4"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="12" r="4"/></svg></div>
             <span class="nav-text">Game Tools</span>
           </a>
           <a href="tools.html?dice=true" class="nav-item">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <circle cx="8" cy="8" r="1" fill="currentColor"/>
-                <circle cx="16" cy="8" r="1" fill="currentColor"/>
-                <circle cx="8" cy="16" r="1" fill="currentColor"/>
-                <circle cx="16" cy="16" r="1" fill="currentColor"/>
-                <circle cx="12" cy="12" r="1" fill="currentColor"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1" fill="currentColor"/><circle cx="16" cy="8" r="1" fill="currentColor"/><circle cx="8" cy="16" r="1" fill="currentColor"/><circle cx="16" cy="16" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></div>
             <span class="nav-text">Dice Roller</span>
           </a>
         </div>
@@ -1197,53 +881,26 @@
         <div class="nav-section">
           <div class="nav-section-title">Quick Actions</div>
           <a href="characters.html?new=true" class="nav-item">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
             <span class="nav-text">New Character</span>
           </a>
           <a href="campaigns.html?new=true" class="nav-item">
-            <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
             <span class="nav-text">Create Campaign</span>
           </a>
         </div>
       </nav>
 
-      <!-- Sidebar Footer -->
       <div class="sidebar-footer">
         <button class="logout-btn" id="logoutButton">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16,17 21,12 16,7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Logout
         </button>
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
       <section class="welcome-section">
-        <!-- D20 3D with animated rings -->
-        <div class="d20-container">
-          <div class="d20-rings">
-            <div class="ring ring-1"></div>
-            <div class="ring ring-2"></div>
-            <div class="ring ring-3"></div>
-          </div>
-          <div class="d20-glow"></div>
-          <canvas id="d20-canvas"></canvas>
-        </div>
-
         <h1 class="welcome-title">Welcome</h1>
         <p class="welcome-subtitle">Ready for adventure, <strong id="welcomeUserName">Adventurer</strong>?</p>
         <p class="welcome-tagline">"Roll for initiative..."</p>
@@ -1256,12 +913,7 @@
     <div class="chat-window" id="chatWindow">
       <div class="chat-header">
         <div class="chat-header-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="chat-header-info">
           <h4>Party Chat</h4>
@@ -1273,89 +925,58 @@
         </div>
       </div>
 
-      <!-- Chat Tabs -->
       <div class="chat-tabs">
-        <div class="chat-tab active" data-tab="tavern">
-          Tavern
-          <span class="tab-badge" id="tavernBadge">0</span>
-        </div>
-        <div class="chat-tab" data-tab="party">
-          My Party
-          <span class="tab-badge" id="partyBadge">0</span>
-        </div>
+        <div class="chat-tab active" data-tab="tavern">Tavern</div>
+        <div class="chat-tab" data-tab="party">My Party</div>
       </div>
 
-      <!-- Online Users -->
       <div class="online-users" id="onlineUsers">
-        <div class="online-user" data-user="Thorin">
-          <div class="online-user-avatar">T</div>
-          <span class="online-user-name">Thorin</span>
-        </div>
-        <div class="online-user" data-user="Elara">
-          <div class="online-user-avatar">E</div>
-          <span class="online-user-name">Elara</span>
-        </div>
-        <div class="online-user" data-user="Grimjaw">
-          <div class="online-user-avatar">G</div>
-          <span class="online-user-name">Grimjaw</span>
-        </div>
+        <div class="online-user" data-user="Thorin"><div class="online-user-avatar">T</div><span class="online-user-name">Thorin</span></div>
+        <div class="online-user" data-user="Elara"><div class="online-user-avatar">E</div><span class="online-user-name">Elara</span></div>
+        <div class="online-user" data-user="Grimjaw"><div class="online-user-avatar">G</div><span class="online-user-name">Grimjaw</span></div>
       </div>
 
-      <div class="chat-messages" id="chatMessages">
-        <!-- Messages will be populated here -->
-      </div>
+      <div class="chat-messages" id="chatMessages"></div>
 
       <div class="chat-input-area">
         <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeypress(event)">
         <button class="chat-send-btn" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="22" y1="2" x2="11" y2="13"/>
-            <polygon points="22,2 15,22 11,13 2,9"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
         </button>
       </div>
     </div>
 
     <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="chat-notification" id="chatNotification">0</span>
     </button>
   </div>
 
   <script>
-    // ====== AUTHENTICATION GUARD ======
+    // Auth Guard
     const token = localStorage.getItem('authToken');
-    if (!token) {
-      console.log('No auth token found, redirecting to login...');
-      window.location.href = 'index.html';
-    }
+    if (!token) { window.location.href = 'index.html'; }
 
-    // ====== DISPLAY USER INFO ======
+    // User Info
     const username = localStorage.getItem('username') || 'Adventurer';
     document.getElementById('userName').textContent = username;
     document.getElementById('welcomeUserName').textContent = username;
     document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
 
-    // ====== SIDEBAR MOBILE TOGGLE ======
+    // Mobile Sidebar
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-
-    mobileMenuBtn.addEventListener('click', () => {
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
       sidebar.classList.toggle('active');
       sidebarOverlay.classList.toggle('active');
     });
-
     sidebarOverlay.addEventListener('click', () => {
       sidebar.classList.remove('active');
       sidebarOverlay.classList.remove('active');
     });
 
-    // ====== LOGOUT HANDLER ======
+    // Logout
     document.getElementById('logoutButton').addEventListener('click', () => {
-      console.log('Logging out...');
       localStorage.removeItem('authToken');
       localStorage.removeItem('username');
       localStorage.removeItem('userEmail');
@@ -1363,31 +984,15 @@
       window.location.href = 'index.html';
     });
 
-    // ====== LOAD USER STATS ======
-    function loadUserStats() {
-      document.getElementById('charCountBadge').textContent = '0';
-      document.getElementById('unreadBadge').textContent = '0';
-    }
-
-    loadUserStats();
-
-    // ====== CHAT FUNCTIONALITY ======
+    // Chat
     const chatWindow = document.getElementById('chatWindow');
     const chatToggleBtn = document.getElementById('chatToggleBtn');
     const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
     const chatNotification = document.getElementById('chatNotification');
-    let unreadCount = 0;
-    let currentTab = 'tavern';
+    let unreadCount = 0, currentTab = 'tavern';
 
-    // Sample online users
-    const onlineUsers = [
-      { name: 'Thorin', class: 'Dwarf Fighter' },
-      { name: 'Elara', class: 'Elf Wizard' },
-      { name: 'Grimjaw', class: 'Half-Orc Barbarian' }
-    ];
-
-    // Sample messages
+    const onlineUsers = [{ name: 'Thorin' }, { name: 'Elara' }, { name: 'Grimjaw' }];
     const sampleMessages = {
       tavern: [
         { sender: 'Thorin', text: 'Anyone up for a dungeon crawl tonight?', time: '10:30' },
@@ -1396,112 +1001,53 @@
       ],
       party: [
         { sender: 'Thorin', text: 'Remember, we meet at the old ruins at midnight.', time: '09:15' },
-        { sender: 'Elara', text: 'I\'ll bring the scrolls we discussed.', time: '09:20' }
+        { sender: 'Elara', text: "I'll bring the scrolls we discussed.", time: '09:20' }
       ]
     };
 
-    // Initialize chat
-    function initChat() {
-      loadMessages(currentTab);
-      updateOnlineCount();
-    }
+    function initChat() { loadMessages(currentTab); }
 
     function loadMessages(tab) {
       chatMessages.innerHTML = '';
-      const messages = sampleMessages[tab] || [];
-
-      messages.forEach(msg => {
-        addMessageToChat(msg.sender, msg.text, msg.time, msg.sender !== username);
-      });
+      (sampleMessages[tab] || []).forEach(msg => addMessageToChat(msg.sender, msg.text, msg.time, msg.sender !== username));
     }
 
     function addMessageToChat(sender, text, time, isReceived = true) {
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${isReceived ? 'received' : 'sent'}`;
-
-      const initial = sender.charAt(0).toUpperCase();
-
-      messageDiv.innerHTML = `
-        <div class="message-header">
-          <div class="message-avatar">${initial}</div>
-          <span class="message-sender">${sender}</span>
-          <span class="message-time">${time}</span>
-        </div>
-        <div class="message-content">${text}</div>
-      `;
-
-      chatMessages.appendChild(messageDiv);
+      const div = document.createElement('div');
+      div.className = `message ${isReceived ? 'received' : 'sent'}`;
+      div.innerHTML = `<div class="message-header"><div class="message-avatar">${sender.charAt(0)}</div><span class="message-sender">${sender}</span><span class="message-time">${time}</span></div><div class="message-content">${text}</div>`;
+      chatMessages.appendChild(div);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function toggleChat() {
       chatWindow.classList.toggle('active');
       chatToggleBtn.classList.toggle('active');
-
-      if (chatWindow.classList.contains('active')) {
-        chatInput.focus();
-        // Clear notifications
-        unreadCount = 0;
-        updateNotificationBadge();
-      }
+      if (chatWindow.classList.contains('active')) { chatInput.focus(); unreadCount = 0; updateNotificationBadge(); }
     }
 
     function sendMessage() {
       const message = chatInput.value.trim();
       if (!message) return;
-
       const now = new Date();
       const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-      // Add user message
       addMessageToChat(username, message, time, false);
       chatInput.value = '';
-
-      // Simulate response from random user
       setTimeout(() => {
         const randomUser = onlineUsers[Math.floor(Math.random() * onlineUsers.length)];
-        const responses = [
-          'Interesting point!',
-          'I agree with that.',
-          'Let\'s discuss this further.',
-          'Roll for persuasion!',
-          'May the dice be ever in your favor!',
-          'That reminds me of our last quest...'
-        ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        const responseTime = new Date();
-        const respTime = `${responseTime.getHours().toString().padStart(2, '0')}:${responseTime.getMinutes().toString().padStart(2, '0')}`;
-
-        addMessageToChat(randomUser.name, randomResponse, respTime, true);
-
-        // Add notification if chat is closed
-        if (!chatWindow.classList.contains('active')) {
-          unreadCount++;
-          updateNotificationBadge();
-        }
+        const responses = ['Interesting!', 'I agree.', 'Roll for persuasion!', 'May the dice be in your favor!', 'That reminds me of our last quest...'];
+        addMessageToChat(randomUser.name, responses[Math.floor(Math.random() * responses.length)], time, true);
+        if (!chatWindow.classList.contains('active')) { unreadCount++; updateNotificationBadge(); }
       }, 1000 + Math.random() * 2000);
     }
 
-    function handleChatKeypress(event) {
-      if (event.key === 'Enter') {
-        sendMessage();
-      }
-    }
+    function handleChatKeypress(e) { if (e.key === 'Enter') sendMessage(); }
 
     function updateNotificationBadge() {
-      if (unreadCount > 0) {
-        chatNotification.textContent = unreadCount > 9 ? '9+' : unreadCount;
-        chatNotification.classList.add('show');
-      } else {
-        chatNotification.classList.remove('show');
-      }
+      if (unreadCount > 0) { chatNotification.textContent = unreadCount > 9 ? '9+' : unreadCount; chatNotification.classList.add('show'); }
+      else { chatNotification.classList.remove('show'); }
     }
 
-    function updateOnlineCount() {
-      document.getElementById('onlineCountText').textContent = `${onlineUsers.length} online`;
-    }
-
-    // Tab switching
     document.querySelectorAll('.chat-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
@@ -1511,226 +1057,23 @@
       });
     });
 
-    // Click on online user to mention
     document.querySelectorAll('.online-user').forEach(user => {
-      user.addEventListener('click', () => {
-        const userName = user.dataset.user;
-        chatInput.value = `@${userName} ` + chatInput.value;
-        chatInput.focus();
-      });
+      user.addEventListener('click', () => { chatInput.value = `@${user.dataset.user} ` + chatInput.value; chatInput.focus(); });
     });
 
-    // Initialize chat on load
     initChat();
 
-    // ====== MAGIC PARTICLES ======
+    // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
-    const PARTICLE_COUNT = 25;
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const particle = document.createElement("span");
-
-      const size = Math.random() * 3 + 2;
-      const duration = Math.random() * 10 + 8;
-      const delay = Math.random() * 10;
-      const left = Math.random() * 100;
-
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.left = `${left}%`;
-      particle.style.animationDuration = `${duration}s`;
-      particle.style.animationDelay = `${delay}s`;
-
-      magicContainer.appendChild(particle);
+    for (let i = 0; i < 60; i++) {
+      const p = document.createElement("span");
+      p.style.width = p.style.height = `${Math.random() * 3 + 2}px`;
+      p.style.left = `${Math.random() * 100}%`;
+      p.style.animationDuration = `${Math.random() * 10 + 8}s`;
+      p.style.animationDelay = `${Math.random() * 10}s`;
+      magicContainer.appendChild(p);
     }
 
-    // ====== 3D D20 ICOSAHEDRON ======
-    const canvas = document.getElementById("d20-canvas");
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvas,
-      alpha: true,
-      antialias: true
-    });
-
-    renderer.setSize(300, 300);
-    camera.position.z = 5;
-
-    // Create D20 as a group of 20 triangular faces
-    const d20Group = new THREE.Group();
-
-    // Function to create texture with number
-    function createNumberTexture(number) {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 512;
-      canvas.height = 512;
-
-      // Fill with red background
-      ctx.fillStyle = '#8b1e1e';
-      ctx.fillRect(0, 0, 512, 512);
-
-      // Draw subtle gradient for depth (centered lower for triangular mapping)
-      const gradient = ctx.createRadialGradient(256, 340, 0, 256, 340, 200);
-      gradient.addColorStop(0, 'rgba(139, 30, 30, 1)');
-      gradient.addColorStop(1, 'rgba(92, 18, 18, 1)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 512, 512);
-
-      // Draw number in gold (positioned lower to center on triangular face)
-      ctx.fillStyle = '#d4af37';
-      ctx.font = 'bold 180px Cinzel, serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(number.toString(), 256, 340);
-
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.flipY = false;
-      return texture;
-    }
-
-    // Get template geometry for vertices
-    const templateGeometry = new THREE.IcosahedronGeometry(1.5, 0);
-    const positions = templateGeometry.attributes.position;
-    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-
-    // Create 20 individual triangular faces
-    for (let i = 0; i < 20; i++) {
-      const i1 = i * 3;
-      const i2 = i * 3 + 1;
-      const i3 = i * 3 + 2;
-
-      const vertices = new Float32Array([
-        positions.getX(i1), positions.getY(i1), positions.getZ(i1),
-        positions.getX(i2), positions.getY(i2), positions.getZ(i2),
-        positions.getX(i3), positions.getY(i3), positions.getZ(i3)
-      ]);
-
-      const uvs = new Float32Array([
-        0.5, 0,
-        0, 1,
-        1, 1
-      ]);
-
-      const faceGeometry = new THREE.BufferGeometry();
-      faceGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-      faceGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-      faceGeometry.computeVertexNormals();
-
-      const faceMaterial = new THREE.MeshPhongMaterial({
-        map: createNumberTexture(numbers[i]),
-        shininess: 80,
-        flatShading: true
-      });
-
-      const faceMesh = new THREE.Mesh(faceGeometry, faceMaterial);
-      d20Group.add(faceMesh);
-    }
-
-    // Add golden edge lines
-    const edges = new THREE.EdgesGeometry(templateGeometry);
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xd4af37, linewidth: 2 });
-    const wireframe = new THREE.LineSegments(edges, lineMaterial);
-    d20Group.add(wireframe);
-
-    scene.add(d20Group);
-
-    // Add lighting
-    const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
-    light1.position.set(1, 1, 1);
-    scene.add(light1);
-
-    const light2 = new THREE.DirectionalLight(0xd4af37, 0.4);
-    light2.position.set(-1, -1, -1);
-    scene.add(light2);
-
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
-
-    // Animation variables
-    let floatOffset = 0;
-    let isHovered = false;
-    let rotationSpeed = 0.005;
-
-    // Touch control variables
-    let isTouching = false;
-    let lastTouchX = 0;
-    let lastTouchY = 0;
-    let touchRotationX = 0;
-    let touchRotationY = 0;
-
-    function activateD20() {
-      isHovered = true;
-      rotationSpeed = 0.05;
-    }
-
-    function deactivateD20() {
-      isHovered = false;
-      rotationSpeed = 0.005;
-    }
-
-    function spinD20() {
-      rotationSpeed = 0.2;
-      setTimeout(() => {
-        rotationSpeed = isHovered ? 0.05 : 0.005;
-      }, 1000);
-    }
-
-    // Desktop mouse events
-    canvas.addEventListener('mouseenter', activateD20);
-    canvas.addEventListener('mouseleave', deactivateD20);
-    canvas.addEventListener('click', spinD20);
-
-    // Mobile touch events
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      isTouching = true;
-      const touch = e.touches[0];
-      lastTouchX = touch.clientX;
-      lastTouchY = touch.clientY;
-      touchRotationX = d20Group.rotation.x;
-      touchRotationY = d20Group.rotation.y;
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', (e) => {
-      if (!isTouching) return;
-      e.preventDefault();
-
-      const touch = e.touches[0];
-      const deltaX = touch.clientX - lastTouchX;
-      const deltaY = touch.clientY - lastTouchY;
-
-      const sensitivity = 0.01;
-      d20Group.rotation.y = touchRotationY + (deltaX * sensitivity);
-      d20Group.rotation.x = touchRotationX + (deltaY * sensitivity);
-    }, { passive: false });
-
-    canvas.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      isTouching = false;
-    }, { passive: false });
-
-    canvas.addEventListener('touchcancel', () => {
-      isTouching = false;
-    });
-
-    // Animation loop
-    function animate() {
-      requestAnimationFrame(animate);
-
-      if (!isTouching) {
-        d20Group.rotation.x += rotationSpeed;
-        d20Group.rotation.y += rotationSpeed;
-      }
-
-      floatOffset += 0.02;
-      d20Group.position.y = Math.sin(floatOffset) * 0.2;
-
-      renderer.render(scene, camera);
-    }
-
-    animate();
   </script>
 </body>
 </html>
