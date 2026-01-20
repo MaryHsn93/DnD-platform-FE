@@ -760,6 +760,306 @@
       100% { bottom: 110vh; opacity: 0; }
     }
 
+    /* ====== DICE ROLLER WIDGET ====== */
+    .dice-roller {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 900;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 40px rgba(212, 175, 55, 0.1);
+    }
+
+    .dice-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .dice-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .dice-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .dice-btn:hover .dice-shape {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    }
+
+    .dice-btn.selected {
+      background: rgba(212, 175, 55, 0.2);
+    }
+
+    .dice-btn.selected .dice-shape {
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+      border-color: #fff;
+    }
+
+    .dice-btn.selected .dice-label {
+      color: var(--gold);
+    }
+
+    .dice-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--gold);
+      color: var(--bg-dark);
+      font-size: 0.65rem;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .dice-btn.selected .dice-count {
+      display: flex;
+    }
+
+    .dice-shape {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      border: 2px solid var(--gold);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .dice-value {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      z-index: 1;
+    }
+
+    .dice-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Dice Shapes */
+    .dice-d4 {
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      border: none;
+      background: var(--primary);
+      box-shadow: 0 0 0 2px var(--gold);
+    }
+
+    .dice-d6 {
+      border-radius: 6px;
+    }
+
+    .dice-d8 {
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      border: none;
+      background: var(--primary);
+      box-shadow: 0 0 0 2px var(--gold);
+    }
+
+    .dice-d10 {
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+      border: none;
+      background: var(--primary);
+      box-shadow: 0 0 0 2px var(--gold);
+    }
+
+    .dice-d12 {
+      clip-path: polygon(50% 0%, 85% 25%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 15% 25%);
+      border: none;
+      background: var(--primary);
+      box-shadow: 0 0 0 2px var(--gold);
+    }
+
+    .dice-d20 {
+      clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+      border: none;
+      background: var(--primary);
+      box-shadow: 0 0 0 2px var(--gold);
+    }
+
+    .dice-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .roll-all-btn {
+      flex: 1;
+      padding: 0.6rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .roll-all-btn:hover {
+      background: linear-gradient(135deg, #a82525, var(--primary));
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .roll-all-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .clear-btn {
+      padding: 0.6rem 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .clear-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+    }
+
+    .dice-result {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      padding: 0.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      min-height: 50px;
+    }
+
+    .result-details {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .result-total {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+
+    .result-value {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+    }
+
+    .result-dice {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .result-value.critical {
+      color: #4ade80;
+      text-shadow: 0 0 20px rgba(74, 222, 128, 0.8);
+      animation: criticalPulse 0.5s ease infinite;
+    }
+
+    .result-value.fumble {
+      color: #ef4444;
+      text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+    }
+
+    @keyframes criticalPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes diceShake {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-15deg) scale(1.1); }
+      40% { transform: rotate(15deg) scale(1.1); }
+      60% { transform: rotate(-10deg); }
+      80% { transform: rotate(10deg); }
+    }
+
+    @keyframes resultReveal {
+      0% { transform: scale(2); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .dice-btn.rolling .dice-shape {
+      animation: diceShake 0.5s ease;
+    }
+
+    .result-value.reveal {
+      animation: resultReveal 0.3s ease;
+    }
+
+    /* Dice Roller Responsive */
+    @media (max-width: 768px) {
+      .dice-roller {
+        top: auto;
+        bottom: 6rem;
+        right: 1rem;
+        padding: 0.75rem;
+      }
+
+      .dice-shape {
+        width: 35px;
+        height: 35px;
+      }
+
+      .dice-value {
+        font-size: 0.8rem;
+      }
+
+      .result-value {
+        font-size: 1.25rem;
+      }
+    }
+
     /* ====== MOBILE ====== */
     .mobile-menu-btn {
       display: none;
@@ -892,6 +1192,53 @@
         <p class="welcome-tagline">"Roll for initiative..."</p>
       </section>
     </main>
+  </div>
+
+  <!-- Dice Roller Widget -->
+  <div class="dice-roller" id="diceRoller">
+    <div class="dice-container">
+      <button class="dice-btn" data-dice="d4" data-max="4">
+        <span class="dice-count">1</span>
+        <div class="dice-shape dice-d4"><span class="dice-value">4</span></div>
+        <span class="dice-label">D4</span>
+      </button>
+      <button class="dice-btn" data-dice="d6" data-max="6">
+        <span class="dice-count">1</span>
+        <div class="dice-shape dice-d6"><span class="dice-value">6</span></div>
+        <span class="dice-label">D6</span>
+      </button>
+      <button class="dice-btn" data-dice="d8" data-max="8">
+        <span class="dice-count">1</span>
+        <div class="dice-shape dice-d8"><span class="dice-value">8</span></div>
+        <span class="dice-label">D8</span>
+      </button>
+      <button class="dice-btn" data-dice="d10" data-max="10">
+        <span class="dice-count">1</span>
+        <div class="dice-shape dice-d10"><span class="dice-value">10</span></div>
+        <span class="dice-label">D10</span>
+      </button>
+      <button class="dice-btn" data-dice="d12" data-max="12">
+        <span class="dice-count">1</span>
+        <div class="dice-shape dice-d12"><span class="dice-value">12</span></div>
+        <span class="dice-label">D12</span>
+      </button>
+      <button class="dice-btn" data-dice="d20" data-max="20">
+        <span class="dice-count">1</span>
+        <div class="dice-shape dice-d20"><span class="dice-value">20</span></div>
+        <span class="dice-label">D20</span>
+      </button>
+    </div>
+    <div class="dice-actions">
+      <button class="roll-all-btn" id="rollAllBtn" disabled>Lancia</button>
+      <button class="clear-btn" id="clearBtn">Reset</button>
+    </div>
+    <div class="dice-result" id="diceResult">
+      <div class="result-total">
+        <span class="result-value" id="resultValue">--</span>
+        <span class="result-dice" id="resultDice"></span>
+      </div>
+      <div class="result-details" id="resultDetails"></div>
+    </div>
   </div>
 
   <!-- Chat Widget -->
@@ -1048,6 +1395,195 @@
     });
 
     initChat();
+
+    // Dice Roller
+    const resultValue = document.getElementById('resultValue');
+    const resultDice = document.getElementById('resultDice');
+    const resultDetails = document.getElementById('resultDetails');
+    const rollAllBtn = document.getElementById('rollAllBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const diceButtons = document.querySelectorAll('.dice-btn');
+    let isRolling = false;
+
+    // Track count per dice type: { d4: 0, d6: 2, d8: 1, ... }
+    const diceCount = {};
+    diceButtons.forEach(btn => {
+      diceCount[btn.dataset.dice] = 0;
+    });
+
+    function getTotalDiceCount() {
+      return Object.values(diceCount).reduce((sum, count) => sum + count, 0);
+    }
+
+    function updateUI() {
+      const total = getTotalDiceCount();
+      rollAllBtn.disabled = total === 0;
+      rollAllBtn.textContent = total > 0 ? `Lancia (${total})` : 'Lancia';
+
+      // Update each dice button's visual state
+      diceButtons.forEach(btn => {
+        const dice = btn.dataset.dice;
+        const count = diceCount[dice];
+        const countEl = btn.querySelector('.dice-count');
+
+        if (count > 0) {
+          btn.classList.add('selected');
+          countEl.textContent = count;
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+    }
+
+    function addDice(btn) {
+      if (isRolling) return;
+      const dice = btn.dataset.dice;
+      diceCount[dice]++;
+      updateUI();
+    }
+
+    function removeDice(btn) {
+      if (isRolling) return;
+      const dice = btn.dataset.dice;
+      if (diceCount[dice] > 0) {
+        diceCount[dice]--;
+        updateUI();
+      }
+    }
+
+    function clearSelection() {
+      if (isRolling) return;
+      Object.keys(diceCount).forEach(dice => diceCount[dice] = 0);
+      updateUI();
+      resultValue.textContent = '--';
+      resultValue.className = 'result-value';
+      resultDice.textContent = '';
+      resultDetails.textContent = '';
+      diceButtons.forEach(btn => {
+        const max = parseInt(btn.dataset.max);
+        btn.querySelector('.dice-value').textContent = max;
+      });
+    }
+
+    function rollSelectedDice() {
+      if (isRolling || getTotalDiceCount() === 0) return;
+
+      isRolling = true;
+      rollAllBtn.disabled = true;
+
+      // Get list of selected dice buttons
+      const activeDice = [];
+      diceButtons.forEach(btn => {
+        const dice = btn.dataset.dice;
+        const count = diceCount[dice];
+        if (count > 0) {
+          activeDice.push({ btn, dice, max: parseInt(btn.dataset.max), count });
+        }
+      });
+
+      // Start rolling animations
+      activeDice.forEach(d => d.btn.classList.add('rolling'));
+
+      // Flicker animation
+      let flickerCount = 0;
+      const flickerInterval = setInterval(() => {
+        activeDice.forEach(d => {
+          const randomVal = Math.floor(Math.random() * d.max) + 1;
+          d.btn.querySelector('.dice-value').textContent = randomVal;
+        });
+        resultValue.textContent = '...';
+        resultValue.className = 'result-value';
+        flickerCount++;
+
+        if (flickerCount >= 15) {
+          clearInterval(flickerInterval);
+
+          // Calculate final results
+          const allResults = [];
+          let total = 0;
+          let hasD20Crit = false;
+          let hasD20Fumble = false;
+
+          activeDice.forEach(d => {
+            const rolls = [];
+            for (let i = 0; i < d.count; i++) {
+              const result = Math.floor(Math.random() * d.max) + 1;
+              rolls.push(result);
+              total += result;
+
+              if (d.dice === 'd20' && result === 20) hasD20Crit = true;
+              if (d.dice === 'd20' && result === 1) hasD20Fumble = true;
+            }
+            // Show last roll on the dice face
+            d.btn.querySelector('.dice-value').textContent = rolls[rolls.length - 1];
+            allResults.push({ dice: d.dice.toUpperCase(), count: d.count, rolls });
+          });
+
+          // Display results
+          resultValue.textContent = total;
+          resultValue.classList.add('reveal');
+
+          const totalDice = getTotalDiceCount();
+          if (totalDice === 1) {
+            resultDice.textContent = allResults[0].dice;
+            resultDetails.textContent = '';
+          } else {
+            resultDice.textContent = 'Totale';
+            // Format: "2D6: 3+5 | D8: 7"
+            const detailsText = allResults.map(r => {
+              const prefix = r.count > 1 ? `${r.count}${r.dice}` : r.dice;
+              return `${prefix}: ${r.rolls.join('+')}`;
+            }).join(' | ');
+            resultDetails.textContent = detailsText;
+          }
+
+          // Special effects
+          if (hasD20Crit) {
+            resultValue.classList.add('critical');
+          } else if (hasD20Fumble) {
+            resultValue.classList.add('fumble');
+          }
+
+          setTimeout(() => {
+            activeDice.forEach(d => d.btn.classList.remove('rolling'));
+            isRolling = false;
+            updateUI();
+          }, 500);
+        }
+      }, 50);
+    }
+
+    // PC: Left click to add, right click to remove
+    diceButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        addDice(btn);
+      });
+      btn.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        removeDice(btn);
+      });
+    });
+
+    // Roll and Clear buttons
+    rollAllBtn.addEventListener('click', rollSelectedDice);
+    clearBtn.addEventListener('click', clearSelection);
+
+    // Mobile: Tap to add
+    let lastTap = 0;
+    diceButtons.forEach(btn => {
+      btn.addEventListener('touchend', (e) => {
+        const now = Date.now();
+        if (now - lastTap < 300) {
+          // Double tap = remove
+          e.preventDefault();
+          removeDice(btn);
+        } else {
+          // Single tap handled by click
+        }
+        lastTap = now;
+      }, { passive: false });
+    });
 
     // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
