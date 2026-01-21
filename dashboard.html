@@ -1351,7 +1351,7 @@
     function toggleChat() {
       chatWindow.classList.toggle('active');
       chatToggleBtn.classList.toggle('active');
-      if (chatWindow.classList.contains('active')) { chatInput.focus(); unreadCount = 0; updateNotificationBadge(); }
+      if (chatWindow.classList.contains('active')) { unreadCount = 0; updateNotificationBadge(); }
     }
 
     function sendMessage() {
