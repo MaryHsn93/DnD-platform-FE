@@ -302,24 +302,38 @@
       text-align: center;
       z-index: 1;
       animation: fadeIn 1s ease;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      max-width: 600px;
-      padding: 0 2rem;
-      pointer-events: none;
     }
 
-    .welcome-section * {
-      pointer-events: auto;
-    }
-
-    /* On mobile, account for sidebar */
+    /* On desktop, center in main content */
     @media (min-width: 1025px) {
       .welcome-section {
-        left: calc(50% + var(--sidebar-width) / 2);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        max-width: 600px;
+        padding: 0 2rem;
+      }
+    }
+
+    /* On tablet/mobile, use different approach */
+    @media (max-width: 1024px) {
+      .welcome-section {
+        position: relative;
+        padding: 2rem;
+        margin-top: 30vh;
+      }
+
+      /* When keyboard is open, lock position */
+      body.ios-keyboard-open .welcome-section {
+        position: fixed !important;
+        top: var(--welcome-top, 30vh) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin-top: 0 !important;
+        width: 100% !important;
+        z-index: 50 !important;
       }
     }
 
@@ -1445,149 +1459,199 @@
 
     // ====== iOS/iPad Keyboard Handling ======
     (function() {
-      // Detect iOS/iPadOS
+      // Detect iOS/iPadOS (including Safari on iPad with desktop mode)
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                   (navigator.userAgent.includes('Safari') && navigator.maxTouchPoints > 1);
 
       if (!isIOS) return;
+
+      console.log('iOS/iPad detected - applying keyboard fixes');
 
       const chatInputEl = document.getElementById('chatInput');
       const chatWidgetEl = document.querySelector('.chat-widget');
       const welcomeSection = document.querySelector('.welcome-section');
-      let initialViewportHeight = window.innerHeight;
-      let keyboardVisible = false;
+      const chatWindow = document.getElementById('chatWindow');
 
-      // Store initial position of welcome section
-      let welcomeInitialTop = null;
+      // Store initial values
+      let initialViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      let keyboardVisible = false;
+      let welcomeInitialRect = null;
+
+      // Calculate and store welcome section position ONCE
       if (welcomeSection) {
-        welcomeInitialTop = welcomeSection.getBoundingClientRect().top;
+        const rect = welcomeSection.getBoundingClientRect();
+        welcomeInitialRect = {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width
+        };
+        // Store as CSS variable for use in stylesheets
+        document.documentElement.style.setProperty('--welcome-top', rect.top + 'px');
       }
 
-      // Visual Viewport API handler for keyboard detection
+      // Keyboard detection using multiple methods
+      const setKeyboardOpen = (isOpen) => {
+        if (isOpen === keyboardVisible) return;
+
+        keyboardVisible = isOpen;
+        console.log('Keyboard state changed:', isOpen ? 'OPEN' : 'CLOSED');
+
+        if (isOpen) {
+          document.body.classList.add('ios-keyboard-open');
+
+          // Lock welcome section position
+          if (welcomeSection && welcomeInitialRect) {
+            welcomeSection.style.cssText = `
+              position: fixed !important;
+              top: ${welcomeInitialRect.top}px !important;
+              left: 50% !important;
+              transform: translateX(-50%) !important;
+              width: 100% !important;
+              max-width: 600px !important;
+              margin: 0 !important;
+              padding: 0 2rem !important;
+              z-index: 50 !important;
+            `;
+          }
+        } else {
+          document.body.classList.remove('ios-keyboard-open');
+
+          // Restore welcome section
+          if (welcomeSection) {
+            welcomeSection.style.cssText = '';
+          }
+
+          // Reset chat widget position
+          if (chatWidgetEl) {
+            chatWidgetEl.style.bottom = '';
+          }
+        }
+      };
+
+      // Visual Viewport API - most reliable for keyboard detection
       if (window.visualViewport) {
+        let lastHeight = window.visualViewport.height;
+
         const handleViewportChange = () => {
           const currentHeight = window.visualViewport.height;
           const heightDiff = initialViewportHeight - currentHeight;
 
-          // Keyboard is considered open if viewport shrinks by more than 100px
+          // Keyboard is open if viewport shrunk significantly
           if (heightDiff > 100) {
-            if (!keyboardVisible) {
-              keyboardVisible = true;
-              document.body.classList.add('ios-keyboard-open');
-            }
+            setKeyboardOpen(true);
 
-            // Adjust chat widget position to stay above keyboard
+            // Position chat widget above keyboard
             if (chatWidgetEl) {
-              const keyboardHeight = initialViewportHeight - currentHeight - window.visualViewport.offsetTop;
-              chatWidgetEl.style.bottom = `${Math.max(keyboardHeight + 16, 32)}px`;
+              const keyboardHeight = initialViewportHeight - currentHeight;
+              chatWidgetEl.style.bottom = `${keyboardHeight + 16}px`;
             }
-          } else {
-            if (keyboardVisible) {
-              keyboardVisible = false;
-              document.body.classList.remove('ios-keyboard-open');
-
-              // Reset chat widget position
-              if (chatWidgetEl) {
-                chatWidgetEl.style.bottom = '';
-              }
-            }
+          } else if (heightDiff < 50) {
+            setKeyboardOpen(false);
           }
+
+          lastHeight = currentHeight;
         };
 
         window.visualViewport.addEventListener('resize', handleViewportChange);
-        window.visualViewport.addEventListener('scroll', handleViewportChange);
+      }
 
-        // Also handle orientation change
-        window.addEventListener('orientationchange', () => {
+      // Fallback: focus/blur detection
+      if (chatInputEl) {
+        chatInputEl.addEventListener('focus', () => {
+          // Delay to let visual viewport update first
           setTimeout(() => {
-            initialViewportHeight = window.innerHeight;
-          }, 500);
+            if (!keyboardVisible) {
+              setKeyboardOpen(true);
+            }
+          }, 300);
+        });
+
+        chatInputEl.addEventListener('blur', () => {
+          // Only close keyboard state if not immediately refocusing
+          setTimeout(() => {
+            if (document.activeElement !== chatInputEl) {
+              setKeyboardOpen(false);
+            }
+          }, 100);
         });
       }
 
-      // Aggressive fix for re-focus issue on iPad
+      // ====== INPUT RE-TAP FIX ======
+      // This prevents the iPad bug where tapping an already-focused input
+      // causes the keyboard to dismiss and reappear
       if (chatInputEl) {
-        let touchStartTime = 0;
-        let lastTouchY = 0;
+        let inputHadFocus = false;
+        let preventNextBlur = false;
 
-        // Prevent the input from losing focus on touch
+        // Track focus state
+        chatInputEl.addEventListener('focus', () => {
+          inputHadFocus = true;
+        });
+
+        chatInputEl.addEventListener('blur', () => {
+          if (preventNextBlur) {
+            preventNextBlur = false;
+            // Immediately restore focus
+            requestAnimationFrame(() => {
+              chatInputEl.focus();
+            });
+            return;
+          }
+          inputHadFocus = false;
+        });
+
+        // Intercept touch on input when already focused
         chatInputEl.addEventListener('touchstart', (e) => {
-          touchStartTime = Date.now();
-          lastTouchY = e.touches[0].clientY;
-
-          // If already focused, we need to handle this specially
-          if (document.activeElement === chatInputEl) {
-            // Store that we're handling a re-tap
-            chatInputEl.dataset.retap = 'true';
+          if (inputHadFocus && document.activeElement === chatInputEl) {
+            // Already focused - prevent the blur/focus cycle
+            preventNextBlur = true;
           }
         }, { passive: true });
 
         chatInputEl.addEventListener('touchend', (e) => {
-          const touchDuration = Date.now() - touchStartTime;
-          const isQuickTap = touchDuration < 300;
-
-          // If this was a re-tap on already focused input
-          if (chatInputEl.dataset.retap === 'true') {
-            chatInputEl.dataset.retap = 'false';
-
-            // Immediately refocus to prevent keyboard dismiss
+          if (preventNextBlur) {
             e.preventDefault();
+            e.stopPropagation();
 
-            // Force focus with multiple attempts
+            // Ensure focus is maintained
             chatInputEl.focus();
 
-            setTimeout(() => {
+            // Move cursor to touch position (approximately)
+            requestAnimationFrame(() => {
               chatInputEl.focus();
-              // Trigger a small change to wake up the keyboard
-              const currentValue = chatInputEl.value;
-              chatInputEl.value = currentValue + ' ';
-              chatInputEl.value = currentValue;
-
-              // Position cursor at tap location or end
               const len = chatInputEl.value.length;
               chatInputEl.setSelectionRange(len, len);
-            }, 10);
-
-            setTimeout(() => {
-              chatInputEl.focus();
-            }, 50);
-
-            setTimeout(() => {
-              chatInputEl.focus();
-            }, 100);
+            });
           }
-        });
+        }, { capture: true });
 
-        // Also handle blur to detect unwanted keyboard dismissal
-        chatInputEl.addEventListener('blur', (e) => {
-          // If we just did a re-tap, restore focus
-          if (chatInputEl.dataset.retap === 'true') {
-            setTimeout(() => {
-              chatInputEl.focus();
-            }, 0);
-          }
-        });
-
-        // Handle click as fallback
-        chatInputEl.addEventListener('click', (e) => {
+        // Additional safeguard: re-focus on any click
+        chatInputEl.addEventListener('click', () => {
           chatInputEl.focus();
         });
       }
 
-      // Prevent body scroll when keyboard is open (iOS Safari workaround)
-      document.body.addEventListener('touchmove', (e) => {
-        if (keyboardVisible && document.activeElement === chatInputEl) {
-          const target = e.target;
-          // Allow scrolling only inside chat messages
-          if (!target.closest('.chat-messages')) {
-            // Don't prevent on the input itself
-            if (target !== chatInputEl) {
-              // Allow but don't prevent default - just ensure focus
-              setTimeout(() => chatInputEl.focus(), 0);
-            }
+      // Handle orientation changes
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+          initialViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+          if (welcomeSection) {
+            const rect = welcomeSection.getBoundingClientRect();
+            welcomeInitialRect = { top: rect.top, left: rect.left, width: rect.width };
+            document.documentElement.style.setProperty('--welcome-top', rect.top + 'px');
           }
-        }
-      }, { passive: true });
+        }, 500);
+      });
+
+      // Prevent scroll-induced keyboard dismissal
+      if (chatWindow) {
+        chatWindow.addEventListener('scroll', (e) => {
+          if (document.activeElement === chatInputEl) {
+            e.stopPropagation();
+          }
+        }, { passive: true });
+      }
     })();
 
     // Dice Roller
