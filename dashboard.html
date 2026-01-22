@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>The Tavern - D&D Platform</title>
 
   <!-- Google Fonts -->
@@ -292,7 +292,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      min-height: 100vh;  /* fallback */
+      min-height: 100dvh; /* dynamic viewport - adapts to iOS keyboard */
       padding: 2rem;
       position: relative;
     }
@@ -301,6 +302,13 @@
       text-align: center;
       z-index: 1;
       animation: fadeIn 1s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 600px;
+      padding: 0 2rem;
     }
 
     @keyframes fadeIn {
@@ -696,7 +704,7 @@
       border: 1px solid rgba(212, 175, 55, 0.2);
       border-radius: 12px;
       color: var(--text-light);
-      font-size: 0.9rem;
+      font-size: 16px; /* iOS won't zoom inputs >= 16px */
       outline: none;
       transition: all 0.3s ease;
     }
@@ -1115,6 +1123,33 @@
       .chat-widget { right: 1rem; bottom: 1rem; }
       .chat-toggle-btn { width: 55px; height: 55px; }
     }
+
+    /* ====== iOS KEYBOARD HANDLING ====== */
+    body.ios-keyboard-open .main-content {
+      min-height: auto;
+    }
+
+    body.ios-keyboard-open .welcome-section {
+      transition: none;
+    }
+
+    body.ios-keyboard-open .chat-window {
+      max-height: 60vh;
+      max-height: 60dvh;
+    }
+
+    body.ios-keyboard-open .chat-widget {
+      transition: bottom 0.1s ease-out;
+    }
+
+    /* Prevent iOS from moving elements during keyboard animation */
+    @supports (-webkit-touch-callout: none) {
+      .welcome-section {
+        will-change: auto;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1380,6 +1415,110 @@
     });
 
     initChat();
+
+    // ====== iOS/iPad Keyboard Handling ======
+    (function() {
+      // Detect iOS/iPadOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      if (!isIOS) return;
+
+      const chatInputEl = document.getElementById('chatInput');
+      const chatWidgetEl = document.querySelector('.chat-widget');
+      let lastViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      let keyboardVisible = false;
+
+      // Visual Viewport API handler for keyboard detection
+      if (window.visualViewport) {
+        const handleViewportResize = () => {
+          const currentHeight = window.visualViewport.height;
+          const heightDiff = lastViewportHeight - currentHeight;
+
+          // Keyboard is considered open if viewport shrinks by more than 150px
+          if (heightDiff > 150 && !keyboardVisible) {
+            keyboardVisible = true;
+            document.body.classList.add('ios-keyboard-open');
+
+            // Adjust chat widget position to stay above keyboard
+            if (chatWidgetEl) {
+              const keyboardHeight = window.innerHeight - currentHeight;
+              chatWidgetEl.style.bottom = `${keyboardHeight + 16}px`;
+            }
+          } else if (heightDiff < 50 && keyboardVisible) {
+            keyboardVisible = false;
+            document.body.classList.remove('ios-keyboard-open');
+
+            // Reset chat widget position
+            if (chatWidgetEl) {
+              chatWidgetEl.style.bottom = '';
+            }
+          }
+
+          lastViewportHeight = currentHeight;
+        };
+
+        window.visualViewport.addEventListener('resize', handleViewportResize);
+        window.visualViewport.addEventListener('scroll', handleViewportResize);
+      }
+
+      // Fix for re-focus issue on iPad
+      // Prevents race condition when tapping input that's already focused
+      if (chatInputEl) {
+        let isFocused = false;
+        let pendingFocus = false;
+
+        chatInputEl.addEventListener('focus', () => {
+          isFocused = true;
+        });
+
+        chatInputEl.addEventListener('blur', () => {
+          // Delay blur state update to handle tap-to-refocus
+          setTimeout(() => {
+            if (!pendingFocus) {
+              isFocused = false;
+            }
+            pendingFocus = false;
+          }, 100);
+        });
+
+        // Handle touchstart to catch re-focus attempts
+        chatInputEl.addEventListener('touchstart', (e) => {
+          if (isFocused) {
+            // Already focused - prevent default blur/focus cycle
+            pendingFocus = true;
+
+            // Use requestAnimationFrame to ensure focus is maintained
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                chatInputEl.focus();
+
+                // Move cursor to end if needed
+                if (chatInputEl.value.length > 0) {
+                  chatInputEl.setSelectionRange(
+                    chatInputEl.value.length,
+                    chatInputEl.value.length
+                  );
+                }
+              });
+            });
+          }
+        }, { passive: true });
+
+        // Prevent keyboard from hiding on scroll
+        const chatMessagesEl = document.getElementById('chatMessages');
+        if (chatMessagesEl) {
+          chatMessagesEl.addEventListener('touchmove', (e) => {
+            if (isFocused) {
+              // Don't prevent scrolling, but keep focus
+              requestAnimationFrame(() => {
+                chatInputEl.focus();
+              });
+            }
+          }, { passive: true });
+        }
+      }
+    })();
 
     // Dice Roller
     const resultValue = document.getElementById('resultValue');
