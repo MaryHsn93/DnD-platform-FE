@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <title>My Characters - The Tavern</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #1b1b1f;
+      --bg-card: #26262b;
+      --primary: #8b1e1e;
+      --gold: #d4af37;
+      --text-light: #f5f5f5;
+      --text-muted: #b5b5b5;
+      --sidebar-width: 280px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('assets/background.jpg') no-repeat 75% center fixed;
+      background-size: cover;
+      filter: blur(3px) brightness(0.4);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+      z-index: -1;
+    }
+
+    /* ====== LAYOUT CONTAINER ====== */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ====== SIDEBAR ====== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-right: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 60px rgba(212, 175, 55, 0.1);
+      padding: 1rem 1.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px)) 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 100;
+      animation: slideInLeft 0.5s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+      animation: sidebarShimmer 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes sidebarShimmer {
+      0%, 100% { left: -100%; }
+      50% { left: 100%; }
+    }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-100%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .sidebar-header {
+      text-align: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+      display: block;
+    }
+
+    .sidebar-logo:hover {
+      text-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+    }
+
+    .sidebar-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .user-info { overflow: hidden; }
+    .user-name {
+      font-weight: 600;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-role {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Navigation */
+    .nav-menu {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-section { margin-bottom: 1.5rem; }
+
+    .nav-section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      padding-left: 0.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 0.25rem;
+      color: var(--text-light);
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--gold);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .nav-item:hover {
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .nav-item:hover::before,
+    .nav-item.active::before {
+      transform: scaleY(1);
+    }
+
+    .nav-item.active {
+      background: rgba(212, 175, 55, 0.15);
+    }
+
+    .nav-icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+    }
+
+    .nav-text { font-size: 0.95rem; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--primary);
+      color: var(--gold);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      padding-top: 1rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: rgba(139, 30, 30, 0.4);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 10px;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .logout-btn:hover {
+      background: rgba(139, 30, 30, 0.6);
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    /* ====== MAIN CONTENT ====== */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .page-section {
+      text-align: center;
+      z-index: 1;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .page-title {
+      font-family: 'Cinzel', serif;
+      font-size: 3rem;
+      color: var(--gold);
+      text-shadow: 0 0 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.3);
+      margin-bottom: 1rem;
+      animation: textGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes textGlow {
+      0%, 100% { text-shadow: 0 0 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.3); }
+      50% { text-shadow: 0 0 60px rgba(212, 175, 55, 0.8), 0 0 100px rgba(212, 175, 55, 0.5), 0 0 140px rgba(212, 175, 55, 0.3); }
+    }
+
+    .page-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .page-tagline {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--text-muted);
+      opacity: 0.7;
+      font-style: italic;
+    }
+
+    /* ====== MAGIC PARTICLES ====== */
+    .magic-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .magic-particles span {
+      position: absolute;
+      bottom: -10px;
+      display: block;
+      background: radial-gradient(circle, var(--gold), transparent);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: rise linear infinite;
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    @keyframes rise {
+      0% { bottom: -10px; opacity: 0.6; }
+      50% { opacity: 0.8; }
+      100% { bottom: 110vh; opacity: 0; }
+    }
+
+    /* ====== MOBILE ====== */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 101;
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-menu-btn svg { color: var(--gold); }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 99;
+    }
+
+    @media (max-width: 1024px) {
+      .mobile-menu-btn { display: flex; }
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.active { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .sidebar-overlay.active { display: block; }
+    }
+
+    @media (max-width: 768px) {
+      .page-title { font-size: 2.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      .page-title { font-size: 2rem; }
+      .page-subtitle { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="magic-particles"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <button class="mobile-menu-btn" id="mobileMenuBtn">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="sidebar-logo">The Tavern</a>
+        <p class="sidebar-subtitle">D&D Platform</p>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Adventurer</div>
+          <div class="user-role">Hero</div>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section">
+          <div class="nav-section-title">Adventure</div>
+          <a href="characters.html" class="nav-item active">
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <span class="nav-text">My Characters</span>
+            <span class="nav-badge" id="charCountBadge">0</span>
+          </a>
+          <a href="campaigns.html" class="nav-item">
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <span class="nav-text">Campaigns</span>
+          </a>
+          <a href="compendium.html" class="nav-item">
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
+            <span class="nav-text">Compendium</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logoutButton">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="page-section">
+        <h1 class="page-title">My Characters</h1>
+        <p class="page-subtitle">Manage your heroes and their stories</p>
+        <p class="page-tagline">"Every hero has a beginning..."</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Auth Guard
+    const token = localStorage.getItem('authToken');
+    if (!token) { window.location.href = 'index.html'; }
+
+    // User Info
+    const username = localStorage.getItem('username') || 'Adventurer';
+    document.getElementById('userName').textContent = username;
+    document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+
+    // Mobile Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      sidebarOverlay.classList.toggle('active');
+    });
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    });
+
+    // Logout
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('loginTimestamp');
+      window.location.href = 'index.html';
+    });
+
+    // Magic Particles
+    const magicContainer = document.querySelector(".magic-particles");
+    for (let i = 0; i < 60; i++) {
+      const p = document.createElement("span");
+      p.style.width = p.style.height = `${Math.random() * 3 + 2}px`;
+      p.style.left = `${Math.random() * 100}%`;
+      p.style.animationDuration = `${Math.random() * 10 + 8}s`;
+      p.style.animationDelay = `${Math.random() * 10}s`;
+      magicContainer.appendChild(p);
+    }
+  </script>
+</body>
+</html>
