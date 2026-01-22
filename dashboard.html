@@ -302,13 +302,25 @@
       text-align: center;
       z-index: 1;
       animation: fadeIn 1s ease;
-      position: absolute;
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
       max-width: 600px;
       padding: 0 2rem;
+      pointer-events: none;
+    }
+
+    .welcome-section * {
+      pointer-events: auto;
+    }
+
+    /* On mobile, account for sidebar */
+    @media (min-width: 1025px) {
+      .welcome-section {
+        left: calc(50% + var(--sidebar-width) / 2);
+      }
     }
 
     @keyframes fadeIn {
@@ -1130,7 +1142,8 @@
     }
 
     body.ios-keyboard-open .welcome-section {
-      transition: none;
+      transition: none !important;
+      animation: none !important;
     }
 
     body.ios-keyboard-open .chat-window {
@@ -1142,13 +1155,27 @@
       transition: bottom 0.1s ease-out;
     }
 
-    /* Prevent iOS from moving elements during keyboard animation */
+    /* Prevent iOS Safari from moving fixed elements */
     @supports (-webkit-touch-callout: none) {
       .welcome-section {
-        will-change: auto;
-        backface-visibility: hidden;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
         -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
       }
+
+      /* Force GPU layer to prevent repaints */
+      body.ios-keyboard-open .welcome-section {
+        transform: translate3d(-50%, -50%, 0);
+        -webkit-transform: translate3d(-50%, -50%, 0);
+      }
+    }
+
+    /* Ensure chat input is always interactive */
+    .chat-input {
+      -webkit-user-select: text;
+      user-select: text;
+      touch-action: manipulation;
     }
   </style>
 </head>
@@ -1292,7 +1319,7 @@
       <div class="chat-messages" id="chatMessages"></div>
 
       <div class="chat-input-area">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeypress(event)">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
         <button class="chat-send-btn" onclick="sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
         </button>
@@ -1426,98 +1453,141 @@
 
       const chatInputEl = document.getElementById('chatInput');
       const chatWidgetEl = document.querySelector('.chat-widget');
-      let lastViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const welcomeSection = document.querySelector('.welcome-section');
+      let initialViewportHeight = window.innerHeight;
       let keyboardVisible = false;
+
+      // Store initial position of welcome section
+      let welcomeInitialTop = null;
+      if (welcomeSection) {
+        welcomeInitialTop = welcomeSection.getBoundingClientRect().top;
+      }
 
       // Visual Viewport API handler for keyboard detection
       if (window.visualViewport) {
-        const handleViewportResize = () => {
+        const handleViewportChange = () => {
           const currentHeight = window.visualViewport.height;
-          const heightDiff = lastViewportHeight - currentHeight;
+          const heightDiff = initialViewportHeight - currentHeight;
 
-          // Keyboard is considered open if viewport shrinks by more than 150px
-          if (heightDiff > 150 && !keyboardVisible) {
-            keyboardVisible = true;
-            document.body.classList.add('ios-keyboard-open');
+          // Keyboard is considered open if viewport shrinks by more than 100px
+          if (heightDiff > 100) {
+            if (!keyboardVisible) {
+              keyboardVisible = true;
+              document.body.classList.add('ios-keyboard-open');
+            }
 
             // Adjust chat widget position to stay above keyboard
             if (chatWidgetEl) {
-              const keyboardHeight = window.innerHeight - currentHeight;
-              chatWidgetEl.style.bottom = `${keyboardHeight + 16}px`;
+              const keyboardHeight = initialViewportHeight - currentHeight - window.visualViewport.offsetTop;
+              chatWidgetEl.style.bottom = `${Math.max(keyboardHeight + 16, 32)}px`;
             }
-          } else if (heightDiff < 50 && keyboardVisible) {
-            keyboardVisible = false;
-            document.body.classList.remove('ios-keyboard-open');
+          } else {
+            if (keyboardVisible) {
+              keyboardVisible = false;
+              document.body.classList.remove('ios-keyboard-open');
 
-            // Reset chat widget position
-            if (chatWidgetEl) {
-              chatWidgetEl.style.bottom = '';
+              // Reset chat widget position
+              if (chatWidgetEl) {
+                chatWidgetEl.style.bottom = '';
+              }
             }
           }
-
-          lastViewportHeight = currentHeight;
         };
 
-        window.visualViewport.addEventListener('resize', handleViewportResize);
-        window.visualViewport.addEventListener('scroll', handleViewportResize);
+        window.visualViewport.addEventListener('resize', handleViewportChange);
+        window.visualViewport.addEventListener('scroll', handleViewportChange);
+
+        // Also handle orientation change
+        window.addEventListener('orientationchange', () => {
+          setTimeout(() => {
+            initialViewportHeight = window.innerHeight;
+          }, 500);
+        });
       }
 
-      // Fix for re-focus issue on iPad
-      // Prevents race condition when tapping input that's already focused
+      // Aggressive fix for re-focus issue on iPad
       if (chatInputEl) {
-        let isFocused = false;
-        let pendingFocus = false;
+        let touchStartTime = 0;
+        let lastTouchY = 0;
 
-        chatInputEl.addEventListener('focus', () => {
-          isFocused = true;
-        });
-
-        chatInputEl.addEventListener('blur', () => {
-          // Delay blur state update to handle tap-to-refocus
-          setTimeout(() => {
-            if (!pendingFocus) {
-              isFocused = false;
-            }
-            pendingFocus = false;
-          }, 100);
-        });
-
-        // Handle touchstart to catch re-focus attempts
+        // Prevent the input from losing focus on touch
         chatInputEl.addEventListener('touchstart', (e) => {
-          if (isFocused) {
-            // Already focused - prevent default blur/focus cycle
-            pendingFocus = true;
+          touchStartTime = Date.now();
+          lastTouchY = e.touches[0].clientY;
 
-            // Use requestAnimationFrame to ensure focus is maintained
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                chatInputEl.focus();
-
-                // Move cursor to end if needed
-                if (chatInputEl.value.length > 0) {
-                  chatInputEl.setSelectionRange(
-                    chatInputEl.value.length,
-                    chatInputEl.value.length
-                  );
-                }
-              });
-            });
+          // If already focused, we need to handle this specially
+          if (document.activeElement === chatInputEl) {
+            // Store that we're handling a re-tap
+            chatInputEl.dataset.retap = 'true';
           }
         }, { passive: true });
 
-        // Prevent keyboard from hiding on scroll
-        const chatMessagesEl = document.getElementById('chatMessages');
-        if (chatMessagesEl) {
-          chatMessagesEl.addEventListener('touchmove', (e) => {
-            if (isFocused) {
-              // Don't prevent scrolling, but keep focus
-              requestAnimationFrame(() => {
-                chatInputEl.focus();
-              });
-            }
-          }, { passive: true });
-        }
+        chatInputEl.addEventListener('touchend', (e) => {
+          const touchDuration = Date.now() - touchStartTime;
+          const isQuickTap = touchDuration < 300;
+
+          // If this was a re-tap on already focused input
+          if (chatInputEl.dataset.retap === 'true') {
+            chatInputEl.dataset.retap = 'false';
+
+            // Immediately refocus to prevent keyboard dismiss
+            e.preventDefault();
+
+            // Force focus with multiple attempts
+            chatInputEl.focus();
+
+            setTimeout(() => {
+              chatInputEl.focus();
+              // Trigger a small change to wake up the keyboard
+              const currentValue = chatInputEl.value;
+              chatInputEl.value = currentValue + ' ';
+              chatInputEl.value = currentValue;
+
+              // Position cursor at tap location or end
+              const len = chatInputEl.value.length;
+              chatInputEl.setSelectionRange(len, len);
+            }, 10);
+
+            setTimeout(() => {
+              chatInputEl.focus();
+            }, 50);
+
+            setTimeout(() => {
+              chatInputEl.focus();
+            }, 100);
+          }
+        });
+
+        // Also handle blur to detect unwanted keyboard dismissal
+        chatInputEl.addEventListener('blur', (e) => {
+          // If we just did a re-tap, restore focus
+          if (chatInputEl.dataset.retap === 'true') {
+            setTimeout(() => {
+              chatInputEl.focus();
+            }, 0);
+          }
+        });
+
+        // Handle click as fallback
+        chatInputEl.addEventListener('click', (e) => {
+          chatInputEl.focus();
+        });
       }
+
+      // Prevent body scroll when keyboard is open (iOS Safari workaround)
+      document.body.addEventListener('touchmove', (e) => {
+        if (keyboardVisible && document.activeElement === chatInputEl) {
+          const target = e.target;
+          // Allow scrolling only inside chat messages
+          if (!target.closest('.chat-messages')) {
+            // Don't prevent on the input itself
+            if (target !== chatInputEl) {
+              // Allow but don't prevent default - just ensure focus
+              setTimeout(() => chatInputEl.focus(), 0);
+            }
+          }
+        }
+      }, { passive: true });
     })();
 
     // Dice Roller
