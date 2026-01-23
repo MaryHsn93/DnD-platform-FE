@@ -391,6 +391,48 @@
 
     .mobile-menu-btn svg { color: var(--gold); }
 
+    /* ====== BACK BUTTON ====== */
+    .back-btn {
+      position: fixed;
+      bottom: 2rem;
+      left: 1rem;
+      z-index: 101;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 2px solid var(--gold);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3);
+      transition: all 0.3s ease;
+      animation: backBtnPulse 2s ease-in-out infinite;
+    }
+
+    .back-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.5);
+    }
+
+    .back-btn svg {
+      width: 28px;
+      height: 28px;
+      color: var(--gold);
+    }
+
+    @keyframes backBtnPulse {
+      0%, 100% { box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); }
+      50% { box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 35px rgba(212, 175, 55, 0.5); }
+    }
+
+    @media (min-width: 1025px) {
+      .back-btn {
+        left: calc(var(--sidebar-width) + 1rem);
+      }
+    }
+
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -430,6 +472,12 @@
   <button class="mobile-menu-btn" id="mobileMenuBtn">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <button class="back-btn" onclick="history.back()" aria-label="Torna indietro">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
     </svg>
   </button>
 
