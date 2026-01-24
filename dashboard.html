@@ -1268,19 +1268,31 @@
       transition: bottom 0.1s ease-out;
     }
 
-    /* Prevent iOS Safari from moving fixed elements */
+    /* Prevent iOS Safari from moving fixed elements - only on desktop */
     @supports (-webkit-touch-callout: none) {
-      .welcome-section {
-        -webkit-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
+      @media (min-width: 1025px) {
+        .welcome-section {
+          -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+        }
+      }
+
+      /* On tablet/mobile iOS, use horizontal centering only */
+      @media (max-width: 1024px) {
+        .welcome-section {
+          -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+        }
       }
 
       /* Force GPU layer to prevent repaints */
       body.ios-keyboard-open .welcome-section {
-        transform: translate3d(-50%, -50%, 0);
-        -webkit-transform: translate3d(-50%, -50%, 0);
+        transform: translate3d(-50%, 0, 0);
+        -webkit-transform: translate3d(-50%, 0, 0);
       }
     }
 
