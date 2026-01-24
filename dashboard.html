@@ -797,11 +797,41 @@
     }
 
     /* ====== DICE ROLLER WIDGET ====== */
-    .dice-roller {
+    .dice-roller-widget {
       position: fixed;
       top: 1.5rem;
       right: 1.5rem;
       z-index: 900;
+    }
+
+    .dice-toggle-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 2px solid var(--gold);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .dice-toggle-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .dice-toggle-btn svg {
+      width: 32px;
+      height: 32px;
+      color: var(--gold);
+    }
+
+    .dice-roller-panel {
+      position: absolute;
+      top: 70px;
+      right: 0;
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(20px) saturate(160%);
       -webkit-backdrop-filter: blur(20px) saturate(160%);
@@ -812,6 +842,16 @@
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1),
         0 0 40px rgba(212, 175, 55, 0.1);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px) scale(0.95);
+      transition: all 0.3s ease;
+    }
+
+    .dice-roller-panel.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
     }
 
     .dice-container {
@@ -1075,10 +1115,23 @@
 
     /* Dice Roller Responsive */
     @media (max-width: 768px) {
-      .dice-roller {
-        top: auto;
-        bottom: 6rem;
+      .dice-roller-widget {
+        top: 1rem;
         right: 1rem;
+      }
+
+      .dice-toggle-btn {
+        width: 50px;
+        height: 50px;
+      }
+
+      .dice-toggle-btn svg {
+        width: 26px;
+        height: 26px;
+      }
+
+      .dice-roller-panel {
+        top: 60px;
         padding: 0.75rem;
       }
 
@@ -1302,50 +1355,58 @@
   </div>
 
   <!-- Dice Roller Widget -->
-  <div class="dice-roller" id="diceRoller">
-    <div class="dice-container">
-      <button class="dice-btn" data-dice="d4" data-max="4">
-        <span class="dice-count">1</span>
-        <div class="dice-shape dice-d4"><span class="dice-value">4</span></div>
-        <span class="dice-label">D4</span>
-      </button>
-      <button class="dice-btn" data-dice="d6" data-max="6">
-        <span class="dice-count">1</span>
-        <div class="dice-shape dice-d6"><span class="dice-value">6</span></div>
-        <span class="dice-label">D6</span>
-      </button>
-      <button class="dice-btn" data-dice="d8" data-max="8">
-        <span class="dice-count">1</span>
-        <div class="dice-shape dice-d8"><span class="dice-value">8</span></div>
-        <span class="dice-label">D8</span>
-      </button>
-      <button class="dice-btn" data-dice="d10" data-max="10">
-        <span class="dice-count">1</span>
-        <div class="dice-shape dice-d10"><span class="dice-value">10</span></div>
-        <span class="dice-label">D10</span>
-      </button>
-      <button class="dice-btn" data-dice="d12" data-max="12">
-        <span class="dice-count">1</span>
-        <div class="dice-shape dice-d12"><span class="dice-value">12</span></div>
-        <span class="dice-label">D12</span>
-      </button>
-      <button class="dice-btn" data-dice="d20" data-max="20">
-        <span class="dice-count">1</span>
-        <div class="dice-shape dice-d20"><span class="dice-value">20</span></div>
-        <span class="dice-label">D20</span>
-      </button>
-    </div>
-    <div class="dice-actions">
-      <button class="roll-all-btn" id="rollAllBtn" disabled>Lancia</button>
-      <button class="clear-btn" id="clearBtn">Reset</button>
-    </div>
-    <div class="dice-result" id="diceResult">
-      <div class="result-total">
-        <span class="result-value" id="resultValue">--</span>
-        <span class="result-dice" id="resultDice"></span>
+  <div class="dice-roller-widget">
+    <div class="dice-roller-panel" id="diceRollerPanel">
+      <div class="dice-container">
+        <button class="dice-btn" data-dice="d4" data-max="4">
+          <span class="dice-count">1</span>
+          <div class="dice-shape dice-d4"><span class="dice-value">4</span></div>
+          <span class="dice-label">D4</span>
+        </button>
+        <button class="dice-btn" data-dice="d6" data-max="6">
+          <span class="dice-count">1</span>
+          <div class="dice-shape dice-d6"><span class="dice-value">6</span></div>
+          <span class="dice-label">D6</span>
+        </button>
+        <button class="dice-btn" data-dice="d8" data-max="8">
+          <span class="dice-count">1</span>
+          <div class="dice-shape dice-d8"><span class="dice-value">8</span></div>
+          <span class="dice-label">D8</span>
+        </button>
+        <button class="dice-btn" data-dice="d10" data-max="10">
+          <span class="dice-count">1</span>
+          <div class="dice-shape dice-d10"><span class="dice-value">10</span></div>
+          <span class="dice-label">D10</span>
+        </button>
+        <button class="dice-btn" data-dice="d12" data-max="12">
+          <span class="dice-count">1</span>
+          <div class="dice-shape dice-d12"><span class="dice-value">12</span></div>
+          <span class="dice-label">D12</span>
+        </button>
+        <button class="dice-btn" data-dice="d20" data-max="20">
+          <span class="dice-count">1</span>
+          <div class="dice-shape dice-d20"><span class="dice-value">20</span></div>
+          <span class="dice-label">D20</span>
+        </button>
       </div>
-      <div class="result-details" id="resultDetails"></div>
+      <div class="dice-actions">
+        <button class="roll-all-btn" id="rollAllBtn" disabled>Lancia</button>
+        <button class="clear-btn" id="clearBtn">Reset</button>
+      </div>
+      <div class="dice-result" id="diceResult">
+        <div class="result-total">
+          <span class="result-value" id="resultValue">--</span>
+          <span class="result-dice" id="resultDice"></span>
+        </div>
+        <div class="result-details" id="resultDetails"></div>
+      </div>
     </div>
+    <button class="dice-toggle-btn" id="diceToggleBtn" onclick="toggleDiceRoller()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/>
+        <text x="12" y="14" text-anchor="middle" font-size="8" fill="currentColor" stroke="none">20</text>
+      </svg>
+    </button>
   </div>
 
   <!-- Chat Widget -->
@@ -1699,6 +1760,14 @@
         }, { passive: true });
       }
     })();
+
+    // Dice Roller Toggle
+    function toggleDiceRoller() {
+      const panel = document.getElementById('diceRollerPanel');
+      const btn = document.getElementById('diceToggleBtn');
+      panel.classList.toggle('active');
+      btn.classList.toggle('active');
+    }
 
     // Dice Roller
     const resultValue = document.getElementById('resultValue');
