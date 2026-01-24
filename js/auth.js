@@ -60,16 +60,19 @@ async function handleLogin(event) {
 
     console.log('Login response:', response);
 
-    // Extract token from response
-    // Common patterns: response.token, response.access_token, response.data.token
-    const token = response.token || response.access_token || response.data?.token || response;
+    // Extract tokens from response
+    const accessToken = response.accessToken;
+    const refreshToken = response.refreshToken;
+    const accessTokenExpiresAt = response.accessTokenExpiresAt;
+    const refreshTokenExpiresAt = response.refreshTokenExpiresAt;
+    const userId = response.userId;
 
-    // Extract username and email from response if available
-    const finalUsername = response.username || response.user?.username || username;
-    const finalEmail = response.email || response.user?.email || email || emailOrUsername;
+    // Extract username and email from JWT payload or use provided values
+    const finalUsername = username;
+    const finalEmail = email || emailOrUsername;
 
     // Save authentication data
-    const saved = saveAuthData(token, finalUsername, finalEmail);
+    const saved = saveAuthData(accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt, finalUsername, finalEmail, userId);
 
     if (!saved) {
       showError('Failed to save authentication data. Please try again.', 'loginErrorContainer');
@@ -134,12 +137,21 @@ async function handleRegister(event) {
 
     console.log('Registration response:', response);
 
-    // Extract token from response (if API returns token after registration)
-    // Common patterns: response.token, response.access_token, response.data.token
-    const token = response.token || response.access_token || response.data?.token || response.id || 'registered';
+    // Auto-login after successful registration
+    console.log('Registration successful, performing auto-login...');
+    const loginResponse = await loginUser(username, email, password);
+
+    console.log('Auto-login response:', loginResponse);
+
+    // Extract tokens from login response
+    const accessToken = loginResponse.accessToken;
+    const refreshToken = loginResponse.refreshToken;
+    const accessTokenExpiresAt = loginResponse.accessTokenExpiresAt;
+    const refreshTokenExpiresAt = loginResponse.refreshTokenExpiresAt;
+    const userId = loginResponse.userId;
 
     // Save authentication data
-    const saved = saveAuthData(token, username, email);
+    const saved = saveAuthData(accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt, username, email, userId);
 
     if (!saved) {
       showError('Registration successful but failed to save data. Please login.', 'registerErrorContainer');
@@ -148,7 +160,7 @@ async function handleRegister(event) {
     }
 
     // Success - redirect to dashboard
-    console.log('Registration successful, redirecting to dashboard...');
+    console.log('Registration and auto-login successful, redirecting to dashboard...');
     window.location.href = 'dashboard.html';
 
   } catch (error) {

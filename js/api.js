@@ -4,6 +4,10 @@ const API_CONFIG = {
     BASE_URL: 'http://192.168.3.70:8081',
     ENDPOINT: '/auth/login-tokens'
   },
+  LOGOUT: {
+    BASE_URL: 'http://192.168.3.70:8081',
+    ENDPOINT: '/auth/login-tokens'
+  },
   REGISTER: {
     BASE_URL: 'http://192.168.3.70:8089',
     ENDPOINT: '/users'
@@ -114,6 +118,29 @@ async function registerUser(username, email, password) {
 
   } catch (error) {
     console.error('Registration error:', error);
+    throw error;
+  }
+}
+
+// ====== LOGOUT USER ======
+async function logoutUser(token, userId) {
+  const url = `${API_CONFIG.LOGOUT.BASE_URL}${API_CONFIG.LOGOUT.ENDPOINT}/${token}?userId=${userId}`;
+
+  console.log('Logout');
+
+  try {
+    const result = await apiRequest(url, {
+      method: 'DELETE',
+      headers: {
+        'accept': '*/*'
+      }
+    });
+
+    console.log('Logout successful:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Logout error:', error);
     throw error;
   }
 }

@@ -87,17 +87,54 @@ function clearErrors(containerId) {
 
 // ====== TOKEN MANAGEMENT ======
 
-function saveAuthData(token, username, email) {
+function saveAuthData(accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt, username, email, userId) {
   try {
-    localStorage.setItem('authToken', token);
+    localStorage.setItem('authToken', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+    if (accessTokenExpiresAt) {
+      localStorage.setItem('accessTokenExpiresAt', accessTokenExpiresAt.toString());
+    }
+    if (refreshTokenExpiresAt) {
+      localStorage.setItem('refreshTokenExpiresAt', refreshTokenExpiresAt.toString());
+    }
     localStorage.setItem('username', username);
     localStorage.setItem('userEmail', email);
+    if (userId) {
+      localStorage.setItem('userId', userId.toString());
+    }
     localStorage.setItem('loginTimestamp', Date.now().toString());
     return true;
   } catch (error) {
     console.error('Failed to save auth data:', error);
     return false;
   }
+}
+
+function getRefreshToken() {
+  try {
+    return localStorage.getItem('refreshToken');
+  } catch (error) {
+    console.error('Failed to get refresh token:', error);
+    return null;
+  }
+}
+
+function getAccessTokenExpiresAt() {
+  try {
+    const expiresAt = localStorage.getItem('accessTokenExpiresAt');
+    return expiresAt ? parseInt(expiresAt, 10) : null;
+  } catch (error) {
+    console.error('Failed to get access token expiry:', error);
+    return null;
+  }
+}
+
+function isAccessTokenExpired() {
+  const expiresAt = getAccessTokenExpiresAt();
+  if (!expiresAt) return true;
+  return Date.now() >= expiresAt;
 }
 
 function getAuthToken() {
@@ -109,16 +146,45 @@ function getAuthToken() {
   }
 }
 
+function getUserId() {
+  try {
+    return localStorage.getItem('userId');
+  } catch (error) {
+    console.error('Failed to get user id:', error);
+    return null;
+  }
+}
+
 function clearAuthData() {
   try {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('accessTokenExpiresAt');
+    localStorage.removeItem('refreshTokenExpiresAt');
     localStorage.removeItem('username');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
     localStorage.removeItem('loginTimestamp');
     return true;
   } catch (error) {
     console.error('Failed to clear auth data:', error);
     return false;
+  }
+}
+
+async function handleLogout() {
+  const refreshToken = getRefreshToken();
+  const userId = getUserId();
+
+  try {
+    if (refreshToken && userId) {
+      await logoutUser(refreshToken, userId);
+    }
+  } catch (error) {
+    console.error('Logout API error:', error);
+  } finally {
+    clearAuthData();
+    window.location.href = 'index.html';
   }
 }
 

@@ -536,6 +536,8 @@
     </main>
   </div>
 
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
   <script>
     // Auth Guard
     const token = localStorage.getItem('authToken');
@@ -559,13 +561,7 @@
     });
 
     // Logout
-    document.getElementById('logoutButton').addEventListener('click', () => {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('username');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('loginTimestamp');
-      window.location.href = 'index.html';
-    });
+    document.getElementById('logoutButton').addEventListener('click', handleLogout);
 
     // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
