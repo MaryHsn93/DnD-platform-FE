@@ -322,11 +322,12 @@
       .welcome-section {
         position: relative;
         padding: 2rem;
-        margin-top: 30vh;
-        left: 50%;
-        transform: translateX(-50%);
+        margin: 30vh auto 0 auto;
+        left: auto;
+        transform: none;
         width: 100%;
         max-width: 600px;
+        text-align: center;
       }
 
       /* When keyboard is open, lock position */
@@ -1279,20 +1280,20 @@
         }
       }
 
-      /* On tablet/mobile iOS, use horizontal centering only */
+      /* On tablet/mobile iOS, no transform needed - uses margin auto */
       @media (max-width: 1024px) {
         .welcome-section {
-          -webkit-transform: translateX(-50%);
-          transform: translateX(-50%);
+          -webkit-transform: none;
+          transform: none;
           -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
         }
-      }
 
-      /* Force GPU layer to prevent repaints */
-      body.ios-keyboard-open .welcome-section {
-        transform: translate3d(-50%, 0, 0);
-        -webkit-transform: translate3d(-50%, 0, 0);
+        /* Force GPU layer to prevent repaints - only when keyboard open */
+        body.ios-keyboard-open .welcome-section {
+          transform: translateX(-50%);
+          -webkit-transform: translateX(-50%);
+        }
       }
     }
 
