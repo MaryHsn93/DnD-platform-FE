@@ -522,11 +522,11 @@
     .chat-send-btn svg { width: 20px; height: 20px; color: var(--gold); }
 
     /* ====== DICE ROLLER WIDGET ====== */
-    .dice-roller-widget { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 900; }
+    .dice-roller-widget { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 900; }
     .dice-toggle-btn { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #5a1414); border: 2px solid var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); transition: all 0.3s ease; }
     .dice-toggle-btn:hover { transform: scale(1.1); }
     .dice-toggle-btn svg { width: 32px; height: 32px; color: var(--gold); }
-    .dice-roller-panel { position: absolute; top: 70px; left: 0; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 16px; padding: 1rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 40px rgba(212, 175, 55, 0.1); opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95); transition: all 0.3s ease; }
+    .dice-roller-panel { position: absolute; top: 70px; right: 0; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 16px; padding: 1rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 40px rgba(212, 175, 55, 0.1); opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95); transition: all 0.3s ease; }
     .dice-roller-panel.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
     .dice-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
     .dice-btn { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; background: transparent; border: none; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease; position: relative; }
@@ -564,10 +564,9 @@
     @keyframes resultReveal { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     .dice-btn.rolling .dice-shape { animation: diceShake 0.5s ease; }
     .result-value.reveal { animation: resultReveal 0.3s ease; }
-    @media (max-width: 768px) { .dice-roller-widget { top: 1rem; left: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } .chat-window { width: 320px; height: 480px; right: -0.5rem; } }
+    @media (max-width: 768px) { .dice-roller-widget { top: 1rem; right: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } .chat-window { width: 320px; height: 480px; right: -0.5rem; } }
     @media (max-width: 480px) { .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; } .chat-widget { right: 1rem; bottom: 1rem; } .chat-toggle-btn { width: 55px; height: 55px; } }
-    @media (min-width: 1025px) { .dice-roller-widget { left: calc(var(--sidebar-width) + 1.5rem); } }
-  </style>
+      </style>
 </head>
 <body>
   <div class="magic-particles"></div>

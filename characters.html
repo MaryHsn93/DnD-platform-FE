@@ -862,7 +862,7 @@
     .dice-roller-widget {
       position: fixed;
       top: 1.5rem;
-      left: 1.5rem;
+      right: 1.5rem;
       z-index: 900;
     }
 
@@ -893,7 +893,7 @@
     .dice-roller-panel {
       position: absolute;
       top: 70px;
-      left: 0;
+      right: 0;
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(20px) saturate(160%);
       -webkit-backdrop-filter: blur(20px) saturate(160%);
@@ -1177,7 +1177,7 @@
     @media (max-width: 768px) {
       .dice-roller-widget {
         top: 1rem;
-        left: 1rem;
+        right: 1rem;
       }
 
       .dice-toggle-btn {
@@ -1217,11 +1217,6 @@
       .chat-toggle-btn { width: 55px; height: 55px; }
     }
 
-    @media (min-width: 1025px) {
-      .dice-roller-widget {
-        left: calc(var(--sidebar-width) + 1.5rem);
-      }
-    }
   </style>
 </head>
 <body>
