@@ -463,6 +463,110 @@
       .page-title { font-size: 2rem; }
       .page-subtitle { font-size: 1rem; }
     }
+
+    /* ====== CHAT WIDGET ====== */
+    .chat-widget { position: fixed; bottom: 2rem; right: 2rem; z-index: 1000; }
+    .chat-toggle-btn { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #5a1414); border: 2px solid var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); transition: all 0.3s ease; animation: chatBtnPulse 2s ease-in-out infinite; position: relative; }
+    .chat-toggle-btn:hover { transform: scale(1.1); box-shadow: 0 5px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.5); }
+    .chat-toggle-btn svg { width: 28px; height: 28px; color: var(--gold); transition: transform 0.3s ease; }
+    .chat-toggle-btn.active svg { transform: rotate(180deg); }
+    .chat-notification { position: absolute; top: -5px; right: -5px; width: 22px; height: 22px; background: #e53935; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: white; border: 2px solid var(--bg-dark); }
+    .chat-notification.show { display: flex; animation: notificationPop 0.3s ease; }
+    @keyframes notificationPop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    @keyframes chatBtnPulse { 0%, 100% { box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); } 50% { box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 35px rgba(212, 175, 55, 0.5); } }
+    .chat-window { position: absolute; bottom: 75px; right: 0; width: 380px; height: 520px; background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; overflow: hidden; transform: scale(0) translateY(20px); transform-origin: bottom right; opacity: 0; transition: all 0.3s ease; pointer-events: none; }
+    .chat-window.active { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+    .chat-header { padding: 1rem 1.25rem; background: rgba(139, 30, 30, 0.3); border-bottom: 1px solid rgba(212, 175, 55, 0.2); display: flex; align-items: center; gap: 0.75rem; }
+    .chat-header-icon { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #b8962e); display: flex; align-items: center; justify-content: center; }
+    .chat-header-icon svg { width: 22px; height: 22px; color: var(--bg-dark); }
+    .chat-header-info h4 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1rem; margin-bottom: 0.2rem; }
+    .chat-header-info span { font-size: 0.8rem; color: var(--text-muted); }
+    .online-count { margin-left: auto; display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #4ade80; }
+    .online-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: statusPulse 2s ease-in-out infinite; }
+    @keyframes statusPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .chat-tabs { display: flex; border-bottom: 1px solid rgba(212, 175, 55, 0.15); background: rgba(0, 0, 0, 0.2); }
+    .chat-tab { flex: 1; padding: 0.75rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; border-bottom: 2px solid transparent; position: relative; }
+    .chat-tab:hover { color: var(--text-light); background: rgba(212, 175, 55, 0.05); }
+    .chat-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .online-users { padding: 0.75rem; border-bottom: 1px solid rgba(212, 175, 55, 0.15); display: flex; gap: 0.5rem; overflow-x: auto; background: rgba(0, 0, 0, 0.15); }
+    .online-users::-webkit-scrollbar { height: 4px; }
+    .online-users::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 2px; }
+    .online-user { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: background 0.3s ease; min-width: 60px; }
+    .online-user:hover { background: rgba(212, 175, 55, 0.1); }
+    .online-user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #5a1414); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); font-size: 0.9rem; position: relative; }
+    .online-user-avatar::after { content: ''; position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #4ade80; border-radius: 50%; border: 2px solid var(--bg-dark); }
+    .online-user-name { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55px; }
+    .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 3px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 3px; }
+    .message { max-width: 85%; animation: messageSlide 0.3s ease; }
+    @keyframes messageSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .message.received { align-self: flex-start; }
+    .message.sent { align-self: flex-end; }
+    .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+    .message.sent .message-header { flex-direction: row-reverse; }
+    .message-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #5a1414); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 0.65rem; color: var(--gold); }
+    .message-sender { font-size: 0.75rem; color: var(--gold); font-weight: 600; }
+    .message-time { font-size: 0.65rem; color: var(--text-muted); margin-left: auto; }
+    .message.sent .message-time { margin-left: 0; margin-right: auto; }
+    .message-content { padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.9rem; line-height: 1.4; }
+    .message.received .message-content { background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2); border-top-left-radius: 4px; }
+    .message.sent .message-content { background: rgba(139, 30, 30, 0.4); border: 1px solid rgba(139, 30, 30, 0.3); border-top-right-radius: 4px; }
+    .chat-input-area { padding: 1rem; border-top: 1px solid rgba(212, 175, 55, 0.2); display: flex; gap: 0.75rem; }
+    .chat-input { flex: 1; padding: 0.85rem 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; color: var(--text-light); font-size: 16px; outline: none; transition: all 0.3s ease; }
+    .chat-input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+    .chat-input::placeholder { color: var(--text-muted); }
+    .chat-send-btn { width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), #5a1414); border: 1px solid rgba(212, 175, 55, 0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+    .chat-send-btn:hover { background: linear-gradient(135deg, #a82525, var(--primary)); border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+    .chat-send-btn svg { width: 20px; height: 20px; color: var(--gold); }
+
+    /* ====== DICE ROLLER WIDGET ====== */
+    .dice-roller-widget { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 900; }
+    .dice-toggle-btn { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #5a1414); border: 2px solid var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); transition: all 0.3s ease; }
+    .dice-toggle-btn:hover { transform: scale(1.1); }
+    .dice-toggle-btn svg { width: 32px; height: 32px; color: var(--gold); }
+    .dice-roller-panel { position: absolute; top: 70px; left: 0; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 16px; padding: 1rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 40px rgba(212, 175, 55, 0.1); opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95); transition: all 0.3s ease; }
+    .dice-roller-panel.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .dice-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
+    .dice-btn { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; background: transparent; border: none; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease; position: relative; }
+    .dice-btn:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-2px); }
+    .dice-btn:hover .dice-shape { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+    .dice-btn.selected { background: rgba(212, 175, 55, 0.2); }
+    .dice-btn.selected .dice-shape { box-shadow: 0 0 15px rgba(212, 175, 55, 0.6); border-color: #fff; }
+    .dice-btn.selected .dice-label { color: var(--gold); }
+    .dice-count { position: absolute; top: -4px; right: -4px; background: var(--gold); color: var(--bg-dark); font-size: 0.65rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+    .dice-btn.selected .dice-count { display: flex; }
+    .dice-shape { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--primary); border: 2px solid var(--gold); transition: all 0.3s ease; position: relative; }
+    .dice-value { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.9rem; color: var(--gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); z-index: 1; }
+    .dice-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .dice-d4 { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d6 { border-radius: 6px; }
+    .dice-d8 { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d10 { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d12 { clip-path: polygon(50% 0%, 85% 25%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 15% 25%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d20 { clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-actions { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .roll-all-btn { flex: 1; padding: 0.6rem; background: linear-gradient(135deg, var(--primary), #5a1414); border: 1px solid var(--gold); border-radius: 8px; color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; }
+    .roll-all-btn:hover { background: linear-gradient(135deg, #a82525, var(--primary)); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); transform: translateY(-1px); }
+    .roll-all-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .clear-btn { padding: 0.6rem 0.8rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: all 0.3s ease; }
+    .clear-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-light); }
+    .dice-result { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.2); min-height: 50px; }
+    .result-details { font-size: 0.7rem; color: var(--text-muted); text-align: center; line-height: 1.4; }
+    .result-total { display: flex; align-items: baseline; gap: 0.4rem; }
+    .result-value { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+    .result-dice { font-size: 0.8rem; color: var(--text-muted); }
+    .result-value.critical { color: #4ade80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.8); animation: criticalPulse 0.5s ease infinite; }
+    .result-value.fumble { color: #ef4444; text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
+    @keyframes criticalPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    @keyframes diceShake { 0%, 100% { transform: rotate(0deg); } 20% { transform: rotate(-15deg) scale(1.1); } 40% { transform: rotate(15deg) scale(1.1); } 60% { transform: rotate(-10deg); } 80% { transform: rotate(10deg); } }
+    @keyframes resultReveal { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .dice-btn.rolling .dice-shape { animation: diceShake 0.5s ease; }
+    .result-value.reveal { animation: resultReveal 0.3s ease; }
+    @media (max-width: 768px) { .dice-roller-widget { top: 1rem; left: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } .chat-window { width: 320px; height: 480px; right: -0.5rem; } }
+    @media (max-width: 480px) { .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; } .chat-widget { right: 1rem; bottom: 1rem; } .chat-toggle-btn { width: 55px; height: 55px; } }
+    @media (min-width: 1025px) { .dice-roller-widget { left: calc(var(--sidebar-width) + 1.5rem); } }
   </style>
 </head>
 <body>
@@ -536,6 +640,60 @@
     </main>
   </div>
 
+  <!-- Dice Roller Widget -->
+  <div class="dice-roller-widget">
+    <div class="dice-roller-panel" id="diceRollerPanel">
+      <div class="dice-container">
+        <button class="dice-btn" data-dice="d4" data-max="4"><span class="dice-count">1</span><div class="dice-shape dice-d4"><span class="dice-value">4</span></div><span class="dice-label">D4</span></button>
+        <button class="dice-btn" data-dice="d6" data-max="6"><span class="dice-count">1</span><div class="dice-shape dice-d6"><span class="dice-value">6</span></div><span class="dice-label">D6</span></button>
+        <button class="dice-btn" data-dice="d8" data-max="8"><span class="dice-count">1</span><div class="dice-shape dice-d8"><span class="dice-value">8</span></div><span class="dice-label">D8</span></button>
+        <button class="dice-btn" data-dice="d10" data-max="10"><span class="dice-count">1</span><div class="dice-shape dice-d10"><span class="dice-value">10</span></div><span class="dice-label">D10</span></button>
+        <button class="dice-btn" data-dice="d12" data-max="12"><span class="dice-count">1</span><div class="dice-shape dice-d12"><span class="dice-value">12</span></div><span class="dice-label">D12</span></button>
+        <button class="dice-btn" data-dice="d20" data-max="20"><span class="dice-count">1</span><div class="dice-shape dice-d20"><span class="dice-value">20</span></div><span class="dice-label">D20</span></button>
+      </div>
+      <div class="dice-actions">
+        <button class="roll-all-btn" id="rollAllBtn" disabled>Lancia</button>
+        <button class="clear-btn" id="clearBtn">Reset</button>
+      </div>
+      <div class="dice-result" id="diceResult">
+        <div class="result-total"><span class="result-value" id="resultValue">--</span><span class="result-dice" id="resultDice"></span></div>
+        <div class="result-details" id="resultDetails"></div>
+      </div>
+    </div>
+    <button class="dice-toggle-btn" id="diceToggleBtn" onclick="toggleDiceRoller()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><text x="12" y="14" text-anchor="middle" font-size="8" fill="currentColor" stroke="none">20</text></svg>
+    </button>
+  </div>
+
+  <!-- Chat Widget -->
+  <div class="chat-widget">
+    <div class="chat-window" id="chatWindow">
+      <div class="chat-header">
+        <div class="chat-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="chat-header-info"><h4>Party Chat</h4><span>Talk with fellow adventurers</span></div>
+        <div class="online-count"><span class="online-dot"></span><span id="onlineCountText">3 online</span></div>
+      </div>
+      <div class="chat-tabs">
+        <div class="chat-tab active" data-tab="tavern">Tavern</div>
+        <div class="chat-tab" data-tab="party">My Party</div>
+      </div>
+      <div class="online-users" id="onlineUsers">
+        <div class="online-user" data-user="Thorin"><div class="online-user-avatar">T</div><span class="online-user-name">Thorin</span></div>
+        <div class="online-user" data-user="Elara"><div class="online-user-avatar">E</div><span class="online-user-name">Elara</span></div>
+        <div class="online-user" data-user="Grimjaw"><div class="online-user-avatar">G</div><span class="online-user-name">Grimjaw</span></div>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
+        <button class="chat-send-btn" onclick="sendMessage()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg></button>
+      </div>
+    </div>
+    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="chat-notification" id="chatNotification">0</span>
+    </button>
+  </div>
+
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
   <script>
@@ -562,6 +720,9 @@
 
     // Logout
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
+
+    // Chat & Dice Widgets
+    const chatWindow=document.getElementById('chatWindow'),chatToggleBtn=document.getElementById('chatToggleBtn'),chatMessages=document.getElementById('chatMessages'),chatInput=document.getElementById('chatInput'),chatNotification=document.getElementById('chatNotification');let unreadCount=0,currentTab='tavern';const onlineUsers=[{name:'Thorin'},{name:'Elara'},{name:'Grimjaw'}],sampleMessages={tavern:[{sender:'Thorin',text:'Anyone up for a dungeon crawl tonight?',time:'10:30'},{sender:'Elara',text:'I need to finish my spell preparations first!',time:'10:32'},{sender:'Grimjaw',text:'GRIMJAW READY TO SMASH!',time:'10:33'}],party:[{sender:'Thorin',text:'Remember, we meet at the old ruins at midnight.',time:'09:15'},{sender:'Elara',text:"I'll bring the scrolls we discussed.",time:'09:20'}]};function initChat(){loadMessages(currentTab)}function loadMessages(t){chatMessages.innerHTML='';(sampleMessages[t]||[]).forEach(m=>addMessageToChat(m.sender,m.text,m.time,m.sender!==username))}function addMessageToChat(s,t,tm,r=true){const d=document.createElement('div');d.className=`message ${r?'received':'sent'}`;d.innerHTML=`<div class="message-header"><div class="message-avatar">${s.charAt(0)}</div><span class="message-sender">${s}</span><span class="message-time">${tm}</span></div><div class="message-content">${t}</div>`;chatMessages.appendChild(d);chatMessages.scrollTop=chatMessages.scrollHeight}function toggleChat(){chatWindow.classList.toggle('active');chatToggleBtn.classList.toggle('active');if(chatWindow.classList.contains('active')){unreadCount=0;updateNotificationBadge()}}function sendMessage(){const m=chatInput.value.trim();if(!m)return;const n=new Date(),tm=`${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}`;addMessageToChat(username,m,tm,false);chatInput.value='';setTimeout(()=>{const u=onlineUsers[Math.floor(Math.random()*onlineUsers.length)],r=['Interesting!','I agree.','Roll for persuasion!','May the dice be in your favor!','That reminds me of our last quest...'];addMessageToChat(u.name,r[Math.floor(Math.random()*r.length)],tm,true);if(!chatWindow.classList.contains('active')){unreadCount++;updateNotificationBadge()}},1000+Math.random()*2000)}function handleChatKeypress(e){if(e.key==='Enter')sendMessage()}function updateNotificationBadge(){if(unreadCount>0){chatNotification.textContent=unreadCount>9?'9+':unreadCount;chatNotification.classList.add('show')}else{chatNotification.classList.remove('show')}}document.querySelectorAll('.chat-tab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.chat-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');currentTab=t.dataset.tab;loadMessages(currentTab)})});document.querySelectorAll('.online-user').forEach(u=>{u.addEventListener('click',()=>{chatInput.value=`@${u.dataset.user} `+chatInput.value;chatInput.focus()})});initChat();function toggleDiceRoller(){document.getElementById('diceRollerPanel').classList.toggle('active');document.getElementById('diceToggleBtn').classList.toggle('active')}const resultValue=document.getElementById('resultValue'),resultDice=document.getElementById('resultDice'),resultDetails=document.getElementById('resultDetails'),rollAllBtn=document.getElementById('rollAllBtn'),clearBtn=document.getElementById('clearBtn'),diceButtons=document.querySelectorAll('.dice-btn');let isRolling=false;const diceCount={};diceButtons.forEach(b=>diceCount[b.dataset.dice]=0);function getTotalDiceCount(){return Object.values(diceCount).reduce((s,c)=>s+c,0)}function updateUI(){const t=getTotalDiceCount();rollAllBtn.disabled=t===0;rollAllBtn.textContent=t>0?`Lancia (${t})`:'Lancia';diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d],e=b.querySelector('.dice-count');if(c>0){b.classList.add('selected');e.textContent=c}else{b.classList.remove('selected')}})}function addDice(b){if(isRolling)return;diceCount[b.dataset.dice]++;updateUI()}function removeDice(b){if(isRolling)return;const d=b.dataset.dice;if(diceCount[d]>0){diceCount[d]--;updateUI()}}function clearSelection(){if(isRolling)return;Object.keys(diceCount).forEach(d=>diceCount[d]=0);updateUI();resultValue.textContent='--';resultValue.className='result-value';resultDice.textContent='';resultDetails.textContent='';diceButtons.forEach(b=>{const m=parseInt(b.dataset.max);b.querySelector('.dice-value').textContent=m})}function rollSelectedDice(){if(isRolling||getTotalDiceCount()===0)return;isRolling=true;rollAllBtn.disabled=true;const a=[];diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d];if(c>0)a.push({btn:b,dice:d,max:parseInt(b.dataset.max),count:c})});a.forEach(d=>d.btn.classList.add('rolling'));let f=0;const i=setInterval(()=>{a.forEach(d=>{const r=Math.floor(Math.random()*d.max)+1;d.btn.querySelector('.dice-value').textContent=r});resultValue.textContent='...';resultValue.className='result-value';f++;if(f>=15){clearInterval(i);const r=[];let t=0,cr=false,fu=false;a.forEach(d=>{const ro=[];for(let j=0;j<d.count;j++){const re=Math.floor(Math.random()*d.max)+1;ro.push(re);t+=re;if(d.dice==='d20'&&re===20)cr=true;if(d.dice==='d20'&&re===1)fu=true}d.btn.querySelector('.dice-value').textContent=ro[ro.length-1];r.push({dice:d.dice.toUpperCase(),count:d.count,rolls:ro})});resultValue.textContent=t;resultValue.classList.add('reveal');const td=getTotalDiceCount();if(td===1){resultDice.textContent=r[0].dice;resultDetails.textContent=''}else{resultDice.textContent='Totale';resultDetails.textContent=r.map(x=>{const p=x.count>1?`${x.count}${x.dice}`:x.dice;return`${p}: ${x.rolls.join('+')}`}).join(' | ')}if(cr)resultValue.classList.add('critical');else if(fu)resultValue.classList.add('fumble');setTimeout(()=>{a.forEach(d=>d.btn.classList.remove('rolling'));isRolling=false;updateUI()},500)}},50)}diceButtons.forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();addDice(b)});b.addEventListener('contextmenu',e=>{e.preventDefault();removeDice(b)})});rollAllBtn.addEventListener('click',rollSelectedDice);clearBtn.addEventListener('click',clearSelection);let lastTap=0;diceButtons.forEach(b=>{b.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<300){e.preventDefault();removeDice(b)}lastTap=n},{passive:false})});
 
     // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
