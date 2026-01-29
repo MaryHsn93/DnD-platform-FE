@@ -464,6 +464,616 @@
       .page-subtitle { font-size: 1rem; }
     }
 
+    /* ====== SEARCH BAR ====== */
+    .search-container {
+      width: 100%;
+      max-width: 700px;
+      margin: 2rem auto 0;
+      position: relative;
+      z-index: 50;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: stretch;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 12px;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 60px rgba(212, 175, 55, 0.1);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--gold);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 80px rgba(212, 175, 55, 0.2);
+    }
+
+    .search-category-dropdown {
+      background: rgba(139, 30, 30, 0.3);
+      border: none;
+      border-right: 1px solid rgba(212, 175, 55, 0.2);
+      padding: 0.85rem 1rem;
+      color: var(--text-light);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2.5rem;
+      min-width: 140px;
+      transition: all 0.3s ease;
+    }
+
+    .search-category-dropdown:hover {
+      background-color: rgba(139, 30, 30, 0.5);
+    }
+
+    .search-category-dropdown:focus {
+      background-color: rgba(139, 30, 30, 0.5);
+    }
+
+    .search-category-dropdown option {
+      background: var(--bg-dark);
+      color: var(--text-light);
+      padding: 0.5rem;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 0.85rem 1rem;
+      color: var(--text-light);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      min-width: 0;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-button {
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: none;
+      padding: 0 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .search-button:hover {
+      background: linear-gradient(135deg, #a82525, var(--primary));
+    }
+
+    .search-button svg {
+      width: 20px;
+      height: 20px;
+      color: var(--gold);
+    }
+
+    /* Search Results Dropdown */
+    .search-results {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: rgba(30, 30, 35, 0.98);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 12px;
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(212, 175, 55, 0.1);
+      max-height: 400px;
+      overflow-y: auto;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .search-results.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .search-results::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .search-results::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .search-results::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.3);
+      border-radius: 3px;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-result-item:hover,
+    .search-result-item.selected {
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .search-result-item.selected {
+      border-left: 3px solid var(--gold);
+    }
+
+    .search-result-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(139, 30, 30, 0.4);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .search-result-icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--gold);
+    }
+
+    .search-result-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .search-result-name {
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-result-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .search-result-category {
+      color: var(--gold);
+    }
+
+    .search-highlight {
+      background: rgba(212, 175, 55, 0.3);
+      color: var(--gold);
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .search-no-results {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .search-no-results svg {
+      width: 40px;
+      height: 40px;
+      color: var(--text-muted);
+      opacity: 0.5;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Search Bar Responsive */
+    @media (max-width: 1024px) {
+      .search-container {
+        max-width: 600px;
+        padding: 0 1rem;
+      }
+
+      .search-category-dropdown {
+        min-width: 120px;
+        font-size: 0.85rem;
+        padding: 0.75rem 0.75rem;
+        padding-right: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .search-container {
+        max-width: 100%;
+      }
+
+      .search-bar {
+        flex-wrap: wrap;
+      }
+
+      .search-category-dropdown {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        background-position: right 1rem center;
+        padding-right: 3rem;
+      }
+
+      .search-input {
+        flex: 1;
+        min-width: calc(100% - 60px);
+      }
+
+      .search-button {
+        width: 50px;
+      }
+
+      .search-results {
+        max-height: 300px;
+      }
+
+      .search-result-item {
+        padding: 0.75rem;
+      }
+
+      .search-result-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .search-result-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    /* ====== QUICK ACCESS SECTION ====== */
+    .quick-access {
+      width: 100%;
+      max-width: 900px;
+      margin: 2.5rem auto 0;
+      padding: 0 1rem;
+    }
+
+    .quick-access-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .quick-access-block {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      min-height: 120px;
+    }
+
+    .quick-access-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .quick-access-header svg {
+      width: 16px;
+      height: 16px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .quick-access-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .quick-access-items {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+    }
+
+    .quick-access-items::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .quick-access-items::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .quick-access-items::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.3);
+      border-radius: 2px;
+    }
+
+    .quick-access-card {
+      flex-shrink: 0;
+      width: 100px;
+      background: rgba(139, 30, 30, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 0.6rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .quick-access-card:hover {
+      background: rgba(139, 30, 30, 0.4);
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .quick-access-card-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(212, 175, 55, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .quick-access-card-icon svg {
+      width: 14px;
+      height: 14px;
+      color: var(--gold);
+    }
+
+    .quick-access-card-name {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.2rem;
+    }
+
+    .quick-access-card-meta {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .quick-access-fav-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 18px;
+      height: 18px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .quick-access-card:hover .quick-access-fav-btn {
+      opacity: 1;
+    }
+
+    .quick-access-fav-btn svg {
+      width: 12px;
+      height: 12px;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .quick-access-fav-btn:hover svg,
+    .quick-access-fav-btn.active svg {
+      color: var(--gold);
+      fill: var(--gold);
+    }
+
+    .quick-access-empty {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-style: italic;
+      text-align: center;
+      padding: 1rem 0.5rem;
+      opacity: 0.7;
+    }
+
+    .quick-access-count {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* Quick Access Responsive */
+    @media (max-width: 1024px) {
+      .quick-access {
+        max-width: 700px;
+      }
+
+      .quick-access-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .quick-access-block {
+        min-height: auto;
+      }
+
+      .quick-access-items {
+        flex-wrap: nowrap;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .quick-access {
+        margin-top: 2rem;
+      }
+
+      .quick-access-card {
+        width: 85px;
+        padding: 0.5rem;
+      }
+
+      .quick-access-card-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      .quick-access-card-icon svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      .quick-access-card-name {
+        font-size: 0.65rem;
+      }
+
+      .quick-access-card-meta {
+        font-size: 0.55rem;
+      }
+    }
+
+    /* ====== ENHANCED SEARCH RESULTS ====== */
+    .search-result-quick-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+
+    .search-result-tag {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .search-result-tag.level {
+      background: rgba(139, 30, 30, 0.3);
+      border-color: rgba(139, 30, 30, 0.4);
+      color: #ff9999;
+    }
+
+    .search-result-tag.school {
+      background: rgba(75, 0, 130, 0.2);
+      border-color: rgba(75, 0, 130, 0.3);
+      color: #c9a0dc;
+    }
+
+    .search-result-tag.cr {
+      background: rgba(139, 69, 19, 0.3);
+      border-color: rgba(139, 69, 19, 0.4);
+      color: #deb887;
+    }
+
+    .search-result-tag.rarity-common {
+      background: rgba(128, 128, 128, 0.2);
+      color: #b5b5b5;
+    }
+
+    .search-result-tag.rarity-uncommon {
+      background: rgba(0, 128, 0, 0.2);
+      color: #90ee90;
+    }
+
+    .search-result-tag.rarity-rare {
+      background: rgba(0, 0, 255, 0.2);
+      color: #87cefa;
+    }
+
+    .search-result-tag.rarity-very-rare {
+      background: rgba(128, 0, 128, 0.2);
+      color: #da70d6;
+    }
+
+    .search-result-tag.rarity-legendary {
+      background: rgba(255, 165, 0, 0.2);
+      color: #ffd700;
+    }
+
+    .search-result-fav-btn {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+
+    .search-result-fav-btn:hover {
+      opacity: 1;
+    }
+
+    .search-result-fav-btn svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .search-result-fav-btn:hover svg,
+    .search-result-fav-btn.active svg {
+      color: var(--gold);
+      fill: var(--gold);
+    }
+
     /* ====== CHAT WIDGET ====== */
     .chat-widget { position: fixed; bottom: 2rem; right: 2rem; z-index: 1000; }
     .chat-toggle-btn { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #5a1414); border: 2px solid var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); transition: all 0.3s ease; animation: chatBtnPulse 2s ease-in-out infinite; position: relative; }
@@ -635,6 +1245,93 @@
         <h1 class="page-title">Compendium</h1>
         <p class="page-subtitle">Explore spells, monsters, and ancient lore</p>
         <p class="page-tagline">"Knowledge is the greatest weapon..."</p>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+          <div class="search-bar">
+            <select class="search-category-dropdown" id="searchCategory">
+              <option value="spells">Incantesimi</option>
+              <option value="monsters">Mostri</option>
+              <option value="classes">Classi</option>
+              <option value="species">Specie/Razze</option>
+              <option value="backgrounds">Background</option>
+              <option value="feats">Talenti</option>
+              <option value="magic-items">Oggetti Magici</option>
+              <option value="equipment">Equipaggiamento</option>
+              <option value="conditions">Condizioni</option>
+              <option value="skills">Abilità</option>
+              <option value="damage-types">Tipi di Danno</option>
+              <option value="alignments">Allineamenti</option>
+              <option value="languages">Lingue</option>
+              <option value="weapon-types">Tipi di Arma</option>
+              <option value="armor-types">Tipi di Armatura</option>
+              <option value="tool-types">Tipi di Strumento</option>
+              <option value="spell-schools">Scuole di Magia</option>
+            </select>
+            <input
+              type="text"
+              class="search-input"
+              id="searchInput"
+              placeholder="Cerca nel compendio..."
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+            >
+            <button class="search-button" id="searchButton" aria-label="Cerca">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </button>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <!-- Quick Access Section -->
+        <div class="quick-access">
+          <div class="quick-access-grid">
+            <!-- Visti di Recente -->
+            <div class="quick-access-block">
+              <div class="quick-access-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span class="quick-access-title">Visti di recente</span>
+              </div>
+              <div class="quick-access-items" id="recentItems">
+                <div class="quick-access-empty">Nessun elemento recente</div>
+              </div>
+            </div>
+
+            <!-- Preferiti -->
+            <div class="quick-access-block">
+              <div class="quick-access-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span class="quick-access-title">Preferiti ⭐</span>
+              </div>
+              <div class="quick-access-items" id="favoriteItems">
+                <div class="quick-access-empty">Aggiungi preferiti con ⭐</div>
+              </div>
+            </div>
+
+            <!-- Usati Spesso -->
+            <div class="quick-access-block">
+              <div class="quick-access-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                <span class="quick-access-title">Usati spesso</span>
+              </div>
+              <div class="quick-access-items" id="frequentItems">
+                <div class="quick-access-empty">Gli elementi più usati appariranno qui</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -733,6 +1430,639 @@
       p.style.animationDelay = `${Math.random() * 10}s`;
       magicContainer.appendChild(p);
     }
+
+    // ====== COMPENDIUM SEARCH ======
+    // Mock data - will be replaced by API calls
+    const compendiumData = [
+      // Classi
+      { id: 'cls-1', name: 'Barbaro', category: 'classes', type: 'Classe', keywords: ['rage', 'fury', 'warrior'], hitDie: 'd12', primaryAbility: 'FOR' },
+      { id: 'cls-2', name: 'Bardo', category: 'classes', type: 'Classe', keywords: ['music', 'inspiration', 'song'], hitDie: 'd8', primaryAbility: 'CAR' },
+      { id: 'cls-3', name: 'Chierico', category: 'classes', type: 'Classe', keywords: ['cleric', 'divine', 'heal'], hitDie: 'd8', primaryAbility: 'SAG' },
+      { id: 'cls-4', name: 'Druido', category: 'classes', type: 'Classe', keywords: ['nature', 'wild shape', 'animal'], hitDie: 'd8', primaryAbility: 'SAG' },
+      { id: 'cls-5', name: 'Guerriero', category: 'classes', type: 'Classe', keywords: ['fighter', 'combat', 'weapon'], hitDie: 'd10', primaryAbility: 'FOR/DES' },
+      { id: 'cls-6', name: 'Ladro', category: 'classes', type: 'Classe', keywords: ['rogue', 'sneak', 'stealth'], hitDie: 'd8', primaryAbility: 'DES' },
+      { id: 'cls-7', name: 'Mago', category: 'classes', type: 'Classe', keywords: ['wizard', 'arcane', 'spell'], hitDie: 'd6', primaryAbility: 'INT' },
+      { id: 'cls-8', name: 'Monaco', category: 'classes', type: 'Classe', keywords: ['monk', 'martial arts', 'ki'], hitDie: 'd8', primaryAbility: 'DES/SAG' },
+      { id: 'cls-9', name: 'Paladino', category: 'classes', type: 'Classe', keywords: ['paladin', 'holy', 'oath'], hitDie: 'd10', primaryAbility: 'FOR/CAR' },
+      { id: 'cls-10', name: 'Ranger', category: 'classes', type: 'Classe', keywords: ['hunter', 'tracker', 'nature'], hitDie: 'd10', primaryAbility: 'DES/SAG' },
+      { id: 'cls-11', name: 'Stregone', category: 'classes', type: 'Classe', keywords: ['sorcerer', 'bloodline', 'magic'], hitDie: 'd6', primaryAbility: 'CAR' },
+      { id: 'cls-12', name: 'Warlock', category: 'classes', type: 'Classe', keywords: ['pact', 'patron', 'eldritch'], hitDie: 'd8', primaryAbility: 'CAR' },
+      // Specie/Razze
+      { id: 'spe-1', name: 'Umano', category: 'species', type: 'Specie', keywords: ['human', 'versatile'], size: 'Media', speed: '9m' },
+      { id: 'spe-2', name: 'Elfo', category: 'species', type: 'Specie', keywords: ['elf', 'fey', 'trance'], size: 'Media', speed: '9m' },
+      { id: 'spe-3', name: 'Nano', category: 'species', type: 'Specie', keywords: ['dwarf', 'mountain', 'hill'], size: 'Media', speed: '7.5m' },
+      { id: 'spe-4', name: 'Halfling', category: 'species', type: 'Specie', keywords: ['small', 'lucky', 'brave'], size: 'Piccola', speed: '7.5m' },
+      { id: 'spe-5', name: 'Dragonborn', category: 'species', type: 'Specie', keywords: ['dragon', 'breath', 'scales'], size: 'Media', speed: '9m' },
+      { id: 'spe-6', name: 'Gnomo', category: 'species', type: 'Specie', keywords: ['gnome', 'tinker', 'illusion'], size: 'Piccola', speed: '7.5m' },
+      { id: 'spe-7', name: 'Mezzelfo', category: 'species', type: 'Specie', keywords: ['half-elf', 'charisma'], size: 'Media', speed: '9m' },
+      { id: 'spe-8', name: 'Mezzorco', category: 'species', type: 'Specie', keywords: ['half-orc', 'savage', 'endurance'], size: 'Media', speed: '9m' },
+      { id: 'spe-9', name: 'Tiefling', category: 'species', type: 'Specie', keywords: ['infernal', 'devil', 'fire'], size: 'Media', speed: '9m' },
+      // Incantesimi
+      { id: 'spl-1', name: 'Palla di Fuoco', category: 'spells', type: 'Incantesimo', keywords: ['fireball', 'fire', 'explosion', 'damage'], level: 3, school: 'Evocazione', castTime: '1 azione', range: '45m' },
+      { id: 'spl-2', name: 'Dardo Incantato', category: 'spells', type: 'Incantesimo', keywords: ['magic missile', 'force', 'auto-hit'], level: 1, school: 'Evocazione', castTime: '1 azione', range: '36m' },
+      { id: 'spl-3', name: 'Cura Ferite', category: 'spells', type: 'Incantesimo', keywords: ['cure wounds', 'heal', 'restore'], level: 1, school: 'Evocazione', castTime: '1 azione', range: 'Contatto' },
+      { id: 'spl-4', name: 'Scudo', category: 'spells', type: 'Incantesimo', keywords: ['shield', 'protection', 'reaction'], level: 1, school: 'Abiurazione', castTime: '1 reazione', range: 'Se stessi' },
+      { id: 'spl-5', name: 'Fulmine', category: 'spells', type: 'Incantesimo', keywords: ['lightning bolt', 'electric', 'line'], level: 3, school: 'Evocazione', castTime: '1 azione', range: 'Se stessi (30m linea)' },
+      { id: 'spl-6', name: 'Invisibilità', category: 'spells', type: 'Incantesimo', keywords: ['invisible', 'stealth', 'hide'], level: 2, school: 'Illusione', castTime: '1 azione', range: 'Contatto' },
+      { id: 'spl-7', name: 'Volare', category: 'spells', type: 'Incantesimo', keywords: ['fly', 'flight', 'air'], level: 3, school: 'Trasmutazione', castTime: '1 azione', range: 'Contatto' },
+      { id: 'spl-8', name: 'Controincantesimo', category: 'spells', type: 'Incantesimo', keywords: ['counterspell', 'dispel', 'negate'], level: 3, school: 'Abiurazione', castTime: '1 reazione', range: '18m' },
+      { id: 'spl-9', name: 'Resurrezione', category: 'spells', type: 'Incantesimo', keywords: ['raise dead', 'revive', 'life'], level: 7, school: 'Necromanzia', castTime: '1 ora', range: 'Contatto' },
+      { id: 'spl-10', name: 'Desiderio', category: 'spells', type: 'Incantesimo', keywords: ['wish', 'reality', 'powerful'], level: 9, school: 'Invocazione', castTime: '1 azione', range: 'Se stessi' },
+      // Oggetti Magici
+      { id: 'mag-1', name: 'Spada Fiammeggiante', category: 'magic-items', type: 'Arma', keywords: ['flame tongue', 'fire', 'sword'], rarity: 'rare', attunement: true },
+      { id: 'mag-2', name: 'Anello di Protezione', category: 'magic-items', type: 'Anello', keywords: ['ring', 'AC', 'save'], rarity: 'rare', attunement: true },
+      { id: 'mag-3', name: 'Mantello dell\'Invisibilità', category: 'magic-items', type: 'Oggetto Meraviglioso', keywords: ['cloak', 'invisibility', 'hide'], rarity: 'legendary', attunement: true },
+      { id: 'mag-4', name: 'Borsa Conservante', category: 'magic-items', type: 'Oggetto Meraviglioso', keywords: ['bag of holding', 'storage', 'extradimensional'], rarity: 'uncommon', attunement: false },
+      { id: 'mag-5', name: 'Stivali della Velocità', category: 'magic-items', type: 'Oggetto Meraviglioso', keywords: ['boots', 'speed', 'haste'], rarity: 'rare', attunement: true },
+      { id: 'mag-6', name: 'Bacchetta dei Dardi', category: 'magic-items', type: 'Bacchetta', keywords: ['wand', 'magic missile', 'charges'], rarity: 'uncommon', attunement: false },
+      // Mostri
+      { id: 'mon-1', name: 'Drago Rosso Antico', category: 'monsters', type: 'Drago', keywords: ['dragon', 'fire', 'legendary'], cr: '24', monsterType: 'Drago', size: 'Enorme' },
+      { id: 'mon-2', name: 'Goblin', category: 'monsters', type: 'Umanoide', keywords: ['humanoid', 'small', 'stealth'], cr: '1/4', monsterType: 'Umanoide', size: 'Piccola' },
+      { id: 'mon-3', name: 'Orco', category: 'monsters', type: 'Umanoide', keywords: ['humanoid', 'aggressive'], cr: '1/2', monsterType: 'Umanoide', size: 'Media' },
+      { id: 'mon-4', name: 'Scheletro', category: 'monsters', type: 'Non Morto', keywords: ['undead', 'bones'], cr: '1/4', monsterType: 'Non Morto', size: 'Media' },
+      { id: 'mon-5', name: 'Zombie', category: 'monsters', type: 'Non Morto', keywords: ['undead', 'slow'], cr: '1/4', monsterType: 'Non Morto', size: 'Media' },
+      { id: 'mon-6', name: 'Beholder', category: 'monsters', type: 'Aberrazione', keywords: ['aberration', 'eye', 'ray'], cr: '13', monsterType: 'Aberrazione', size: 'Grande' },
+      { id: 'mon-7', name: 'Mind Flayer', category: 'monsters', type: 'Aberrazione', keywords: ['illithid', 'psionic', 'brain'], cr: '7', monsterType: 'Aberrazione', size: 'Media' },
+      { id: 'mon-8', name: 'Lich', category: 'monsters', type: 'Non Morto', keywords: ['undead', 'spellcaster', 'phylactery'], cr: '21', monsterType: 'Non Morto', size: 'Media' },
+      { id: 'mon-9', name: 'Tarrasque', category: 'monsters', type: 'Mostruosità', keywords: ['monstrosity', 'titan', 'legendary'], cr: '30', monsterType: 'Mostruosità', size: 'Mastodontica' },
+      { id: 'mon-10', name: 'Mimic', category: 'monsters', type: 'Mostruosità', keywords: ['shapechanger', 'chest', 'adhesive'], cr: '2', monsterType: 'Mostruosità', size: 'Media' },
+      // Talenti
+      { id: 'fea-1', name: 'Allerta', category: 'feats', type: 'Talento', keywords: ['alert', 'initiative', 'surprise'], prerequisite: 'Nessuno' },
+      { id: 'fea-2', name: 'Incantatore da Guerra', category: 'feats', type: 'Talento', keywords: ['war caster', 'concentration', 'opportunity'], prerequisite: 'Capacità di lanciare incantesimi' },
+      { id: 'fea-3', name: 'Arma Preferita', category: 'feats', type: 'Talento', keywords: ['weapon master', 'proficiency'], prerequisite: 'Nessuno' },
+      { id: 'fea-4', name: 'Fortunato', category: 'feats', type: 'Talento', keywords: ['lucky', 'reroll', 'luck'], prerequisite: 'Nessuno' },
+      { id: 'fea-5', name: 'Sentinella', category: 'feats', type: 'Talento', keywords: ['sentinel', 'opportunity attack', 'speed'], prerequisite: 'Nessuno' },
+      { id: 'fea-6', name: 'Tiratore Scelto', category: 'feats', type: 'Talento', keywords: ['sharpshooter', 'ranged', 'cover'], prerequisite: 'Nessuno' },
+      // Background
+      { id: 'bg-1', name: 'Accolito', category: 'backgrounds', type: 'Background', keywords: ['acolyte', 'temple', 'religion'], skills: 'Intuizione, Religione' },
+      { id: 'bg-2', name: 'Criminale', category: 'backgrounds', type: 'Background', keywords: ['criminal', 'thief', 'contact'], skills: 'Furtività, Inganno' },
+      { id: 'bg-3', name: 'Nobile', category: 'backgrounds', type: 'Background', keywords: ['noble', 'aristocrat', 'privilege'], skills: 'Persuasione, Storia' },
+      { id: 'bg-4', name: 'Soldato', category: 'backgrounds', type: 'Background', keywords: ['soldier', 'military', 'rank'], skills: 'Atletica, Intimidire' },
+      { id: 'bg-5', name: 'Eremita', category: 'backgrounds', type: 'Background', keywords: ['hermit', 'discovery', 'isolation'], skills: 'Medicina, Religione' },
+      { id: 'bg-6', name: 'Saggio', category: 'backgrounds', type: 'Background', keywords: ['sage', 'researcher', 'knowledge'], skills: 'Arcano, Storia' },
+      // Condizioni
+      { id: 'cnd-1', name: 'Accecato', category: 'conditions', type: 'Condizione', keywords: ['blinded', 'sight', 'disadvantage'], effect: 'Svantaggio agli attacchi' },
+      { id: 'cnd-2', name: 'Affascinato', category: 'conditions', type: 'Condizione', keywords: ['charmed', 'friendly', 'social'], effect: 'Non può attaccare l\'incantatore' },
+      { id: 'cnd-3', name: 'Spaventato', category: 'conditions', type: 'Condizione', keywords: ['frightened', 'fear', 'disadvantage'], effect: 'Svantaggio mentre vede la fonte' },
+      { id: 'cnd-4', name: 'Paralizzato', category: 'conditions', type: 'Condizione', keywords: ['paralyzed', 'incapacitated', 'fail'], effect: 'Incapacitato, TS FOR/DES falliti' },
+      { id: 'cnd-5', name: 'Pietrificato', category: 'conditions', type: 'Condizione', keywords: ['petrified', 'stone', 'weight'], effect: 'Trasformato in pietra' },
+      { id: 'cnd-6', name: 'Avvelenato', category: 'conditions', type: 'Condizione', keywords: ['poisoned', 'disadvantage'], effect: 'Svantaggio ad attacchi e prove' },
+      { id: 'cnd-7', name: 'Prono', category: 'conditions', type: 'Condizione', keywords: ['prone', 'ground', 'crawl'], effect: 'Svantaggio agli attacchi' },
+      { id: 'cnd-8', name: 'Stordito', category: 'conditions', type: 'Condizione', keywords: ['stunned', 'incapacitated'], effect: 'Incapacitato, TS FOR/DES falliti' },
+      // Equipaggiamento
+      { id: 'eq-1', name: 'Spada Lunga', category: 'equipment', type: 'Arma Marziale', keywords: ['longsword', 'versatile', 'melee'], damage: '1d8 taglienti', properties: 'Versatile (1d10)' },
+      { id: 'eq-2', name: 'Arco Lungo', category: 'equipment', type: 'Arma Marziale', keywords: ['longbow', 'ranged', 'ammunition'], damage: '1d8 perforanti', properties: 'Munizioni, pesante' },
+      { id: 'eq-3', name: 'Cotta di Maglia', category: 'equipment', type: 'Armatura Media', keywords: ['chain mail', 'AC', 'metal'], ac: 'CA 16', properties: 'Furtività svantaggiata' },
+      { id: 'eq-4', name: 'Armatura di Piastre', category: 'equipment', type: 'Armatura Pesante', keywords: ['plate', 'AC', 'heavy'], ac: 'CA 18', properties: 'FOR 15, furtività svant.' },
+      { id: 'eq-5', name: 'Scudo', category: 'equipment', type: 'Scudo', keywords: ['shield', 'AC', 'bonus'], ac: '+2 CA', properties: 'Una mano' },
+      { id: 'eq-6', name: 'Kit da Guarigione', category: 'equipment', type: 'Equipaggiamento', keywords: ['healer', 'stabilize', 'medicine'], uses: '10 usi', properties: 'Stabilizza creature' },
+      { id: 'eq-7', name: 'Corda di Seta', category: 'equipment', type: 'Equipaggiamento', keywords: ['rope', 'silk', 'climb'], length: '15m', properties: '2 PF, CD 17' },
+      { id: 'eq-8', name: 'Torcia', category: 'equipment', type: 'Equipaggiamento', keywords: ['torch', 'light', 'fire'], duration: '1 ora', properties: 'Luce 6m/12m' },
+      // Abilità
+      { id: 'skl-1', name: 'Acrobazia', category: 'skills', type: 'Abilità', keywords: ['acrobatics', 'dex', 'balance'], ability: 'DES' },
+      { id: 'skl-2', name: 'Arcano', category: 'skills', type: 'Abilità', keywords: ['arcana', 'int', 'magic'], ability: 'INT' },
+      { id: 'skl-3', name: 'Atletica', category: 'skills', type: 'Abilità', keywords: ['athletics', 'str', 'climb'], ability: 'FOR' },
+      { id: 'skl-4', name: 'Furtività', category: 'skills', type: 'Abilità', keywords: ['stealth', 'dex', 'hide'], ability: 'DES' },
+      { id: 'skl-5', name: 'Percezione', category: 'skills', type: 'Abilità', keywords: ['perception', 'wis', 'spot'], ability: 'SAG' },
+      // Tipi di Danno
+      { id: 'dmg-1', name: 'Fuoco', category: 'damage-types', type: 'Tipo di Danno', keywords: ['fire', 'burn', 'flame'] },
+      { id: 'dmg-2', name: 'Freddo', category: 'damage-types', type: 'Tipo di Danno', keywords: ['cold', 'ice', 'frost'] },
+      { id: 'dmg-3', name: 'Fulmine', category: 'damage-types', type: 'Tipo di Danno', keywords: ['lightning', 'electric', 'shock'] },
+      { id: 'dmg-4', name: 'Necrotico', category: 'damage-types', type: 'Tipo di Danno', keywords: ['necrotic', 'death', 'undead'] },
+      { id: 'dmg-5', name: 'Radiante', category: 'damage-types', type: 'Tipo di Danno', keywords: ['radiant', 'holy', 'light'] },
+      // Allineamenti
+      { id: 'aln-1', name: 'Legale Buono', category: 'alignments', type: 'Allineamento', keywords: ['lawful good', 'LB', 'paladin'], code: 'LB' },
+      { id: 'aln-2', name: 'Neutrale Buono', category: 'alignments', type: 'Allineamento', keywords: ['neutral good', 'NB'], code: 'NB' },
+      { id: 'aln-3', name: 'Caotico Buono', category: 'alignments', type: 'Allineamento', keywords: ['chaotic good', 'CB'], code: 'CB' },
+      { id: 'aln-4', name: 'Legale Neutrale', category: 'alignments', type: 'Allineamento', keywords: ['lawful neutral', 'LN'], code: 'LN' },
+      { id: 'aln-5', name: 'Neutrale Puro', category: 'alignments', type: 'Allineamento', keywords: ['true neutral', 'N'], code: 'N' },
+      { id: 'aln-6', name: 'Caotico Neutrale', category: 'alignments', type: 'Allineamento', keywords: ['chaotic neutral', 'CN'], code: 'CN' },
+      { id: 'aln-7', name: 'Legale Malvagio', category: 'alignments', type: 'Allineamento', keywords: ['lawful evil', 'LM'], code: 'LM' },
+      { id: 'aln-8', name: 'Neutrale Malvagio', category: 'alignments', type: 'Allineamento', keywords: ['neutral evil', 'NM'], code: 'NM' },
+      { id: 'aln-9', name: 'Caotico Malvagio', category: 'alignments', type: 'Allineamento', keywords: ['chaotic evil', 'CM'], code: 'CM' },
+      // Lingue
+      { id: 'lng-1', name: 'Comune', category: 'languages', type: 'Lingua', keywords: ['common', 'human'], script: 'Comune' },
+      { id: 'lng-2', name: 'Elfico', category: 'languages', type: 'Lingua', keywords: ['elvish', 'elf'], script: 'Elfico' },
+      { id: 'lng-3', name: 'Nanico', category: 'languages', type: 'Lingua', keywords: ['dwarvish', 'dwarf'], script: 'Nanico' },
+      { id: 'lng-4', name: 'Draconico', category: 'languages', type: 'Lingua', keywords: ['draconic', 'dragon'], script: 'Draconico' },
+      { id: 'lng-5', name: 'Infernale', category: 'languages', type: 'Lingua', keywords: ['infernal', 'devil'], script: 'Infernale' },
+      // Scuole di Magia
+      { id: 'sch-1', name: 'Abiurazione', category: 'spell-schools', type: 'Scuola di Magia', keywords: ['abjuration', 'protection', 'ward'] },
+      { id: 'sch-2', name: 'Evocazione', category: 'spell-schools', type: 'Scuola di Magia', keywords: ['evocation', 'damage', 'energy'] },
+      { id: 'sch-3', name: 'Illusione', category: 'spell-schools', type: 'Scuola di Magia', keywords: ['illusion', 'deceive', 'phantasm'] },
+      { id: 'sch-4', name: 'Necromanzia', category: 'spell-schools', type: 'Scuola di Magia', keywords: ['necromancy', 'undead', 'death'] },
+      { id: 'sch-5', name: 'Trasmutazione', category: 'spell-schools', type: 'Scuola di Magia', keywords: ['transmutation', 'change', 'alter'] }
+    ];
+
+    const categoryIcons = {
+      'spells': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+      'monsters': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+      'classes': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+      'species': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+      'backgrounds': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+      'feats': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+      'magic-items': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+      'equipment': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+      'conditions': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+      'skills': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      'damage-types': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+      'alignments': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+      'languages': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>',
+      'weapon-types': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg>',
+      'armor-types': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+      'tool-types': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+      'spell-schools': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>'
+    };
+
+    const categoryNames = {
+      'spells': 'Incantesimi',
+      'monsters': 'Mostri',
+      'classes': 'Classi',
+      'species': 'Specie/Razze',
+      'backgrounds': 'Background',
+      'feats': 'Talenti',
+      'magic-items': 'Oggetti Magici',
+      'equipment': 'Equipaggiamento',
+      'conditions': 'Condizioni',
+      'skills': 'Abilità',
+      'damage-types': 'Tipi di Danno',
+      'alignments': 'Allineamenti',
+      'languages': 'Lingue',
+      'weapon-types': 'Tipi di Arma',
+      'armor-types': 'Tipi di Armatura',
+      'tool-types': 'Tipi di Strumento',
+      'spell-schools': 'Scuole di Magia'
+    };
+
+    const searchInput = document.getElementById('searchInput');
+    const searchCategory = document.getElementById('searchCategory');
+    const searchResults = document.getElementById('searchResults');
+    const searchButton = document.getElementById('searchButton');
+    let selectedIndex = -1;
+    let currentResults = [];
+    let debounceTimer;
+
+    function highlightText(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return text.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
+    function searchCompendium(query, category) {
+      if (!query || query.length < 2) return [];
+
+      const lowerQuery = query.toLowerCase();
+      let results = compendiumData.filter(item => {
+        if (category !== 'all' && item.category !== category) return false;
+
+        const nameMatch = item.name.toLowerCase().includes(lowerQuery);
+        const keywordMatch = item.keywords.some(kw => kw.toLowerCase().includes(lowerQuery));
+
+        return nameMatch || keywordMatch;
+      });
+
+      // Sort: exact matches first, then by name
+      results.sort((a, b) => {
+        const aExact = a.name.toLowerCase().startsWith(lowerQuery);
+        const bExact = b.name.toLowerCase().startsWith(lowerQuery);
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      return results.slice(0, 8);
+    }
+
+    function getQuickInfoTags(item) {
+      const tags = [];
+      switch (item.category) {
+        case 'spells':
+          tags.push({ text: `Liv. ${item.level}`, class: 'level' });
+          tags.push({ text: item.school, class: 'school' });
+          if (item.castTime) tags.push({ text: item.castTime, class: '' });
+          break;
+        case 'monsters':
+          tags.push({ text: `GS ${item.cr}`, class: 'cr' });
+          tags.push({ text: item.monsterType, class: '' });
+          if (item.size) tags.push({ text: item.size, class: '' });
+          break;
+        case 'magic-items':
+          const rarityClass = `rarity-${item.rarity}`;
+          const rarityNames = { common: 'Comune', uncommon: 'Non Comune', rare: 'Raro', 'very-rare': 'Molto Raro', legendary: 'Leggendario' };
+          tags.push({ text: rarityNames[item.rarity] || item.rarity, class: rarityClass });
+          tags.push({ text: item.type, class: '' });
+          if (item.attunement) tags.push({ text: 'Sintonia', class: '' });
+          break;
+        case 'classes':
+          tags.push({ text: item.hitDie, class: 'level' });
+          tags.push({ text: item.primaryAbility, class: '' });
+          break;
+        case 'species':
+          tags.push({ text: item.size, class: '' });
+          tags.push({ text: item.speed, class: '' });
+          break;
+        case 'equipment':
+          if (item.damage) tags.push({ text: item.damage, class: 'level' });
+          if (item.ac) tags.push({ text: item.ac, class: 'level' });
+          tags.push({ text: item.type, class: '' });
+          break;
+        case 'conditions':
+          if (item.effect) tags.push({ text: item.effect, class: '' });
+          break;
+        case 'backgrounds':
+          if (item.skills) tags.push({ text: item.skills, class: '' });
+          break;
+        case 'feats':
+          if (item.prerequisite && item.prerequisite !== 'Nessuno') tags.push({ text: item.prerequisite, class: '' });
+          break;
+        case 'skills':
+          if (item.ability) tags.push({ text: item.ability, class: 'level' });
+          break;
+        case 'alignments':
+          if (item.code) tags.push({ text: item.code, class: 'level' });
+          break;
+        case 'languages':
+          if (item.script) tags.push({ text: `Scrittura: ${item.script}`, class: '' });
+          break;
+      }
+      return tags;
+    }
+
+    function renderResults(results, query) {
+      if (results.length === 0) {
+        searchResults.innerHTML = `
+          <div class="search-no-results">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <p>Nessun risultato trovato</p>
+          </div>
+        `;
+        searchResults.classList.add('active');
+        return;
+      }
+
+      searchResults.innerHTML = results.map((item, index) => {
+        const tags = getQuickInfoTags(item);
+        const isFav = isFavorite(item.id);
+        return `
+        <div class="search-result-item" data-index="${index}" data-id="${item.id}">
+          <div class="search-result-icon">
+            ${categoryIcons[item.category] || ''}
+          </div>
+          <div class="search-result-content">
+            <div class="search-result-name">${highlightText(item.name, query)}</div>
+            <div class="search-result-meta">
+              <span class="search-result-category">${categoryNames[item.category]}</span>
+            </div>
+            ${tags.length > 0 ? `
+            <div class="search-result-quick-info">
+              ${tags.map(tag => `<span class="search-result-tag ${tag.class}">${tag.text}</span>`).join('')}
+            </div>
+            ` : ''}
+          </div>
+          <button class="search-result-fav-btn ${isFav ? 'active' : ''}" data-id="${item.id}" title="${isFav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}">
+            <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </button>
+        </div>
+      `}).join('');
+
+      searchResults.classList.add('active');
+
+      // Add click handlers
+      searchResults.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('.search-result-fav-btn')) return;
+          const idx = parseInt(item.dataset.index);
+          selectResult(idx);
+        });
+      });
+
+      // Add favorite button handlers
+      searchResults.querySelectorAll('.search-result-fav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const itemId = btn.dataset.id;
+          toggleFavorite(itemId);
+          btn.classList.toggle('active');
+          const svg = btn.querySelector('svg');
+          svg.setAttribute('fill', btn.classList.contains('active') ? 'currentColor' : 'none');
+          renderQuickAccess();
+        });
+      });
+    }
+
+    function selectResult(index) {
+      if (index >= 0 && index < currentResults.length) {
+        const result = currentResults[index];
+        searchInput.value = result.name;
+        closeResults();
+
+        // Track recent and frequent
+        addToRecent(result.id);
+        incrementFrequent(result.id);
+        renderQuickAccess();
+
+        // Here you could navigate to the detail page
+        console.log('Selected:', result);
+        // Future: window.location.href = `compendium-detail.html?item=${encodeURIComponent(result.id)}`;
+      }
+    }
+
+    function updateSelection(newIndex) {
+      const items = searchResults.querySelectorAll('.search-result-item');
+
+      if (newIndex < 0) newIndex = items.length - 1;
+      if (newIndex >= items.length) newIndex = 0;
+
+      items.forEach((item, i) => {
+        item.classList.toggle('selected', i === newIndex);
+        if (i === newIndex) {
+          item.scrollIntoView({ block: 'nearest' });
+        }
+      });
+
+      selectedIndex = newIndex;
+    }
+
+    function closeResults() {
+      searchResults.classList.remove('active');
+      selectedIndex = -1;
+      currentResults = [];
+    }
+
+    function performSearch() {
+      const query = searchInput.value.trim();
+      const category = searchCategory.value;
+
+      if (query.length < 2) {
+        closeResults();
+        return;
+      }
+
+      currentResults = searchCompendium(query, category);
+      selectedIndex = -1;
+      renderResults(currentResults, query);
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(performSearch, 300);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (!searchResults.classList.contains('active')) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+        return;
+      }
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          updateSelection(selectedIndex + 1);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          updateSelection(selectedIndex - 1);
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (selectedIndex >= 0) {
+            selectResult(selectedIndex);
+          } else if (currentResults.length > 0) {
+            selectResult(0);
+          }
+          break;
+        case 'Escape':
+          closeResults();
+          break;
+      }
+    });
+
+    searchCategory.addEventListener('change', () => {
+      if (searchInput.value.trim().length >= 2) {
+        performSearch();
+      }
+      searchInput.focus();
+    });
+
+    searchButton.addEventListener('click', () => {
+      performSearch();
+    });
+
+    // Close results on click outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        closeResults();
+      }
+    });
+
+    // Focus search input on page load
+    setTimeout(() => {
+      searchInput.focus();
+    }, 500);
+
+    // ====== QUICK ACCESS FUNCTIONALITY ======
+    const STORAGE_KEYS = {
+      recent: 'compendium_recent',
+      favorites: 'compendium_favorites',
+      frequent: 'compendium_frequent'
+    };
+
+    const MAX_RECENT = 6;
+    const MAX_FREQUENT = 6;
+
+    function getItemById(id) {
+      return compendiumData.find(item => item.id === id);
+    }
+
+    // Recent Items
+    function getRecent() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEYS.recent)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function addToRecent(itemId) {
+      let recent = getRecent();
+      recent = recent.filter(id => id !== itemId);
+      recent.unshift(itemId);
+      recent = recent.slice(0, MAX_RECENT);
+      localStorage.setItem(STORAGE_KEYS.recent, JSON.stringify(recent));
+    }
+
+    // Favorites
+    function getFavorites() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function isFavorite(itemId) {
+      return getFavorites().includes(itemId);
+    }
+
+    function toggleFavorite(itemId) {
+      let favorites = getFavorites();
+      if (favorites.includes(itemId)) {
+        favorites = favorites.filter(id => id !== itemId);
+      } else {
+        favorites.push(itemId);
+      }
+      localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favorites));
+    }
+
+    // Frequent Items
+    function getFrequent() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEYS.frequent)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function incrementFrequent(itemId) {
+      const frequent = getFrequent();
+      frequent[itemId] = (frequent[itemId] || 0) + 1;
+      localStorage.setItem(STORAGE_KEYS.frequent, JSON.stringify(frequent));
+    }
+
+    function getTopFrequent() {
+      const frequent = getFrequent();
+      return Object.entries(frequent)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, MAX_FREQUENT)
+        .map(([id, count]) => ({ id, count }));
+    }
+
+    // Get short meta info for quick access cards
+    function getShortMeta(item) {
+      switch (item.category) {
+        case 'spells':
+          return `Liv. ${item.level} • ${item.school}`;
+        case 'monsters':
+          return `GS ${item.cr} • ${item.monsterType}`;
+        case 'magic-items':
+          const rarityNames = { common: 'Comune', uncommon: 'Non Com.', rare: 'Raro', 'very-rare': 'Molto Raro', legendary: 'Leggend.' };
+          return rarityNames[item.rarity] || item.rarity;
+        case 'classes':
+          return `${item.hitDie} • ${item.primaryAbility}`;
+        case 'species':
+          return `${item.size} • ${item.speed}`;
+        case 'equipment':
+          return item.damage || item.ac || item.type;
+        case 'conditions':
+          return item.effect ? item.effect.substring(0, 20) + '...' : '';
+        case 'skills':
+          return item.ability || item.type;
+        case 'alignments':
+          return item.code || item.type;
+        case 'languages':
+          return item.script || item.type;
+        default:
+          return categoryNames[item.category] || item.type;
+      }
+    }
+
+    // Render Quick Access Card
+    function renderQuickAccessCard(item, showFavBtn = false, count = null) {
+      const isFav = isFavorite(item.id);
+      return `
+        <div class="quick-access-card" data-id="${item.id}">
+          ${showFavBtn ? `
+          <button class="quick-access-fav-btn ${isFav ? 'active' : ''}" data-id="${item.id}">
+            <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </button>
+          ` : ''}
+          ${count !== null ? `<span class="quick-access-count">${count}x</span>` : ''}
+          <div class="quick-access-card-icon">
+            ${categoryIcons[item.category] || ''}
+          </div>
+          <div class="quick-access-card-name" title="${item.name}">${item.name}</div>
+          <div class="quick-access-card-meta">${getShortMeta(item)}</div>
+        </div>
+      `;
+    }
+
+    // Render all Quick Access sections
+    function renderQuickAccess() {
+      const recentContainer = document.getElementById('recentItems');
+      const favoriteContainer = document.getElementById('favoriteItems');
+      const frequentContainer = document.getElementById('frequentItems');
+
+      // Recent
+      const recentIds = getRecent();
+      const recentItems = recentIds.map(id => getItemById(id)).filter(Boolean);
+      if (recentItems.length > 0) {
+        recentContainer.innerHTML = recentItems.map(item => renderQuickAccessCard(item, true)).join('');
+      } else {
+        recentContainer.innerHTML = '<div class="quick-access-empty">Nessun elemento recente</div>';
+      }
+
+      // Favorites
+      const favoriteIds = getFavorites();
+      const favoriteItems = favoriteIds.map(id => getItemById(id)).filter(Boolean);
+      if (favoriteItems.length > 0) {
+        favoriteContainer.innerHTML = favoriteItems.map(item => renderQuickAccessCard(item)).join('');
+      } else {
+        favoriteContainer.innerHTML = '<div class="quick-access-empty">Aggiungi preferiti con ⭐</div>';
+      }
+
+      // Frequent
+      const frequentData = getTopFrequent();
+      const frequentItems = frequentData.map(({ id, count }) => {
+        const item = getItemById(id);
+        return item ? { item, count } : null;
+      }).filter(Boolean);
+      if (frequentItems.length > 0) {
+        frequentContainer.innerHTML = frequentItems.map(({ item, count }) => renderQuickAccessCard(item, false, count)).join('');
+      } else {
+        frequentContainer.innerHTML = '<div class="quick-access-empty">Gli elementi più usati appariranno qui</div>';
+      }
+
+      // Add click handlers for cards
+      document.querySelectorAll('.quick-access-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.quick-access-fav-btn')) return;
+          const itemId = card.dataset.id;
+          const item = getItemById(itemId);
+          if (item) {
+            addToRecent(item.id);
+            incrementFrequent(item.id);
+            searchInput.value = item.name;
+            searchInput.focus();
+            renderQuickAccess();
+            console.log('Quick access selected:', item);
+            // Future: window.location.href = `compendium-detail.html?item=${encodeURIComponent(item.id)}`;
+          }
+        });
+      });
+
+      // Add favorite button handlers in recent section
+      document.querySelectorAll('.quick-access-fav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const itemId = btn.dataset.id;
+          toggleFavorite(itemId);
+          renderQuickAccess();
+        });
+      });
+    }
+
+    // Initialize Quick Access on page load
+    renderQuickAccess();
   </script>
 </body>
 </html>
