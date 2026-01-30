@@ -757,231 +757,6 @@
       }
     }
 
-    /* ====== QUICK ACCESS SECTION ====== */
-    .quick-access {
-      width: 100%;
-      max-width: 900px;
-      margin: 2.5rem auto 0;
-      padding: 0 1rem;
-    }
-
-    .quick-access-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-    }
-
-    .quick-access-block {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 12px;
-      padding: 1rem;
-      min-height: 120px;
-    }
-
-    .quick-access-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-    }
-
-    .quick-access-header svg {
-      width: 16px;
-      height: 16px;
-      color: var(--gold);
-      flex-shrink: 0;
-    }
-
-    .quick-access-title {
-      font-family: 'Cinzel', serif;
-      font-size: 0.85rem;
-      color: var(--gold);
-      font-weight: 600;
-    }
-
-    .quick-access-items {
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-      padding-bottom: 0.25rem;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
-    }
-
-    .quick-access-items::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .quick-access-items::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .quick-access-items::-webkit-scrollbar-thumb {
-      background: rgba(212, 175, 55, 0.3);
-      border-radius: 2px;
-    }
-
-    .quick-access-card {
-      flex-shrink: 0;
-      width: 100px;
-      background: rgba(139, 30, 30, 0.2);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 8px;
-      padding: 0.6rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .quick-access-card:hover {
-      background: rgba(139, 30, 30, 0.4);
-      border-color: var(--gold);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .quick-access-card-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      background: rgba(212, 175, 55, 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.4rem;
-    }
-
-    .quick-access-card-icon svg {
-      width: 14px;
-      height: 14px;
-      color: var(--gold);
-    }
-
-    .quick-access-card-name {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--text-light);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 0.2rem;
-    }
-
-    .quick-access-card-meta {
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .quick-access-fav-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      width: 18px;
-      height: 18px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: all 0.3s ease;
-    }
-
-    .quick-access-card:hover .quick-access-fav-btn {
-      opacity: 1;
-    }
-
-    .quick-access-fav-btn svg {
-      width: 12px;
-      height: 12px;
-      color: var(--text-muted);
-      transition: all 0.3s ease;
-    }
-
-    .quick-access-fav-btn:hover svg,
-    .quick-access-fav-btn.active svg {
-      color: var(--gold);
-      fill: var(--gold);
-    }
-
-    .quick-access-empty {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      font-style: italic;
-      text-align: center;
-      padding: 1rem 0.5rem;
-      opacity: 0.7;
-    }
-
-    .quick-access-count {
-      position: absolute;
-      bottom: 4px;
-      right: 4px;
-      font-size: 0.55rem;
-      color: var(--text-muted);
-      background: rgba(0, 0, 0, 0.4);
-      padding: 1px 4px;
-      border-radius: 3px;
-    }
-
-    /* Quick Access Responsive */
-    @media (max-width: 1024px) {
-      .quick-access {
-        max-width: 700px;
-      }
-
-      .quick-access-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-
-      .quick-access-block {
-        min-height: auto;
-      }
-
-      .quick-access-items {
-        flex-wrap: nowrap;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .quick-access {
-        margin-top: 2rem;
-      }
-
-      .quick-access-card {
-        width: 85px;
-        padding: 0.5rem;
-      }
-
-      .quick-access-card-icon {
-        width: 24px;
-        height: 24px;
-      }
-
-      .quick-access-card-icon svg {
-        width: 12px;
-        height: 12px;
-      }
-
-      .quick-access-card-name {
-        font-size: 0.65rem;
-      }
-
-      .quick-access-card-meta {
-        font-size: 0.55rem;
-      }
-    }
 
     /* ====== ENHANCED SEARCH RESULTS ====== */
     .search-result-quick-info {
@@ -1042,36 +817,6 @@
     .search-result-tag.rarity-legendary {
       background: rgba(255, 165, 0, 0.2);
       color: #ffd700;
-    }
-
-    .search-result-fav-btn {
-      margin-left: auto;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.5;
-      transition: all 0.3s ease;
-    }
-
-    .search-result-fav-btn:hover {
-      opacity: 1;
-    }
-
-    .search-result-fav-btn svg {
-      width: 16px;
-      height: 16px;
-      color: var(--text-muted);
-      transition: all 0.3s ease;
-    }
-
-    .search-result-fav-btn:hover svg,
-    .search-result-fav-btn.active svg {
-      color: var(--gold);
-      fill: var(--gold);
     }
 
     /* ====== CHAT WIDGET ====== */
@@ -1288,50 +1033,6 @@
           <div class="search-results" id="searchResults"></div>
         </div>
 
-        <!-- Quick Access Section -->
-        <div class="quick-access">
-          <div class="quick-access-grid">
-            <!-- Visti di Recente -->
-            <div class="quick-access-block">
-              <div class="quick-access-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12 6 12 12 16 14"/>
-                </svg>
-                <span class="quick-access-title">Visti di recente</span>
-              </div>
-              <div class="quick-access-items" id="recentItems">
-                <div class="quick-access-empty">Nessun elemento recente</div>
-              </div>
-            </div>
-
-            <!-- Preferiti -->
-            <div class="quick-access-block">
-              <div class="quick-access-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-                <span class="quick-access-title">Preferiti ⭐</span>
-              </div>
-              <div class="quick-access-items" id="favoriteItems">
-                <div class="quick-access-empty">Aggiungi preferiti con ⭐</div>
-              </div>
-            </div>
-
-            <!-- Usati Spesso -->
-            <div class="quick-access-block">
-              <div class="quick-access-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                </svg>
-                <span class="quick-access-title">Usati spesso</span>
-              </div>
-              <div class="quick-access-items" id="frequentItems">
-                <div class="quick-access-empty">Gli elementi più usati appariranno qui</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
     </main>
   </div>
@@ -1705,7 +1406,6 @@
 
       searchResults.innerHTML = results.map((item, index) => {
         const tags = getQuickInfoTags(item);
-        const isFav = isFavorite(item.id);
         return `
         <div class="search-result-item" data-index="${index}" data-id="${item.id}">
           <div class="search-result-icon">
@@ -1722,11 +1422,6 @@
             </div>
             ` : ''}
           </div>
-          <button class="search-result-fav-btn ${isFav ? 'active' : ''}" data-id="${item.id}" title="${isFav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}">
-            <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-          </button>
         </div>
       `}).join('');
 
@@ -1735,22 +1430,8 @@
       // Add click handlers
       searchResults.querySelectorAll('.search-result-item').forEach(item => {
         item.addEventListener('click', (e) => {
-          if (e.target.closest('.search-result-fav-btn')) return;
           const idx = parseInt(item.dataset.index);
           selectResult(idx);
-        });
-      });
-
-      // Add favorite button handlers
-      searchResults.querySelectorAll('.search-result-fav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const itemId = btn.dataset.id;
-          toggleFavorite(itemId);
-          btn.classList.toggle('active');
-          const svg = btn.querySelector('svg');
-          svg.setAttribute('fill', btn.classList.contains('active') ? 'currentColor' : 'none');
-          renderQuickAccess();
         });
       });
     }
@@ -1760,11 +1441,6 @@
         const result = currentResults[index];
         searchInput.value = result.name;
         closeResults();
-
-        // Track recent and frequent
-        addToRecent(result.id);
-        incrementFrequent(result.id);
-        renderQuickAccess();
 
         // Here you could navigate to the detail page
         console.log('Selected:', result);
@@ -1868,201 +1544,6 @@
       searchInput.focus();
     }, 500);
 
-    // ====== QUICK ACCESS FUNCTIONALITY ======
-    const STORAGE_KEYS = {
-      recent: 'compendium_recent',
-      favorites: 'compendium_favorites',
-      frequent: 'compendium_frequent'
-    };
-
-    const MAX_RECENT = 6;
-    const MAX_FREQUENT = 6;
-
-    function getItemById(id) {
-      return compendiumData.find(item => item.id === id);
-    }
-
-    // Recent Items
-    function getRecent() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEYS.recent)) || [];
-      } catch {
-        return [];
-      }
-    }
-
-    function addToRecent(itemId) {
-      let recent = getRecent();
-      recent = recent.filter(id => id !== itemId);
-      recent.unshift(itemId);
-      recent = recent.slice(0, MAX_RECENT);
-      localStorage.setItem(STORAGE_KEYS.recent, JSON.stringify(recent));
-    }
-
-    // Favorites
-    function getFavorites() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites)) || [];
-      } catch {
-        return [];
-      }
-    }
-
-    function isFavorite(itemId) {
-      return getFavorites().includes(itemId);
-    }
-
-    function toggleFavorite(itemId) {
-      let favorites = getFavorites();
-      if (favorites.includes(itemId)) {
-        favorites = favorites.filter(id => id !== itemId);
-      } else {
-        favorites.push(itemId);
-      }
-      localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favorites));
-    }
-
-    // Frequent Items
-    function getFrequent() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEYS.frequent)) || {};
-      } catch {
-        return {};
-      }
-    }
-
-    function incrementFrequent(itemId) {
-      const frequent = getFrequent();
-      frequent[itemId] = (frequent[itemId] || 0) + 1;
-      localStorage.setItem(STORAGE_KEYS.frequent, JSON.stringify(frequent));
-    }
-
-    function getTopFrequent() {
-      const frequent = getFrequent();
-      return Object.entries(frequent)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, MAX_FREQUENT)
-        .map(([id, count]) => ({ id, count }));
-    }
-
-    // Get short meta info for quick access cards
-    function getShortMeta(item) {
-      switch (item.category) {
-        case 'spells':
-          return `Liv. ${item.level} • ${item.school}`;
-        case 'monsters':
-          return `GS ${item.cr} • ${item.monsterType}`;
-        case 'magic-items':
-          const rarityNames = { common: 'Comune', uncommon: 'Non Com.', rare: 'Raro', 'very-rare': 'Molto Raro', legendary: 'Leggend.' };
-          return rarityNames[item.rarity] || item.rarity;
-        case 'classes':
-          return `${item.hitDie} • ${item.primaryAbility}`;
-        case 'species':
-          return `${item.size} • ${item.speed}`;
-        case 'equipment':
-          return item.damage || item.ac || item.type;
-        case 'conditions':
-          return item.effect ? item.effect.substring(0, 20) + '...' : '';
-        case 'skills':
-          return item.ability || item.type;
-        case 'alignments':
-          return item.code || item.type;
-        case 'languages':
-          return item.script || item.type;
-        default:
-          return categoryNames[item.category] || item.type;
-      }
-    }
-
-    // Render Quick Access Card
-    function renderQuickAccessCard(item, showFavBtn = false, count = null) {
-      const isFav = isFavorite(item.id);
-      return `
-        <div class="quick-access-card" data-id="${item.id}">
-          ${showFavBtn ? `
-          <button class="quick-access-fav-btn ${isFav ? 'active' : ''}" data-id="${item.id}">
-            <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-          </button>
-          ` : ''}
-          ${count !== null ? `<span class="quick-access-count">${count}x</span>` : ''}
-          <div class="quick-access-card-icon">
-            ${categoryIcons[item.category] || ''}
-          </div>
-          <div class="quick-access-card-name" title="${item.name}">${item.name}</div>
-          <div class="quick-access-card-meta">${getShortMeta(item)}</div>
-        </div>
-      `;
-    }
-
-    // Render all Quick Access sections
-    function renderQuickAccess() {
-      const recentContainer = document.getElementById('recentItems');
-      const favoriteContainer = document.getElementById('favoriteItems');
-      const frequentContainer = document.getElementById('frequentItems');
-
-      // Recent
-      const recentIds = getRecent();
-      const recentItems = recentIds.map(id => getItemById(id)).filter(Boolean);
-      if (recentItems.length > 0) {
-        recentContainer.innerHTML = recentItems.map(item => renderQuickAccessCard(item, true)).join('');
-      } else {
-        recentContainer.innerHTML = '<div class="quick-access-empty">Nessun elemento recente</div>';
-      }
-
-      // Favorites
-      const favoriteIds = getFavorites();
-      const favoriteItems = favoriteIds.map(id => getItemById(id)).filter(Boolean);
-      if (favoriteItems.length > 0) {
-        favoriteContainer.innerHTML = favoriteItems.map(item => renderQuickAccessCard(item)).join('');
-      } else {
-        favoriteContainer.innerHTML = '<div class="quick-access-empty">Aggiungi preferiti con ⭐</div>';
-      }
-
-      // Frequent
-      const frequentData = getTopFrequent();
-      const frequentItems = frequentData.map(({ id, count }) => {
-        const item = getItemById(id);
-        return item ? { item, count } : null;
-      }).filter(Boolean);
-      if (frequentItems.length > 0) {
-        frequentContainer.innerHTML = frequentItems.map(({ item, count }) => renderQuickAccessCard(item, false, count)).join('');
-      } else {
-        frequentContainer.innerHTML = '<div class="quick-access-empty">Gli elementi più usati appariranno qui</div>';
-      }
-
-      // Add click handlers for cards
-      document.querySelectorAll('.quick-access-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-          if (e.target.closest('.quick-access-fav-btn')) return;
-          const itemId = card.dataset.id;
-          const item = getItemById(itemId);
-          if (item) {
-            addToRecent(item.id);
-            incrementFrequent(item.id);
-            searchInput.value = item.name;
-            searchInput.focus();
-            renderQuickAccess();
-            console.log('Quick access selected:', item);
-            // Future: window.location.href = `compendium-detail.html?item=${encodeURIComponent(item.id)}`;
-          }
-        });
-      });
-
-      // Add favorite button handlers in recent section
-      document.querySelectorAll('.quick-access-fav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const itemId = btn.dataset.id;
-          toggleFavorite(itemId);
-          renderQuickAccess();
-        });
-      });
-    }
-
-    // Initialize Quick Access on page load
-    renderQuickAccess();
   </script>
 </body>
 </html>
