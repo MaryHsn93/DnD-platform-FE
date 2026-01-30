@@ -297,10 +297,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
       min-height: 100dvh;
       padding: 2rem;
+      padding-top: 6rem;
       position: relative;
     }
 
@@ -468,7 +469,7 @@
     .search-container {
       width: 100%;
       max-width: 700px;
-      margin: 2rem auto 0;
+      margin: 1.5rem auto 0;
       position: relative;
       z-index: 50;
     }
@@ -988,8 +989,6 @@
     <main class="main-content">
       <section class="page-section">
         <h1 class="page-title">Compendium</h1>
-        <p class="page-subtitle">Explore spells, monsters, and ancient lore</p>
-        <p class="page-tagline">"Knowledge is the greatest weapon..."</p>
 
         <!-- Search Bar -->
         <div class="search-container">
@@ -1032,7 +1031,6 @@
           </div>
           <div class="search-results" id="searchResults"></div>
         </div>
-
       </section>
     </main>
   </div>
