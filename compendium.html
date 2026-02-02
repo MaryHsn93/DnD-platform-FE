@@ -875,6 +875,399 @@
     .result-value.reveal { animation: resultReveal 0.3s ease; }
     @media (max-width: 768px) { .dice-roller-widget { top: 1rem; right: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } .chat-window { width: 320px; height: 480px; right: -0.5rem; } }
     @media (max-width: 480px) { .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; } .chat-widget { right: 1rem; bottom: 1rem; } .chat-toggle-btn { width: 55px; height: 55px; } }
+
+    /* ====== COMPENDIUM CATEGORIES BOX ====== */
+    .page-section { width: 100%; }
+
+    .compendium-box {
+      width: 100%;
+      max-width: 1100px;
+      margin: 3rem auto 2rem;
+      padding: 2.5rem 2rem 2rem;
+      background: rgba(255, 255, 255, 0.035);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      border: 1px solid rgba(212, 175, 55, 0.18);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 8px 40px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+        0 0 80px rgba(212, 175, 55, 0.03);
+      animation: boxReveal 0.8s ease 0.3s both;
+    }
+
+    @keyframes boxReveal {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glass reflection sweep */
+    .compendium-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -80%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(212, 175, 55, 0.04) 45%,
+        rgba(255, 255, 255, 0.03) 50%,
+        transparent 55%
+      );
+      pointer-events: none;
+      animation: glassSweep 10s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @keyframes glassSweep {
+      0%, 100% { left: -80%; }
+      50% { left: 120%; }
+    }
+
+    /* Top edge soft glow */
+    .compendium-box::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 5%,
+        rgba(212, 175, 55, 0.3) 30%,
+        rgba(212, 175, 55, 0.5) 50%,
+        rgba(212, 175, 55, 0.3) 70%,
+        transparent 95%
+      );
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Box header */
+    .compendium-box-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .compendium-box-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+      margin-bottom: 0.4rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .compendium-box-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Rune divider */
+    .rune-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin: 1.2rem 0 0;
+      color: var(--gold);
+      opacity: 0.35;
+      font-size: 0.9rem;
+      letter-spacing: 6px;
+    }
+
+    .rune-divider::before,
+    .rune-divider::after {
+      content: '';
+      flex: 1;
+      max-width: 140px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
+    }
+
+    /* Categories grid */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Category card */
+    .category-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 1.6rem 0.8rem 1.4rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-light);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      animation: cardReveal 0.5s ease both;
+    }
+
+    .category-card:nth-child(1)  { animation-delay: 0.40s; }
+    .category-card:nth-child(2)  { animation-delay: 0.46s; }
+    .category-card:nth-child(3)  { animation-delay: 0.52s; }
+    .category-card:nth-child(4)  { animation-delay: 0.58s; }
+    .category-card:nth-child(5)  { animation-delay: 0.64s; }
+    .category-card:nth-child(6)  { animation-delay: 0.70s; }
+    .category-card:nth-child(7)  { animation-delay: 0.76s; }
+    .category-card:nth-child(8)  { animation-delay: 0.82s; }
+    .category-card:nth-child(9)  { animation-delay: 0.88s; }
+    .category-card:nth-child(10) { animation-delay: 0.94s; }
+    .category-card:nth-child(11) { animation-delay: 1.00s; }
+    .category-card:nth-child(12) { animation-delay: 1.06s; }
+    .category-card:nth-child(13) { animation-delay: 1.12s; }
+    .category-card:nth-child(14) { animation-delay: 1.18s; }
+    .category-card:nth-child(15) { animation-delay: 1.24s; }
+    .category-card:nth-child(16) { animation-delay: 1.30s; }
+    .category-card:nth-child(17) { animation-delay: 1.36s; }
+    .category-card:nth-child(18) { animation-delay: 1.42s; }
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(18px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Card hover glow */
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(
+        ellipse at 50% -20%,
+        var(--card-glow, rgba(212, 175, 55, 0.12)) 0%,
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    /* Card rune watermark */
+    .category-card::after {
+      content: attr(data-rune);
+      position: absolute;
+      bottom: -10px;
+      right: 4px;
+      font-size: 4rem;
+      opacity: 0.025;
+      color: var(--card-glow-color, var(--gold));
+      transition: all 0.5s ease;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    /* Hover state */
+    .category-card:hover {
+      transform: translateY(-7px);
+      background: rgba(255, 255, 255, 0.055);
+      border-color: rgba(212, 175, 55, 0.35);
+      box-shadow:
+        0 14px 40px rgba(0, 0, 0, 0.25),
+        0 0 35px var(--card-glow, rgba(212, 175, 55, 0.1)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .category-card:hover::before { opacity: 1; }
+    .category-card:hover::after { opacity: 0.07; transform: scale(1.15) translateY(-4px); }
+
+    .category-card:active {
+      transform: translateY(-3px) scale(0.97);
+      transition-duration: 0.1s;
+    }
+
+    .category-card:hover .category-icon {
+      transform: scale(1.12) translateY(-2px);
+      box-shadow:
+        0 0 20px var(--card-glow, rgba(212, 175, 55, 0.3)),
+        0 8px 20px rgba(0, 0, 0, 0.3);
+      border-color: rgba(212, 175, 55, 0.5);
+    }
+
+    .category-card:hover .category-icon svg {
+      filter: drop-shadow(0 0 8px var(--card-glow, rgba(212, 175, 55, 0.5)));
+    }
+
+    .category-card:hover .category-name {
+      color: var(--gold);
+      text-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+    }
+
+    .category-card:hover .card-rune {
+      opacity: 0.55;
+      text-shadow: 0 0 6px var(--card-glow, rgba(212, 175, 55, 0.4));
+    }
+
+    /* Category icon */
+    .category-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      background: linear-gradient(145deg,
+        var(--card-accent, var(--primary)),
+        color-mix(in srgb, var(--card-accent, var(--primary)) 60%, black)
+      );
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .category-icon svg {
+      width: 26px;
+      height: 26px;
+      color: var(--gold);
+      filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.2));
+      transition: filter 0.4s ease;
+    }
+
+    /* Category text */
+    .category-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-light);
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .category-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.4;
+      position: relative;
+      z-index: 1;
+      opacity: 0.8;
+    }
+
+    /* Rune decorations on cards */
+    .card-rune {
+      position: absolute;
+      font-size: 0.65rem;
+      color: var(--gold);
+      opacity: 0.15;
+      transition: all 0.4s ease;
+      pointer-events: none;
+    }
+    .card-rune.tl { top: 8px; left: 10px; }
+    .card-rune.tr { top: 8px; right: 10px; }
+
+    /* D20 floating decorations */
+    .d20-deco {
+      position: absolute;
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 1;
+      color: var(--gold);
+    }
+
+    .d20-deco.d20-a {
+      top: 10%; left: 2%;
+      animation: d20Float 9s ease-in-out infinite;
+    }
+    .d20-deco.d20-b {
+      bottom: 8%; right: 3%;
+      animation: d20Float 11s ease-in-out infinite 3s;
+    }
+    .d20-deco.d20-c {
+      top: 50%; left: 48%;
+      animation: d20Float 13s ease-in-out infinite 6s;
+    }
+
+    @keyframes d20Float {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.03; }
+      50% { transform: translateY(-14px) rotate(15deg); opacity: 0.05; }
+    }
+
+    /* Arcane corner runes */
+    .box-rune {
+      position: absolute;
+      color: var(--gold);
+      opacity: 0.08;
+      font-size: 1.3rem;
+      pointer-events: none;
+      z-index: 1;
+      transition: all 0.6s ease;
+    }
+    .compendium-box:hover .box-rune {
+      opacity: 0.2;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+    }
+    .box-rune.r-tl { top: 16px; left: 20px; }
+    .box-rune.r-tr { top: 16px; right: 20px; }
+    .box-rune.r-bl { bottom: 16px; left: 20px; }
+    .box-rune.r-br { bottom: 16px; right: 20px; }
+
+    /* Per-category color accents */
+    .category-card[data-cat="classes"]       { --card-accent: #8b1e1e; --card-glow: rgba(139, 30, 30, 0.2); --card-glow-color: #c44; }
+    .category-card[data-cat="species"]       { --card-accent: #1a6b3a; --card-glow: rgba(26, 107, 58, 0.2); --card-glow-color: #3a5; }
+    .category-card[data-cat="spells"]        { --card-accent: #5b2d8e; --card-glow: rgba(91, 45, 142, 0.2); --card-glow-color: #a6f; }
+    .category-card[data-cat="magic-items"]   { --card-accent: #8b6914; --card-glow: rgba(180, 150, 40, 0.2); --card-glow-color: #da3; }
+    .category-card[data-cat="monsters"]      { --card-accent: #7a1a1a; --card-glow: rgba(160, 30, 30, 0.2); --card-glow-color: #d44; }
+    .category-card[data-cat="backgrounds"]   { --card-accent: #2a6b6b; --card-glow: rgba(42, 107, 107, 0.2); --card-glow-color: #5aa; }
+    .category-card[data-cat="feats"]         { --card-accent: #8b5a1e; --card-glow: rgba(139, 90, 30, 0.2); --card-glow-color: #c84; }
+    .category-card[data-cat="equipment"]     { --card-accent: #4a5568; --card-glow: rgba(74, 85, 104, 0.2); --card-glow-color: #89a; }
+    .category-card[data-cat="conditions"]    { --card-accent: #8b4513; --card-glow: rgba(139, 69, 19, 0.2); --card-glow-color: #d73; }
+    .category-card[data-cat="damage-types"]  { --card-accent: #a03030; --card-glow: rgba(160, 48, 48, 0.2); --card-glow-color: #e55; }
+    .category-card[data-cat="languages"]     { --card-accent: #3b3d8e; --card-glow: rgba(59, 61, 142, 0.2); --card-glow-color: #77b; }
+    .category-card[data-cat="skills"]        { --card-accent: #2d6b2d; --card-glow: rgba(45, 107, 45, 0.2); --card-glow-color: #5a5; }
+    .category-card[data-cat="alignments"]    { --card-accent: #3a5070; --card-glow: rgba(58, 80, 112, 0.2); --card-glow-color: #68a; }
+    .category-card[data-cat="spell-schools"] { --card-accent: #6b2d6b; --card-glow: rgba(107, 45, 107, 0.2); --card-glow-color: #a6a; }
+    .category-card[data-cat="weapon-types"]  { --card-accent: #7a5a2a; --card-glow: rgba(122, 90, 42, 0.2); --card-glow-color: #b84; }
+    .category-card[data-cat="armor-types"]   { --card-accent: #5a6570; --card-glow: rgba(90, 101, 112, 0.2); --card-glow-color: #8a9; }
+    .category-card[data-cat="tool-types"]    { --card-accent: #7a4a2a; --card-glow: rgba(122, 74, 42, 0.2); --card-glow-color: #b73; }
+    .category-card[data-cat="prof-types"]    { --card-accent: #2a3d5a; --card-glow: rgba(42, 61, 90, 0.2); --card-glow-color: #579; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .categories-grid { grid-template-columns: repeat(3, 1fr); }
+      .compendium-box { margin: 2rem 0 0; padding: 2rem 1.5rem; }
+    }
+
+    @media (max-width: 768px) {
+      .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .compendium-box { padding: 1.5rem 1rem; border-radius: 18px; }
+      .compendium-box-title { font-size: 1.2rem; letter-spacing: 2px; }
+      .category-card { padding: 1.2rem 0.75rem; }
+      .category-icon { width: 48px; height: 48px; }
+      .category-icon svg { width: 22px; height: 22px; }
+      .d20-deco { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .compendium-box { padding: 1.25rem 0.75rem; margin: 1.5rem 0 0; border-radius: 16px; }
+      .compendium-box-title { font-size: 1rem; }
+      .category-card { padding: 1rem 0.5rem; gap: 0.5rem; }
+      .category-name { font-size: 0.82rem; }
+      .category-desc { font-size: 0.68rem; }
+      .category-icon { width: 42px; height: 42px; border-radius: 10px; }
+      .category-icon svg { width: 20px; height: 20px; }
+      .box-rune { font-size: 1rem; }
+    }
+
       </style>
 </head>
 <body>
@@ -965,6 +1358,219 @@
           </div>
           <div class="search-results" id="searchResults"></div>
         </div>
+
+        <!-- Compendium Categories Box -->
+        <div class="compendium-box">
+          <!-- Corner runes -->
+          <span class="box-rune r-tl">&#5765;</span>
+          <span class="box-rune r-tr">&#5791;</span>
+          <span class="box-rune r-bl">&#5794;</span>
+          <span class="box-rune r-br">&#5765;</span>
+
+          <!-- Floating D20 decorations -->
+          <div class="d20-deco d20-a">
+            <svg width="55" height="55" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><text x="12" y="14" text-anchor="middle" font-size="6" fill="currentColor" stroke="none">20</text></svg>
+          </div>
+          <div class="d20-deco d20-b">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><text x="12" y="14" text-anchor="middle" font-size="6" fill="currentColor" stroke="none">20</text></svg>
+          </div>
+          <div class="d20-deco d20-c">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><text x="12" y="14" text-anchor="middle" font-size="6" fill="currentColor" stroke="none">20</text></svg>
+          </div>
+
+          <!-- Header -->
+          <div class="compendium-box-header">
+            <h2 class="compendium-box-title">Esplora il Compendio</h2>
+            <p class="compendium-box-subtitle">Scegli una categoria per consultare il sapere arcano</p>
+            <div class="rune-divider">&#5794; &#5765; &#5794;</div>
+          </div>
+
+          <!-- Categories Grid -->
+          <div class="categories-grid">
+
+            <a href="compendium-classes.html" class="category-card" data-cat="classes" data-rune="&#5765;">
+              <span class="card-rune tl">&#5794;</span>
+              <span class="card-rune tr">&#5791;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg>
+              </div>
+              <span class="category-name">Classi</span>
+              <span class="category-desc">Guerrieri, maghi, ladri e altro</span>
+            </a>
+
+            <a href="compendium-species.html" class="category-card" data-cat="species" data-rune="&#5794;">
+              <span class="card-rune tl">&#5765;</span>
+              <span class="card-rune tr">&#5794;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="category-name">Specie / Razze</span>
+              <span class="category-desc">Elfi, nani, umani e oltre</span>
+            </a>
+
+            <a href="compendium-spells.html" class="category-card" data-cat="spells" data-rune="&#5791;">
+              <span class="card-rune tl">&#5791;</span>
+              <span class="card-rune tr">&#5765;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <span class="category-name">Incantesimi</span>
+              <span class="category-desc">Arti arcane e magie divine</span>
+            </a>
+
+            <a href="compendium-spell-schools.html" class="category-card" data-cat="spell-schools" data-rune="&#5765;">
+              <span class="card-rune tl">&#5791;</span>
+              <span class="card-rune tr">&#5794;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/><circle cx="7" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="8" r="1" fill="currentColor" stroke="none"/></svg>
+              </div>
+              <span class="category-name">Scuole di Magia</span>
+              <span class="category-desc">Evocazione, illusione e altre</span>
+            </a>
+
+            <a href="compendium-magic-items.html" class="category-card" data-cat="magic-items" data-rune="&#5794;">
+              <span class="card-rune tl">&#5794;</span>
+              <span class="card-rune tr">&#5791;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              </div>
+              <span class="category-name">Oggetti Magici</span>
+              <span class="category-desc">Artefatti e tesori leggendari</span>
+            </a>
+
+            <a href="compendium-monsters.html" class="category-card" data-cat="monsters" data-rune="&#5791;">
+              <span class="card-rune tl">&#5765;</span>
+              <span class="card-rune tr">&#5794;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10c0-4.4 4.5-8 10-8s10 3.6 10 8c0 2.5-1.2 4.7-3 6.3"/><path d="M5 16.3C3.2 14.7 2 12.5 2 10"/><circle cx="8.5" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="15.5" cy="10" r="1.5" fill="currentColor" stroke="none"/><path d="M7 15l1.5 4"/><path d="M17 15l-1.5 4"/><path d="M9.5 15l.5 3"/><path d="M14.5 15l-.5 3"/><path d="M7 15h10"/><path d="M11 15v2.5"/><path d="M13 15v2.5"/></svg>
+              </div>
+              <span class="category-name">Mostri</span>
+              <span class="category-desc">Creature e bestie temibili</span>
+            </a>
+
+            <a href="compendium-equipment.html" class="category-card" data-cat="equipment" data-rune="&#5765;">
+              <span class="card-rune tl">&#5794;</span>
+              <span class="card-rune tr">&#5765;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12l2 7H4L6 2z"/><path d="M4 9v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M10 2v7"/><path d="M14 2v7"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+              </div>
+              <span class="category-name">Equipaggiamento</span>
+              <span class="category-desc">Zaini, attrezzi e provviste</span>
+            </a>
+
+            <a href="compendium-weapon-types.html" class="category-card" data-cat="weapon-types" data-rune="&#5791;">
+              <span class="card-rune tl">&#5765;</span>
+              <span class="card-rune tr">&#5791;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><line x1="18" y1="2" x2="22" y2="6"/><line x1="20" y1="2" x2="22" y2="4"/></svg>
+              </div>
+              <span class="category-name">Tipi di Arma</span>
+              <span class="category-desc">Spade, archi, asce e altro</span>
+            </a>
+
+            <a href="compendium-armor-types.html" class="category-card" data-cat="armor-types" data-rune="&#5794;">
+              <span class="card-rune tl">&#5791;</span>
+              <span class="card-rune tr">&#5765;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M10 10h4"/></svg>
+              </div>
+              <span class="category-name">Tipi di Armatura</span>
+              <span class="category-desc">Corazze, scudi e protezioni</span>
+            </a>
+
+            <a href="compendium-backgrounds.html" class="category-card" data-cat="backgrounds" data-rune="&#5765;">
+              <span class="card-rune tl">&#5794;</span>
+              <span class="card-rune tr">&#5791;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2c-2 0-3 1.5-3 3v14c0 1.5 1 3 3 3"/><path d="M16 2c2 0 3 1.5 3 3v14c0 1.5-1 3-3 3"/><path d="M8 2h8"/><path d="M8 22h8"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>
+              </div>
+              <span class="category-name">Background</span>
+              <span class="category-desc">Origini e storie passate</span>
+            </a>
+
+            <a href="compendium-feats.html" class="category-card" data-cat="feats" data-rune="&#5791;">
+              <span class="card-rune tl">&#5765;</span>
+              <span class="card-rune tr">&#5794;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M12 14l-3 8h6l-3-8"/><path d="M8.5 7.5l2 1.5-0.75 2.5L12 10l2.25 1.5L13.5 9l2-1.5h-2.5L12 5l-1 2.5H8.5z" fill="currentColor" stroke="none"/></svg>
+              </div>
+              <span class="category-name">Talenti</span>
+              <span class="category-desc">Abilita' speciali e vantaggi</span>
+            </a>
+
+            <a href="compendium-skills.html" class="category-card" data-cat="skills" data-rune="&#5794;">
+              <span class="card-rune tl">&#5791;</span>
+              <span class="card-rune tr">&#5765;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <span class="category-name">Abilita'</span>
+              <span class="category-desc">Competenze e prove</span>
+            </a>
+
+            <a href="compendium-conditions.html" class="category-card" data-cat="conditions" data-rune="&#5765;">
+              <span class="card-rune tl">&#5794;</span>
+              <span class="card-rune tr">&#5791;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <span class="category-name">Condizioni</span>
+              <span class="category-desc">Stordito, avvelenato e altro</span>
+            </a>
+
+            <a href="compendium-damage-types.html" class="category-card" data-cat="damage-types" data-rune="&#5791;">
+              <span class="card-rune tl">&#5765;</span>
+              <span class="card-rune tr">&#5794;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <span class="category-name">Tipi di Danno</span>
+              <span class="category-desc">Fuoco, gelo, fulmine e altri</span>
+            </a>
+
+            <a href="compendium-languages.html" class="category-card" data-cat="languages" data-rune="&#5794;">
+              <span class="card-rune tl">&#5791;</span>
+              <span class="card-rune tr">&#5765;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+              </div>
+              <span class="category-name">Lingue</span>
+              <span class="category-desc">Comune, elfico, nanico e altre</span>
+            </a>
+
+            <a href="compendium-alignments.html" class="category-card" data-cat="alignments" data-rune="&#5765;">
+              <span class="card-rune tl">&#5794;</span>
+              <span class="card-rune tr">&#5791;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+              </div>
+              <span class="category-name">Allineamenti</span>
+              <span class="category-desc">Legale, caotico, buono e altro</span>
+            </a>
+
+            <a href="compendium-tool-types.html" class="category-card" data-cat="tool-types" data-rune="&#5791;">
+              <span class="card-rune tl">&#5765;</span>
+              <span class="card-rune tr">&#5794;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <span class="category-name">Tipi di Strumento</span>
+              <span class="category-desc">Arnesi, kit e utensili</span>
+            </a>
+
+            <a href="compendium-proficiency-types.html" class="category-card" data-cat="prof-types" data-rune="&#5794;">
+              <span class="card-rune tl">&#5791;</span>
+              <span class="card-rune tr">&#5765;</span>
+              <div class="category-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <span class="category-name">Competenze</span>
+              <span class="category-desc">Tipi di competenza</span>
+            </a>
+
+          </div>
+        </div>
+
       </section>
     </main>
   </div>
