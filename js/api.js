@@ -12,6 +12,10 @@ const API_CONFIG = {
     BASE_URL: 'http://192.168.3.70:8089',
     ENDPOINT: '/users'
   },
+  COMPENDIUM: {
+    BASE_URL: 'http://192.168.3.70:8090',
+    CLASSES: '/api/compendium/classes'
+  },
   TIMEOUT: 10000 // 10 seconds
 };
 
@@ -118,6 +122,28 @@ async function registerUser(username, email, password) {
 
   } catch (error) {
     console.error('Registration error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CLASSES ======
+async function getClasses() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.CLASSES;
+  const token = getAuthToken();
+
+  try {
+    const result = await apiRequest(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    console.log('Classes fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get classes error:', error);
     throw error;
   }
 }
