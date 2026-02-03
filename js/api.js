@@ -8,6 +8,10 @@ const API_CONFIG = {
     BASE_URL: 'http://192.168.3.70:8081',
     ENDPOINT: '/auth/login-tokens'
   },
+  REFRESH: {
+    BASE_URL: 'http://192.168.3.70:8081',
+    ENDPOINT: '/auth/login-tokens/refreshed'
+  },
   REGISTER: {
     BASE_URL: 'http://192.168.3.70:8089',
     ENDPOINT: '/users'
@@ -77,6 +81,85 @@ async function apiRequest(url, options = {}) {
   }
 }
 
+// ====== TOKEN REFRESH ======
+let _refreshPromise = null;
+
+async function refreshAccessToken() {
+  const refreshToken = getRefreshToken();
+  const userId = getUserId();
+
+  if (!refreshToken || !userId) {
+    throw new Error('Missing refresh token or userId');
+  }
+
+  const url = API_CONFIG.REFRESH.BASE_URL + API_CONFIG.REFRESH.ENDPOINT;
+
+  const result = await apiRequest(url, {
+    method: 'POST',
+    headers: { 'accept': '*/*' },
+    body: JSON.stringify({
+      token: refreshToken,
+      userId: parseInt(userId, 10)
+    })
+  });
+
+  const data = result.data;
+  localStorage.setItem('authToken', data.accessToken);
+  if (data.refreshToken) {
+    localStorage.setItem('refreshToken', data.refreshToken);
+  }
+  if (data.accessTokenExpiresAt) {
+    localStorage.setItem('accessTokenExpiresAt', data.accessTokenExpiresAt.toString());
+  }
+  if (data.refreshTokenExpiresAt) {
+    localStorage.setItem('refreshTokenExpiresAt', data.refreshTokenExpiresAt.toString());
+  }
+
+  return data.accessToken;
+}
+
+async function authenticatedRequest(url, options = {}) {
+  const token = getAuthToken();
+  const reqOptions = {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': 'Bearer ' + token
+    }
+  };
+
+  try {
+    return await apiRequest(url, reqOptions);
+  } catch (error) {
+    if (error.status !== 401) {
+      throw error;
+    }
+
+    // 401 received — attempt token refresh (deduplicate concurrent refreshes)
+    try {
+      if (!_refreshPromise) {
+        _refreshPromise = refreshAccessToken().finally(() => {
+          _refreshPromise = null;
+        });
+      }
+      const newToken = await _refreshPromise;
+
+      // Retry original request with new token
+      reqOptions.headers['Authorization'] = 'Bearer ' + newToken;
+      return await apiRequest(url, reqOptions);
+    } catch (refreshError) {
+      console.error('Token refresh failed, showing re-login overlay:', refreshError);
+
+      // Show overlay instead of redirecting — user stays on the current page
+      const newToken = await showReloginOverlay();
+
+      // Retry original request with the token from re-login
+      reqOptions.headers['Authorization'] = 'Bearer ' + newToken;
+      return await apiRequest(url, reqOptions);
+    }
+  }
+}
+
 // ====== LOGIN USER ======
 async function loginUser(username, email, password) {
   const url = API_CONFIG.LOGIN.BASE_URL + API_CONFIG.LOGIN.ENDPOINT;
@@ -130,14 +213,10 @@ async function registerUser(username, email, password) {
 // ====== GET CLASSES ======
 async function getClasses() {
   const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.CLASSES;
-  const token = getAuthToken();
 
   try {
-    const result = await apiRequest(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
     });
 
     console.log('Classes fetched successfully:', result);
@@ -152,14 +231,10 @@ async function getClasses() {
 // ====== GET SPECIES ======
 async function getSpecies() {
   const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPECIES;
-  const token = getAuthToken();
 
   try {
-    const result = await apiRequest(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
     });
 
     console.log('Species fetched successfully:', result);

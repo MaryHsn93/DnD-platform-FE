@@ -192,6 +192,191 @@ function isAuthenticated() {
   return !!getAuthToken();
 }
 
+// ====== RE-LOGIN OVERLAY ======
+
+let _reloginPromise = null;
+
+function showReloginOverlay() {
+  // Deduplicate: if overlay is already showing, return the same promise
+  if (_reloginPromise) return _reloginPromise;
+
+  _reloginPromise = new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.id = 'relogin-overlay';
+    overlay.innerHTML = `
+      <style>
+        #relogin-overlay {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.75);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: reloginFadeIn 0.3s ease;
+        }
+        @keyframes reloginFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .relogin-card {
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
+          padding: 2rem;
+          border-radius: 20px;
+          width: 100%;
+          max-width: 360px;
+          margin: 1rem;
+          border: 1px solid rgba(212, 175, 55, 0.35);
+          box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            0 0 60px rgba(212, 175, 55, 0.2);
+          animation: reloginSlideUp 0.4s ease;
+          font-family: 'Inter', sans-serif;
+          color: #f5f5f5;
+        }
+        @keyframes reloginSlideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .relogin-card h3 {
+          font-family: 'Cinzel', serif;
+          margin-bottom: 0.5rem;
+          text-align: center;
+          color: #d4af37;
+          text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        .relogin-card .relogin-subtitle {
+          text-align: center;
+          color: #b5b5b5;
+          font-size: 0.85rem;
+          margin-bottom: 1.5rem;
+        }
+        .relogin-card input {
+          width: 100%;
+          padding: 0.8rem;
+          margin-bottom: 1rem;
+          border-radius: 12px;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          background: rgba(255, 255, 255, 0.04);
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+          color: #f5f5f5;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.95rem;
+          transition: all 0.3s ease;
+          box-sizing: border-box;
+        }
+        .relogin-card input:focus {
+          outline: none;
+          border-color: rgba(212, 175, 55, 0.8);
+          background: rgba(255, 255, 255, 0.08);
+          box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+        .relogin-card input::placeholder {
+          color: rgba(181, 181, 181, 0.7);
+        }
+        .relogin-card button {
+          width: 100%;
+          padding: 0.9rem;
+          background: linear-gradient(135deg,
+            rgba(139, 30, 30, 0.8),
+            rgba(90, 20, 20, 0.8));
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 0.95rem;
+          color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          font-family: 'Inter', sans-serif;
+        }
+        .relogin-card button:hover {
+          transform: translateY(-2px);
+          background: linear-gradient(135deg,
+            rgba(139, 30, 30, 1),
+            rgba(90, 20, 20, 1));
+          box-shadow:
+            0 5px 20px rgba(139, 30, 30, 0.6),
+            0 0 30px rgba(212, 175, 55, 0.3);
+          border-color: rgba(212, 175, 55, 0.5);
+        }
+        .relogin-card button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+        .relogin-error {
+          color: #ff6b6b;
+          text-align: center;
+          font-size: 0.85rem;
+          margin-bottom: 1rem;
+          min-height: 1.2em;
+        }
+      </style>
+      <div class="relogin-card">
+        <h3>Session Expired</h3>
+        <p class="relogin-subtitle">Your session has expired. Please log in again to continue.</p>
+        <div class="relogin-error" id="relogin-error"></div>
+        <form id="relogin-form">
+          <input type="text" id="relogin-username" placeholder="Username" required />
+          <input type="email" id="relogin-email" placeholder="Email" required />
+          <input type="password" id="relogin-password" placeholder="Password" required />
+          <button type="submit">Sign In</button>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const form = document.getElementById('relogin-form');
+    const errorEl = document.getElementById('relogin-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button');
+      const username = document.getElementById('relogin-username').value.trim();
+      const email = document.getElementById('relogin-email').value.trim();
+      const password = document.getElementById('relogin-password').value;
+
+      errorEl.textContent = '';
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
+      try {
+        const data = await loginUser(username, email, password);
+        saveAuthData(
+          data.accessToken,
+          data.refreshToken,
+          data.accessTokenExpiresAt,
+          data.refreshTokenExpiresAt,
+          username,
+          email,
+          data.userId
+        );
+
+        overlay.remove();
+        _reloginPromise = null;
+        resolve(data.accessToken);
+      } catch (err) {
+        errorEl.textContent = getErrorMessage(err);
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    });
+  });
+
+  return _reloginPromise;
+}
+
 // ====== LOADING STATE ======
 
 function setLoading(button, isLoading) {
