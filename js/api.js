@@ -19,7 +19,8 @@ const API_CONFIG = {
   COMPENDIUM: {
     BASE_URL: 'http://192.168.3.70:8090',
     CLASSES: '/api/compendium/classes',
-    SPECIES: '/api/compendium/species'
+    SPECIES: '/api/compendium/species',
+    SPELLS: '/api/compendium/spells'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -119,7 +120,23 @@ async function refreshAccessToken() {
 }
 
 async function authenticatedRequest(url, options = {}) {
-  const token = getAuthToken();
+  // Proactively refresh token if expired (avoids 401 + CORS issues)
+  let token = getAuthToken();
+  if (isAccessTokenExpired()) {
+    console.log('Access token expired, refreshing proactively...');
+    try {
+      if (!_refreshPromise) {
+        _refreshPromise = refreshAccessToken().finally(() => {
+          _refreshPromise = null;
+        });
+      }
+      token = await _refreshPromise;
+    } catch (refreshError) {
+      console.error('Proactive refresh failed, showing re-login overlay:', refreshError);
+      token = await showReloginOverlay();
+    }
+  }
+
   const reqOptions = {
     ...options,
     headers: {
@@ -131,11 +148,11 @@ async function authenticatedRequest(url, options = {}) {
   try {
     return await apiRequest(url, reqOptions);
   } catch (error) {
-    if (error.status !== 401) {
+    if (error.status !== 401 && !error.isNetworkError) {
       throw error;
     }
 
-    // 401 received — attempt token refresh (deduplicate concurrent refreshes)
+    // 401 or network error (CORS-blocked 401) — attempt token refresh
     try {
       if (!_refreshPromise) {
         _refreshPromise = refreshAccessToken().finally(() => {
@@ -242,6 +259,24 @@ async function getSpecies() {
 
   } catch (error) {
     console.error('Get species error:', error);
+    throw error;
+  }
+}
+
+// ====== GET SPELLS ======
+async function getSpells() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPELLS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Spells fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get spells error:', error);
     throw error;
   }
 }
