@@ -14,7 +14,8 @@ const API_CONFIG = {
   },
   COMPENDIUM: {
     BASE_URL: 'http://192.168.3.70:8090',
-    CLASSES: '/api/compendium/classes'
+    CLASSES: '/api/compendium/classes',
+    SPECIES: '/api/compendium/species'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -144,6 +145,28 @@ async function getClasses() {
 
   } catch (error) {
     console.error('Get classes error:', error);
+    throw error;
+  }
+}
+
+// ====== GET SPECIES ======
+async function getSpecies() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPECIES;
+  const token = getAuthToken();
+
+  try {
+    const result = await apiRequest(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    console.log('Species fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get species error:', error);
     throw error;
   }
 }
