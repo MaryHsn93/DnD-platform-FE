@@ -904,29 +904,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Glass reflection sweep */
-    .compendium-box::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -80%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(
-        105deg,
-        transparent 40%,
-        rgba(212, 175, 55, 0.04) 45%,
-        rgba(255, 255, 255, 0.03) 50%,
-        transparent 55%
-      );
-      pointer-events: none;
-      animation: glassSweep 10s ease-in-out infinite;
-      z-index: 0;
-    }
-
-    @keyframes glassSweep {
-      0%, 100% { left: -80%; }
-      50% { left: 120%; }
-    }
 
     /* Top edge soft glow */
     .compendium-box::after {
