@@ -38,6 +38,17 @@
     .page-title{font-family:'Cinzel',serif;font-size:3rem;color:var(--gold);text-shadow:0 0 40px rgba(212,175,55,0.5),0 0 80px rgba(212,175,55,0.3);margin-bottom:0.5rem;animation:textGlow 3s ease-in-out infinite}
     @keyframes textGlow{0%,100%{text-shadow:0 0 40px rgba(212,175,55,0.5),0 0 80px rgba(212,175,55,0.3)}50%{text-shadow:0 0 60px rgba(212,175,55,0.8),0 0 100px rgba(212,175,55,0.5),0 0 140px rgba(212,175,55,0.3)}}
     .page-subtitle{font-size:1.1rem;color:var(--text-muted);margin-bottom:2rem;font-style:italic}
+    .schools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;width:100%;max-width:1200px;margin:0 auto;padding:0 1rem}
+    .school-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(212,175,55,0.25);border-radius:16px;padding:1.5rem;transition:all 0.3s ease;cursor:default;animation:fadeIn 0.5s ease;text-align:left}
+    .school-card:hover{border-color:var(--gold);box-shadow:0 0 30px rgba(212,175,55,0.2);transform:translateY(-4px)}
+    .school-card-name{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold);text-shadow:0 0 10px rgba(212,175,55,0.3);margin-bottom:0.75rem}
+    .school-card-desc{font-size:0.9rem;color:var(--text-muted);line-height:1.5}
+    .schools-loading{text-align:center;padding:3rem;color:var(--text-muted);font-size:1.1rem}
+    .schools-loading .spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(212,175,55,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:1rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .schools-error{text-align:center;padding:3rem;color:#ef4444;font-size:1rem}
+    .schools-error-btn{margin-top:1rem;padding:0.7rem 1.5rem;background:linear-gradient(135deg,var(--primary),#5a1414);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.9rem;cursor:pointer;transition:all 0.3s ease}
+    .schools-error-btn:hover{background:linear-gradient(135deg,#a82525,var(--primary));box-shadow:0 0 20px rgba(212,175,55,0.4)}
     .magic-particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
     .magic-particles span{position:absolute;bottom:-10px;display:block;background:radial-gradient(circle,var(--gold),transparent);border-radius:50%;opacity:0.6;animation:rise linear infinite;box-shadow:0 0 10px var(--gold)}
     @keyframes rise{0%{bottom:-10px;opacity:0.6}50%{opacity:0.8}100%{bottom:110vh;opacity:0}}
@@ -77,6 +88,12 @@
       <section class="page-section">
         <h1 class="page-title">Scuole di Magia</h1>
         <p class="page-subtitle">Spell school reference data</p>
+        <div id="schoolsContainer">
+          <div class="schools-loading" id="schoolsLoading">
+            <div class="spinner"></div>
+            <p>Loading spell schools from the compendium...</p>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -95,6 +112,42 @@
     const username=localStorage.getItem('username')||'Adventurer';document.getElementById('userName').textContent=username;document.getElementById('userAvatar').textContent=username.charAt(0).toUpperCase();
     const sidebar=document.getElementById('sidebar'),sidebarOverlay=document.getElementById('sidebarOverlay');document.getElementById('mobileMenuBtn').addEventListener('click',()=>{sidebar.classList.toggle('active');sidebarOverlay.classList.toggle('active')});sidebarOverlay.addEventListener('click',()=>{sidebar.classList.remove('active');sidebarOverlay.classList.remove('active')});
     document.getElementById('logoutButton').addEventListener('click',handleLogout);
+
+    function escapeHtml(text){const div=document.createElement('div');div.textContent=String(text);return div.innerHTML;}
+
+    async function loadSpellSchools(){
+      const container=document.getElementById('schoolsContainer');
+      const loading=document.getElementById('schoolsLoading');
+      try{
+        const schools=await getSpellSchools();
+        loading.remove();
+        if(!schools||(Array.isArray(schools)&&schools.length===0)){
+          container.innerHTML='<p class="schools-loading">No spell schools found in the compendium.</p>';
+          return;
+        }
+        const list=Array.isArray(schools)?schools:[schools];
+        const grid=document.createElement('div');
+        grid.className='schools-grid';
+        list.forEach(school=>{
+          const card=document.createElement('div');
+          card.className='school-card';
+          const name=school.name||'Unknown';
+          let html='<div class="school-card-name">'+escapeHtml(name)+'</div>';
+          if(school.description){html+='<div class="school-card-desc">'+escapeHtml(school.description)+'</div>';}
+          card.innerHTML=html;
+          grid.appendChild(card);
+        });
+        container.appendChild(grid);
+      }catch(error){
+        console.error('Failed to load spell schools:',error);
+        console.error('Error status:',error.status,'Error data:',error.data);
+        loading.remove();
+        const statusInfo=error.status?' (HTTP '+error.status+')':'';
+        container.innerHTML='<div class="schools-error"><p>'+getErrorMessage(error)+statusInfo+'</p><button class="schools-error-btn" onclick="loadSpellSchools()">Retry</button></div>';
+      }
+    }
+    loadSpellSchools();
+
     const chatWindow=document.getElementById('chatWindow'),chatToggleBtn=document.getElementById('chatToggleBtn'),chatMessages=document.getElementById('chatMessages'),chatInput=document.getElementById('chatInput'),chatNotification=document.getElementById('chatNotification');let unreadCount=0,currentTab='tavern';const onlineUsers=[{name:'Thorin'},{name:'Elara'},{name:'Grimjaw'}],sampleMessages={tavern:[{sender:'Thorin',text:'Anyone up for a dungeon crawl tonight?',time:'10:30'},{sender:'Elara',text:'I need to finish my spell preparations first!',time:'10:32'},{sender:'Grimjaw',text:'GRIMJAW READY TO SMASH!',time:'10:33'}],party:[{sender:'Thorin',text:'Remember, we meet at the old ruins at midnight.',time:'09:15'},{sender:'Elara',text:"I'll bring the scrolls we discussed.",time:'09:20'}]};function initChat(){loadMessages(currentTab)}function loadMessages(t){chatMessages.innerHTML='';(sampleMessages[t]||[]).forEach(m=>addMessageToChat(m.sender,m.text,m.time,m.sender!==username))}function addMessageToChat(s,t,tm,r){const d=document.createElement('div');d.className='message '+(r?'received':'sent');d.innerHTML='<div class="message-header"><div class="message-avatar">'+s.charAt(0)+'</div><span class="message-sender">'+s+'</span><span class="message-time">'+tm+'</span></div><div class="message-content">'+t+'</div>';chatMessages.appendChild(d);chatMessages.scrollTop=chatMessages.scrollHeight}function toggleChat(){chatWindow.classList.toggle('active');chatToggleBtn.classList.toggle('active');if(chatWindow.classList.contains('active')){unreadCount=0;updateNotificationBadge()}}function sendMessage(){const m=chatInput.value.trim();if(!m)return;const n=new Date(),tm=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');addMessageToChat(username,m,tm,false);chatInput.value='';setTimeout(()=>{const u=onlineUsers[Math.floor(Math.random()*onlineUsers.length)],r=['Interesting!','I agree.','Roll for persuasion!','May the dice be in your favor!','That reminds me of our last quest...'];addMessageToChat(u.name,r[Math.floor(Math.random()*r.length)],tm,true);if(!chatWindow.classList.contains('active')){unreadCount++;updateNotificationBadge()}},1000+Math.random()*2000)}function handleChatKeypress(e){if(e.key==='Enter')sendMessage()}function updateNotificationBadge(){if(unreadCount>0){chatNotification.textContent=unreadCount>9?'9+':unreadCount;chatNotification.classList.add('show')}else{chatNotification.classList.remove('show')}}document.querySelectorAll('.chat-tab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.chat-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');currentTab=t.dataset.tab;loadMessages(currentTab)})});document.querySelectorAll('.online-user').forEach(u=>{u.addEventListener('click',()=>{chatInput.value='@'+u.dataset.user+' '+chatInput.value;chatInput.focus()})});initChat();
     function toggleDiceRoller(){document.getElementById('diceRollerPanel').classList.toggle('active');document.getElementById('diceToggleBtn').classList.toggle('active')}const resultValue=document.getElementById('resultValue'),resultDice=document.getElementById('resultDice'),resultDetails=document.getElementById('resultDetails'),rollAllBtn=document.getElementById('rollAllBtn'),clearBtn=document.getElementById('clearBtn'),diceButtons=document.querySelectorAll('.dice-btn');let isRolling=false;const diceCount={};diceButtons.forEach(b=>diceCount[b.dataset.dice]=0);function getTotalDiceCount(){return Object.values(diceCount).reduce((s,c)=>s+c,0)}function updateUI(){const t=getTotalDiceCount();rollAllBtn.disabled=t===0;rollAllBtn.textContent=t>0?'Lancia ('+t+')':'Lancia';diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d],e=b.querySelector('.dice-count');if(c>0){b.classList.add('selected');e.textContent=c}else{b.classList.remove('selected')}})}function addDice(b){if(isRolling)return;diceCount[b.dataset.dice]++;updateUI()}function removeDice(b){if(isRolling)return;const d=b.dataset.dice;if(diceCount[d]>0){diceCount[d]--;updateUI()}}function clearSelection(){if(isRolling)return;Object.keys(diceCount).forEach(d=>diceCount[d]=0);updateUI();resultValue.textContent='--';resultValue.className='result-value';resultDice.textContent='';resultDetails.textContent='';diceButtons.forEach(b=>{b.querySelector('.dice-value').textContent=parseInt(b.dataset.max)})}function rollSelectedDice(){if(isRolling||getTotalDiceCount()===0)return;isRolling=true;rollAllBtn.disabled=true;const a=[];diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d];if(c>0)a.push({btn:b,dice:d,max:parseInt(b.dataset.max),count:c})});a.forEach(d=>d.btn.classList.add('rolling'));let f=0;const i=setInterval(()=>{a.forEach(d=>{d.btn.querySelector('.dice-value').textContent=Math.floor(Math.random()*d.max)+1});resultValue.textContent='...';resultValue.className='result-value';f++;if(f>=15){clearInterval(i);const r=[];let t=0,cr=false,fu=false;a.forEach(d=>{const ro=[];for(let j=0;j<d.count;j++){const re=Math.floor(Math.random()*d.max)+1;ro.push(re);t+=re;if(d.dice==='d20'&&re===20)cr=true;if(d.dice==='d20'&&re===1)fu=true}d.btn.querySelector('.dice-value').textContent=ro[ro.length-1];r.push({dice:d.dice.toUpperCase(),count:d.count,rolls:ro})});resultValue.textContent=t;resultValue.classList.add('reveal');if(getTotalDiceCount()===1){resultDice.textContent=r[0].dice;resultDetails.textContent=''}else{resultDice.textContent='Totale';resultDetails.textContent=r.map(x=>{const p=x.count>1?x.count+x.dice:x.dice;return p+': '+x.rolls.join('+')}).join(' | ')}if(cr)resultValue.classList.add('critical');else if(fu)resultValue.classList.add('fumble');setTimeout(()=>{a.forEach(d=>d.btn.classList.remove('rolling'));isRolling=false;updateUI()},500)}},50)}diceButtons.forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();addDice(b)});b.addEventListener('contextmenu',e=>{e.preventDefault();removeDice(b)})});rollAllBtn.addEventListener('click',rollSelectedDice);clearBtn.addEventListener('click',clearSelection);let lastTap=0;diceButtons.forEach(b=>{b.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<300){e.preventDefault();removeDice(b)}lastTap=n},{passive:false})});
     const magicContainer=document.querySelector(".magic-particles");for(let i=0;i<60;i++){const p=document.createElement("span");p.style.width=p.style.height=Math.random()*3+2+"px";p.style.left=Math.random()*100+"%";p.style.animationDuration=Math.random()*10+8+"s";p.style.animationDelay=Math.random()*10+"s";magicContainer.appendChild(p)}

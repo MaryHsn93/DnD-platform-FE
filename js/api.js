@@ -20,7 +20,8 @@ const API_CONFIG = {
     BASE_URL: 'http://192.168.3.70:8090',
     CLASSES: '/api/compendium/classes',
     SPECIES: '/api/compendium/species',
-    SPELLS: '/api/compendium/spells'
+    SPELLS: '/api/compendium/spells',
+    SPELL_SCHOOLS: '/api/compendium/spell-schools'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -263,9 +264,10 @@ async function getSpecies() {
   }
 }
 
-// ====== GET SPELLS ======
-async function getSpells() {
-  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPELLS;
+// ====== GET SPELLS (PAGINATED) ======
+async function getSpells(page = 0, pageSize = 50) {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPELLS
+    + '?page=' + page + '&pageSize=' + pageSize;
 
   try {
     const result = await authenticatedRequest(url, {
@@ -277,6 +279,24 @@ async function getSpells() {
 
   } catch (error) {
     console.error('Get spells error:', error);
+    throw error;
+  }
+}
+
+// ====== GET SPELL SCHOOLS ======
+async function getSpellSchools() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPELL_SCHOOLS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Spell schools fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get spell schools error:', error);
     throw error;
   }
 }
