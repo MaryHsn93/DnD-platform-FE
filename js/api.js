@@ -21,7 +21,8 @@ const API_CONFIG = {
     CLASSES: '/api/compendium/classes',
     SPECIES: '/api/compendium/species',
     SPELLS: '/api/compendium/spells',
-    SPELL_SCHOOLS: '/api/compendium/spell-schools'
+    SPELL_SCHOOLS: '/api/compendium/spell-schools',
+    MAGIC_ITEMS: '/api/compendium/magic-items'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -297,6 +298,25 @@ async function getSpellSchools() {
 
   } catch (error) {
     console.error('Get spell schools error:', error);
+    throw error;
+  }
+}
+
+// ====== GET MAGIC ITEMS (PAGINATED) ======
+async function getMagicItems(page = 0, pageSize = 50) {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.MAGIC_ITEMS
+    + '?page=' + page + '&pageSize=' + pageSize;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Magic items fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get magic items error:', error);
     throw error;
   }
 }
