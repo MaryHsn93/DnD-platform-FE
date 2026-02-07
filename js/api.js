@@ -265,10 +265,14 @@ async function getSpecies() {
   }
 }
 
-// ====== GET SPELLS (PAGINATED) ======
-async function getSpells(page = 0, pageSize = 50) {
-  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPELLS
+// ====== GET SPELLS (PAGINATED + FILTERS) ======
+async function getSpells(page = 0, pageSize = 50, filters = {}) {
+  let url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPELLS
     + '?page=' + page + '&pageSize=' + pageSize;
+  if (filters.level != null) url += '&level=' + encodeURIComponent(filters.level);
+  if (filters.school) url += '&school=' + encodeURIComponent(filters.school);
+  if (filters.ritual != null) url += '&ritual=' + filters.ritual;
+  if (filters.concentration != null) url += '&concentration=' + filters.concentration;
 
   try {
     const result = await authenticatedRequest(url, {

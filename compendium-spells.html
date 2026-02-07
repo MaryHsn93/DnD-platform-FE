@@ -41,7 +41,7 @@
     .spells-grid{display:flex;flex-direction:column;gap:0.75rem;width:100%;max-width:500px;margin:0 auto;padding:0 1rem}
     .spell-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(212,175,55,0.25);border-radius:12px;padding:0.8rem 1rem;transition:all 0.3s ease;cursor:pointer;animation:fadeIn 0.5s ease;text-align:left}
     .spell-card:hover{border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,0.2);transform:translateY(-2px)}
-    .spell-card.expanded{padding:1.5rem;cursor:default}
+    .spell-card.expanded{padding:1.5rem;cursor:pointer}
     .spell-card-header{display:flex;justify-content:space-between;align-items:center}
     .spell-card-name{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold);text-shadow:0 0 10px rgba(212,175,55,0.3)}
     .spell-card.expanded .spell-card-name{font-size:1.4rem}
@@ -53,10 +53,7 @@
     .spell-card-desc{font-size:0.9rem;color:var(--text-muted);line-height:1.6;margin-bottom:0.75rem}
     .spell-card-details{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem}
     .spell-detail-tag{background:rgba(139,30,30,0.4);border:1px solid rgba(212,175,55,0.3);border-radius:8px;padding:0.3rem 0.7rem;font-size:0.75rem;color:var(--gold)}
-    .spell-card-close{display:none;position:absolute;top:0.75rem;right:0.75rem;width:28px;height:28px;border-radius:50%;background:rgba(139,30,30,0.5);border:1px solid rgba(212,175,55,0.3);color:var(--gold);cursor:pointer;font-size:1.2rem;line-height:1;transition:all 0.3s ease}
-    .spell-card-close:hover{background:rgba(139,30,30,0.8);border-color:var(--gold)}
     .spell-card.expanded{position:relative}
-    .spell-card.expanded .spell-card-close{display:flex;align-items:center;justify-content:center}
     .spell-level-separator{display:flex;align-items:center;gap:1rem;margin:1.5rem 0 1rem 0;padding:0 0.5rem}
     .spell-level-separator::before,.spell-level-separator::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.5),transparent)}
     .spell-level-separator span{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold);text-shadow:0 0 15px rgba(212,175,55,0.4);white-space:nowrap}
@@ -354,7 +351,7 @@
         const name=spell.name||'Unknown';
         const levelLabel=levelNum===0?'Cantrip':(levelNum===999?'':'Livello '+levelNum);
         const school=spell.school||'';
-        let html='<button class="spell-card-close" onclick="event.stopPropagation();this.parentElement.classList.remove(\'expanded\')">&times;</button>';
+        let html='';
         html+='<div class="spell-card-header"><div class="spell-card-name">'+escapeHtml(name)+'</div>'+(levelLabel?'<span class="spell-card-level">'+escapeHtml(levelLabel)+'</span>':'')+'</div>';
         html+='<div class="spell-card-body">';
         if(school){html+='<div class="spell-card-school">'+escapeHtml(school)+'</div>';}
@@ -376,7 +373,9 @@
         html+='</div>';
         card.innerHTML=html;
         card.addEventListener('click',function(){
-          if(!this.classList.contains('expanded')){
+          if(this.classList.contains('expanded')){
+            this.classList.remove('expanded');
+          }else{
             document.querySelectorAll('.spell-card.expanded').forEach(c=>c.classList.remove('expanded'));
             this.classList.add('expanded');
             this.scrollIntoView({behavior:'smooth',block:'center'});
