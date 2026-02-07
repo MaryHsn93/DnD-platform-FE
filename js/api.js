@@ -269,8 +269,12 @@ async function getSpecies() {
 async function getSpells(page = 0, pageSize = 50, filters = {}) {
   let url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.SPELLS
     + '?page=' + page + '&pageSize=' + pageSize;
-  if (filters.level != null) url += '&level=' + encodeURIComponent(filters.level);
-  if (filters.school) url += '&school=' + encodeURIComponent(filters.school);
+  if (filters.levels && filters.levels.length > 0) {
+    filters.levels.forEach(function(l) { url += '&level=' + encodeURIComponent(l); });
+  }
+  if (filters.schools && filters.schools.length > 0) {
+    filters.schools.forEach(function(s) { url += '&school=' + encodeURIComponent(s); });
+  }
   if (filters.ritual != null) url += '&ritual=' + filters.ritual;
   if (filters.concentration != null) url += '&concentration=' + filters.concentration;
 

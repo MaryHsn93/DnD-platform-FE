@@ -236,13 +236,18 @@
       else{badge.style.display='none'}
     }
 
-    function populateSchoolChips(){
+    let allSchools=[];
+    async function populateSchoolChips(){
       const container=document.getElementById('schoolChips');
-      const schools=new Set();
-      allSpells.forEach(s=>{if(s.school)schools.add(s.school)});
-      const sorted=[...schools].sort();
+      if(allSchools.length===0){
+        try{
+          const data=await getSpellSchools();
+          const raw=Array.isArray(data)?data:(data.content||[]);
+          allSchools=raw.map(s=>s.name||s).sort();
+        }catch(e){console.error('Failed to load spell schools:',e);return;}
+      }
       container.innerHTML='';
-      sorted.forEach(school=>{
+      allSchools.forEach(school=>{
         const chip=document.createElement('span');
         chip.className='filter-chip';
         chip.dataset.school=school;
@@ -293,36 +298,47 @@
       applyFilters();
     }
 
+    let filterDebounceTimer=null;
     function applyFilters(){
-      const query=(document.getElementById('spellSearch').value||'').toLowerCase().trim();
-      const hasFilters=getActiveFilterCount()>0;
-      const filtered=allSpells.filter(spell=>{
+      clearTimeout(filterDebounceTimer);
+      filterDebounceTimer=setTimeout(()=>{ doApplyFilters(); },300);
+    }
+
+    async function doApplyFilters(){
+      const filters={};
+      if(activeFilters.levels.size>0)filters.levels=[...activeFilters.levels];
+      if(activeFilters.schools.size>0)filters.schools=[...activeFilters.schools];
+      if(activeFilters.ritual===true)filters.ritual=true;
+      if(activeFilters.concentration===true)filters.concentration=true;
+      const container=document.getElementById('spellsContainer');
+      container.innerHTML='<div class="spells-loading"><div class="spinner"></div><p>Loading spells...</p></div>';
+      try{
+        const data=await getSpells(0,PAGE_SIZE,filters);
+        const spellsRaw=data.content||data;
+        allSpells=[...spellsRaw].sort((a,b)=>{
+          const lvlA=a.level!=null?parseInt(a.level):999;
+          const lvlB=b.level!=null?parseInt(b.level):999;
+          if(lvlA!==lvlB)return lvlA-lvlB;
+          return (a.name||'').localeCompare(b.name||'');
+        });
+        const query=(document.getElementById('spellSearch').value||'').toLowerCase().trim();
+        let toRender=allSpells;
         if(query){
-          const name=(spell.name||'').toLowerCase();
-          const level=spell.level!=null?spell.level:'';
-          const levelNum=parseInt(level);
-          let textMatch=false;
-          if(name.includes(query))textMatch=true;
-          if(query==='cantrip'&&levelNum===0)textMatch=true;
-          if(query.includes('livello')){
-            const match=query.match(/livello\s*(\d+)/);
-            if(match&&levelNum===parseInt(match[1]))textMatch=true;
-          }
-          if(/^\d+$/.test(query)&&levelNum===parseInt(query))textMatch=true;
-          if(!textMatch)return false;
+          toRender=allSpells.filter(spell=>{
+            const name=(spell.name||'').toLowerCase();
+            if(name.includes(query))return true;
+            const levelNum=spell.level!=null?parseInt(spell.level):999;
+            if(query==='cantrip'&&levelNum===0)return true;
+            if(query.includes('livello')){const m=query.match(/livello\s*(\d+)/);if(m&&levelNum===parseInt(m[1]))return true;}
+            if(/^\d+$/.test(query)&&levelNum===parseInt(query))return true;
+            return false;
+          });
         }
-        if(activeFilters.levels.size>0){
-          const lvl=spell.level!=null?parseInt(spell.level):999;
-          if(!activeFilters.levels.has(lvl))return false;
-        }
-        if(activeFilters.schools.size>0){
-          if(!activeFilters.schools.has(spell.school))return false;
-        }
-        if(activeFilters.ritual===true&&!spell.ritual)return false;
-        if(activeFilters.concentration===true&&!spell.concentration)return false;
-        return true;
-      });
-      renderSpells(filtered);
+        renderSpells(toRender);
+      }catch(error){
+        console.error('Failed to load filtered spells:',error);
+        container.innerHTML='<div class="spells-error"><p>'+getErrorMessage(error)+'</p><button class="spells-error-btn" onclick="doApplyFilters()">Retry</button></div>';
+      }
     }
 
     function renderSpells(spells){
@@ -390,64 +406,11 @@
       applyFilters();
     });
 
-    async function loadSpells(page){
-      if(page==null)page=currentPage;
-      const container=document.getElementById('spellsContainer');
-      container.innerHTML='<div class="spells-loading" id="spellsLoading"><div class="spinner"></div><p>Loading spells from the compendium...</p></div>';
-      try{
-        const data=await getSpells(page,PAGE_SIZE);
-        const spellsRaw=data.content||data;
-        allSpells=[...spellsRaw].sort((a,b)=>{
-          const lvlA=a.level!=null?parseInt(a.level):999;
-          const lvlB=b.level!=null?parseInt(b.level):999;
-          if(lvlA!==lvlB)return lvlA-lvlB;
-          return (a.name||'').localeCompare(b.name||'');
-        });
-        const totalPages=data.totalPages||1;
-        const totalElements=data.totalElements!=null?data.totalElements:null;
-        currentPage=page;
-        document.getElementById('spellSearch').value='';
-        populateSchoolChips();
-        applyFilters();
-        if(totalPages>1){
-          const pag=document.createElement('div');
-          pag.className='pagination';
-          const prevBtn=document.createElement('button');
-          prevBtn.className='pagination-btn';
-          prevBtn.textContent='\u2190 Precedente';
-          prevBtn.disabled=currentPage<=0;
-          prevBtn.onclick=function(){loadSpells(currentPage-1);window.scrollTo({top:0,behavior:'smooth'})};
-          pag.appendChild(prevBtn);
-          for(let i=0;i<totalPages;i++){
-            const btn=document.createElement('button');
-            btn.className='pagination-btn'+(i===currentPage?' active':'');
-            btn.textContent=i+1;
-            btn.onclick=(function(p){return function(){loadSpells(p);window.scrollTo({top:0,behavior:'smooth'})}})(i);
-            pag.appendChild(btn);
-          }
-          const nextBtn=document.createElement('button');
-          nextBtn.className='pagination-btn';
-          nextBtn.textContent='Successiva \u2192';
-          nextBtn.disabled=currentPage>=totalPages-1;
-          nextBtn.onclick=function(){loadSpells(currentPage+1);window.scrollTo({top:0,behavior:'smooth'})};
-          pag.appendChild(nextBtn);
-          if(totalElements!=null){
-            const info=document.createElement('div');
-            info.className='pagination-info';
-            info.textContent=totalElements+' incantesimi totali';
-            pag.appendChild(info);
-          }
-          document.getElementById('spellsContainer').appendChild(pag);
-        }
-      }catch(error){
-        console.error('Failed to load spells:',error);
-        console.error('Error status:',error.status,'Error data:',error.data);
-        container.innerHTML='';
-        const statusInfo=error.status?' (HTTP '+error.status+')':'';
-        container.innerHTML='<div class="spells-error"><p>'+getErrorMessage(error)+statusInfo+'</p><button class="spells-error-btn" onclick="loadSpells()">Retry</button></div>';
-      }
+    async function loadSpells(){
+      await populateSchoolChips();
+      doApplyFilters();
     }
-    loadSpells(0);
+    loadSpells();
     const chatWindow=document.getElementById('chatWindow'),chatToggleBtn=document.getElementById('chatToggleBtn'),chatMessages=document.getElementById('chatMessages'),chatInput=document.getElementById('chatInput'),chatNotification=document.getElementById('chatNotification');let unreadCount=0,currentTab='tavern';const onlineUsers=[{name:'Thorin'},{name:'Elara'},{name:'Grimjaw'}],sampleMessages={tavern:[{sender:'Thorin',text:'Anyone up for a dungeon crawl tonight?',time:'10:30'},{sender:'Elara',text:'I need to finish my spell preparations first!',time:'10:32'},{sender:'Grimjaw',text:'GRIMJAW READY TO SMASH!',time:'10:33'}],party:[{sender:'Thorin',text:'Remember, we meet at the old ruins at midnight.',time:'09:15'},{sender:'Elara',text:"I'll bring the scrolls we discussed.",time:'09:20'}]};function initChat(){loadMessages(currentTab)}function loadMessages(t){chatMessages.innerHTML='';(sampleMessages[t]||[]).forEach(m=>addMessageToChat(m.sender,m.text,m.time,m.sender!==username))}function addMessageToChat(s,t,tm,r){const d=document.createElement('div');d.className='message '+(r?'received':'sent');d.innerHTML='<div class="message-header"><div class="message-avatar">'+s.charAt(0)+'</div><span class="message-sender">'+s+'</span><span class="message-time">'+tm+'</span></div><div class="message-content">'+t+'</div>';chatMessages.appendChild(d);chatMessages.scrollTop=chatMessages.scrollHeight}function toggleChat(){chatWindow.classList.toggle('active');chatToggleBtn.classList.toggle('active');if(chatWindow.classList.contains('active')){unreadCount=0;updateNotificationBadge()}}function sendMessage(){const m=chatInput.value.trim();if(!m)return;const n=new Date(),tm=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');addMessageToChat(username,m,tm,false);chatInput.value='';setTimeout(()=>{const u=onlineUsers[Math.floor(Math.random()*onlineUsers.length)],r=['Interesting!','I agree.','Roll for persuasion!','May the dice be in your favor!','That reminds me of our last quest...'];addMessageToChat(u.name,r[Math.floor(Math.random()*r.length)],tm,true);if(!chatWindow.classList.contains('active')){unreadCount++;updateNotificationBadge()}},1000+Math.random()*2000)}function handleChatKeypress(e){if(e.key==='Enter')sendMessage()}function updateNotificationBadge(){if(unreadCount>0){chatNotification.textContent=unreadCount>9?'9+':unreadCount;chatNotification.classList.add('show')}else{chatNotification.classList.remove('show')}}document.querySelectorAll('.chat-tab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.chat-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');currentTab=t.dataset.tab;loadMessages(currentTab)})});document.querySelectorAll('.online-user').forEach(u=>{u.addEventListener('click',()=>{chatInput.value='@'+u.dataset.user+' '+chatInput.value;chatInput.focus()})});initChat();
     function toggleDiceRoller(){document.getElementById('diceRollerPanel').classList.toggle('active');document.getElementById('diceToggleBtn').classList.toggle('active')}const resultValue=document.getElementById('resultValue'),resultDice=document.getElementById('resultDice'),resultDetails=document.getElementById('resultDetails'),rollAllBtn=document.getElementById('rollAllBtn'),clearBtn=document.getElementById('clearBtn'),diceButtons=document.querySelectorAll('.dice-btn');let isRolling=false;const diceCount={};diceButtons.forEach(b=>diceCount[b.dataset.dice]=0);function getTotalDiceCount(){return Object.values(diceCount).reduce((s,c)=>s+c,0)}function updateUI(){const t=getTotalDiceCount();rollAllBtn.disabled=t===0;rollAllBtn.textContent=t>0?'Lancia ('+t+')':'Lancia';diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d],e=b.querySelector('.dice-count');if(c>0){b.classList.add('selected');e.textContent=c}else{b.classList.remove('selected')}})}function addDice(b){if(isRolling)return;diceCount[b.dataset.dice]++;updateUI()}function removeDice(b){if(isRolling)return;const d=b.dataset.dice;if(diceCount[d]>0){diceCount[d]--;updateUI()}}function clearSelection(){if(isRolling)return;Object.keys(diceCount).forEach(d=>diceCount[d]=0);updateUI();resultValue.textContent='--';resultValue.className='result-value';resultDice.textContent='';resultDetails.textContent='';diceButtons.forEach(b=>{b.querySelector('.dice-value').textContent=parseInt(b.dataset.max)})}function rollSelectedDice(){if(isRolling||getTotalDiceCount()===0)return;isRolling=true;rollAllBtn.disabled=true;const a=[];diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d];if(c>0)a.push({btn:b,dice:d,max:parseInt(b.dataset.max),count:c})});a.forEach(d=>d.btn.classList.add('rolling'));let f=0;const i=setInterval(()=>{a.forEach(d=>{d.btn.querySelector('.dice-value').textContent=Math.floor(Math.random()*d.max)+1});resultValue.textContent='...';resultValue.className='result-value';f++;if(f>=15){clearInterval(i);const r=[];let t=0,cr=false,fu=false;a.forEach(d=>{const ro=[];for(let j=0;j<d.count;j++){const re=Math.floor(Math.random()*d.max)+1;ro.push(re);t+=re;if(d.dice==='d20'&&re===20)cr=true;if(d.dice==='d20'&&re===1)fu=true}d.btn.querySelector('.dice-value').textContent=ro[ro.length-1];r.push({dice:d.dice.toUpperCase(),count:d.count,rolls:ro})});resultValue.textContent=t;resultValue.classList.add('reveal');if(getTotalDiceCount()===1){resultDice.textContent=r[0].dice;resultDetails.textContent=''}else{resultDice.textContent='Totale';resultDetails.textContent=r.map(x=>{const p=x.count>1?x.count+x.dice:x.dice;return p+': '+x.rolls.join('+')}).join(' | ')}if(cr)resultValue.classList.add('critical');else if(fu)resultValue.classList.add('fumble');setTimeout(()=>{a.forEach(d=>d.btn.classList.remove('rolling'));isRolling=false;updateUI()},500)}},50)}diceButtons.forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();addDice(b)});b.addEventListener('contextmenu',e=>{e.preventDefault();removeDice(b)})});rollAllBtn.addEventListener('click',rollSelectedDice);clearBtn.addEventListener('click',clearSelection);let lastTap=0;diceButtons.forEach(b=>{b.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<300){e.preventDefault();removeDice(b)}lastTap=n},{passive:false})});
     const magicContainer=document.querySelector(".magic-particles");for(let i=0;i<60;i++){const p=document.createElement("span");p.style.width=p.style.height=Math.random()*3+2+"px";p.style.left=Math.random()*100+"%";p.style.animationDuration=Math.random()*10+8+"s";p.style.animationDelay=Math.random()*10+"s";magicContainer.appendChild(p)}
