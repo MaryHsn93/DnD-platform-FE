@@ -301,10 +301,11 @@
     let filterDebounceTimer=null;
     function applyFilters(){
       clearTimeout(filterDebounceTimer);
-      filterDebounceTimer=setTimeout(()=>{ doApplyFilters(); },300);
+      filterDebounceTimer=setTimeout(()=>{ currentPage=0; doApplyFilters(); },300);
     }
 
-    async function doApplyFilters(){
+    async function doApplyFilters(page){
+      if(page==null)page=currentPage;
       const filters={};
       if(activeFilters.levels.size>0)filters.levels=[...activeFilters.levels];
       if(activeFilters.schools.size>0)filters.schools=[...activeFilters.schools];
@@ -313,8 +314,11 @@
       const container=document.getElementById('spellsContainer');
       container.innerHTML='<div class="spells-loading"><div class="spinner"></div><p>Loading spells...</p></div>';
       try{
-        const data=await getSpells(0,PAGE_SIZE,filters);
+        const data=await getSpells(page,PAGE_SIZE,filters);
         const spellsRaw=data.content||data;
+        const totalPages=data.totalPages||1;
+        const totalElements=data.totalElements!=null?data.totalElements:null;
+        currentPage=page;
         allSpells=[...spellsRaw].sort((a,b)=>{
           const lvlA=a.level!=null?parseInt(a.level):999;
           const lvlB=b.level!=null?parseInt(b.level):999;
@@ -335,6 +339,36 @@
           });
         }
         renderSpells(toRender);
+        if(totalPages>1){
+          const pag=document.createElement('div');
+          pag.className='pagination';
+          const prevBtn=document.createElement('button');
+          prevBtn.className='pagination-btn';
+          prevBtn.textContent='\u2190 Precedente';
+          prevBtn.disabled=currentPage<=0;
+          prevBtn.onclick=function(){doApplyFilters(currentPage-1);window.scrollTo({top:0,behavior:'smooth'});};
+          pag.appendChild(prevBtn);
+          for(let i=0;i<totalPages;i++){
+            const btn=document.createElement('button');
+            btn.className='pagination-btn'+(i===currentPage?' active':'');
+            btn.textContent=i+1;
+            btn.onclick=(function(p){return function(){doApplyFilters(p);window.scrollTo({top:0,behavior:'smooth'});};})(i);
+            pag.appendChild(btn);
+          }
+          const nextBtn=document.createElement('button');
+          nextBtn.className='pagination-btn';
+          nextBtn.textContent='Successiva \u2192';
+          nextBtn.disabled=currentPage>=totalPages-1;
+          nextBtn.onclick=function(){doApplyFilters(currentPage+1);window.scrollTo({top:0,behavior:'smooth'});};
+          pag.appendChild(nextBtn);
+          if(totalElements!=null){
+            const info=document.createElement('div');
+            info.className='pagination-info';
+            info.textContent=totalElements+' incantesimi totali';
+            pag.appendChild(info);
+          }
+          container.appendChild(pag);
+        }
       }catch(error){
         console.error('Failed to load filtered spells:',error);
         container.innerHTML='<div class="spells-error"><p>'+getErrorMessage(error)+'</p><button class="spells-error-btn" onclick="doApplyFilters()">Retry</button></div>';
