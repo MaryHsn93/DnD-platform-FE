@@ -202,23 +202,14 @@
       container.appendChild(grid);
     }
 
-    function filterItems(query){
-      if(!query.trim()){
-        renderItems(allItems);
-        return;
-      }
-      const q=query.toLowerCase().trim();
-      const filtered=allItems.filter(item=>{
-        const name=(item.name||'').toLowerCase();
-        const type=(item.type||item.monsterType||'').toLowerCase();
-        const size=(item.size||'').toLowerCase();
-        return name.includes(q)||type.includes(q)||size.includes(q);
-      });
-      renderItems(filtered);
+    let filterDebounceTimer=null;
+    function applyFilters(){
+      clearTimeout(filterDebounceTimer);
+      filterDebounceTimer=setTimeout(()=>{ currentPage=0; loadMonsters(); },300);
     }
 
     document.getElementById('itemSearch').addEventListener('input',function(){
-      filterItems(this.value);
+      applyFilters();
     });
 
     async function loadMonsters(page){
@@ -231,41 +222,48 @@
         allItems=Array.isArray(itemsRaw)?[...itemsRaw].sort((a,b)=>{
           return (a.name||'').localeCompare(b.name||'');
         }):[];
-        const totalPages=data.totalPages||1;
-        const totalElements=data.totalElements!=null?data.totalElements:null;
+        const totalPages=data.totalPages||data.total_pages||1;
+        const totalElements=data.totalElements!=null?data.totalElements:(data.total_elements!=null?data.total_elements:null);
         currentPage=page;
-        document.getElementById('itemSearch').value='';
-        renderItems(allItems);
-        if(totalPages>1){
-          const pag=document.createElement('div');
-          pag.className='pagination';
-          const prevBtn=document.createElement('button');
-          prevBtn.className='pagination-btn';
-          prevBtn.textContent='\u2190 Precedente';
-          prevBtn.disabled=currentPage<=0;
-          prevBtn.onclick=function(){loadMonsters(currentPage-1);window.scrollTo({top:0,behavior:'smooth'})};
-          pag.appendChild(prevBtn);
-          for(let i=0;i<totalPages;i++){
-            const btn=document.createElement('button');
-            btn.className='pagination-btn'+(i===currentPage?' active':'');
-            btn.textContent=i+1;
-            btn.onclick=(function(p){return function(){loadMonsters(p);window.scrollTo({top:0,behavior:'smooth'})}})(i);
-            pag.appendChild(btn);
-          }
-          const nextBtn=document.createElement('button');
-          nextBtn.className='pagination-btn';
-          nextBtn.textContent='Successiva \u2192';
-          nextBtn.disabled=currentPage>=totalPages-1;
-          nextBtn.onclick=function(){loadMonsters(currentPage+1);window.scrollTo({top:0,behavior:'smooth'})};
-          pag.appendChild(nextBtn);
-          if(totalElements!=null){
-            const info=document.createElement('div');
-            info.className='pagination-info';
-            info.textContent=totalElements+' mostri totali';
-            pag.appendChild(info);
-          }
-          document.getElementById('itemsContainer').appendChild(pag);
+        const query=(document.getElementById('itemSearch').value||'').toLowerCase().trim();
+        let toRender=allItems;
+        if(query){
+          toRender=allItems.filter(item=>{
+            const name=(item.name||'').toLowerCase();
+            const type=(item.type||item.monsterType||'').toLowerCase();
+            const size=(item.size||'').toLowerCase();
+            return name.includes(query)||type.includes(query)||size.includes(query);
+          });
         }
+        renderItems(toRender);
+        const pag=document.createElement('div');
+        pag.className='pagination';
+        const prevBtn=document.createElement('button');
+        prevBtn.className='pagination-btn';
+        prevBtn.textContent='\u2190 Precedente';
+        prevBtn.disabled=currentPage<=0;
+        prevBtn.onclick=function(){loadMonsters(currentPage-1);window.scrollTo({top:0,behavior:'smooth'})};
+        pag.appendChild(prevBtn);
+        for(let i=0;i<totalPages;i++){
+          const btn=document.createElement('button');
+          btn.className='pagination-btn'+(i===currentPage?' active':'');
+          btn.textContent=i+1;
+          btn.onclick=(function(p){return function(){loadMonsters(p);window.scrollTo({top:0,behavior:'smooth'})}})(i);
+          pag.appendChild(btn);
+        }
+        const nextBtn=document.createElement('button');
+        nextBtn.className='pagination-btn';
+        nextBtn.textContent='Successiva \u2192';
+        nextBtn.disabled=currentPage>=totalPages-1;
+        nextBtn.onclick=function(){loadMonsters(currentPage+1);window.scrollTo({top:0,behavior:'smooth'})};
+        pag.appendChild(nextBtn);
+        if(totalElements!=null){
+          const info=document.createElement('div');
+          info.className='pagination-info';
+          info.textContent=totalElements+' mostri totali';
+          pag.appendChild(info);
+        }
+        container.appendChild(pag);
       }catch(error){
         console.error('Failed to load monsters:',error);
         console.error('Error status:',error.status,'Error data:',error.data);
