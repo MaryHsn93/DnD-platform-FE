@@ -60,14 +60,32 @@
     .spell-level-separator{display:flex;align-items:center;gap:1rem;margin:1.5rem 0 1rem 0;padding:0 0.5rem}
     .spell-level-separator::before,.spell-level-separator::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.5),transparent)}
     .spell-level-separator span{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold);text-shadow:0 0 15px rgba(212,175,55,0.4);white-space:nowrap}
-    .spell-search-container{width:100%;max-width:500px;margin:0 auto 2rem auto;padding:0 1rem}
-    .spell-search-bar{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.3);border-radius:12px;transition:all 0.3s ease;overflow:hidden}
+    .spell-search-container{width:100%;max-width:500px;margin:0 auto 1rem auto;padding:0 1rem}
+    .spell-search-bar{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.3);border-radius:12px;transition:all 0.3s ease;overflow:visible;position:relative}
     .spell-search-bar:focus-within{border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,0.25);background:rgba(255,255,255,0.08)}
     .spell-search-icon{display:flex;align-items:center;justify-content:center;padding:0 0.5rem 0 1rem;color:var(--text-muted);transition:color 0.3s ease}
     .spell-search-bar:focus-within .spell-search-icon{color:var(--gold)}
     .spell-search-icon svg{width:20px;height:20px}
-    .spell-search{flex:1;padding:0.9rem 1rem 0.9rem 0.5rem;background:transparent;border:none;color:var(--text-light);font-size:1rem;outline:none}
+    .spell-search{flex:1;padding:0.9rem 0.5rem 0.9rem 0.5rem;background:transparent;border:none;color:var(--text-light);font-size:1rem;outline:none;min-width:0}
     .spell-search::placeholder{color:var(--text-muted)}
+    .filter-toggle-btn{display:flex;align-items:center;justify-content:center;gap:0.35rem;padding:0.5rem 0.75rem;margin-right:0.35rem;background:transparent;border:1px solid rgba(212,175,55,0.2);border-radius:8px;color:var(--text-muted);cursor:pointer;transition:all 0.3s ease;flex-shrink:0;position:relative}
+    .filter-toggle-btn:hover{background:rgba(212,175,55,0.1);color:var(--gold);border-color:rgba(212,175,55,0.4)}
+    .filter-toggle-btn.active{background:rgba(212,175,55,0.15);color:var(--gold);border-color:var(--gold)}
+    .filter-toggle-btn svg{width:16px;height:16px}
+    .filter-badge{position:absolute;top:-6px;right:-6px;background:var(--primary);color:var(--gold);font-size:0.6rem;min-width:16px;height:16px;padding:0 4px;border-radius:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid rgba(212,175,55,0.4);font-family:'Inter',sans-serif}
+    .filters-section{max-height:0;overflow:hidden;transition:max-height 0.4s ease,opacity 0.3s ease;opacity:0;width:100%;margin-top:0.75rem}
+    .filters-section.open{max-height:600px;opacity:1}
+    .filters-inner{padding:1rem;background:rgba(255,255,255,0.03);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(212,175,55,0.25);border-radius:12px}
+    .filter-group{margin-bottom:1rem}
+    .filter-group:last-child{margin-bottom:0}
+    .filter-group-title{font-family:'Cinzel',serif;font-size:0.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem}
+    .filter-chips{display:flex;flex-wrap:wrap;gap:0.4rem}
+    .filter-chip{padding:0.35rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.2);border-radius:20px;color:var(--text-muted);font-size:0.8rem;cursor:pointer;transition:all 0.25s ease;user-select:none}
+    .filter-chip:hover{background:rgba(212,175,55,0.1);color:var(--text-light);border-color:rgba(212,175,55,0.4)}
+    .filter-chip.active{background:rgba(212,175,55,0.2);border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,0.15)}
+    .filter-reset-btn{display:flex;align-items:center;gap:0.4rem;margin-top:1rem;padding:0.5rem 1rem;background:rgba(139,30,30,0.3);border:1px solid rgba(212,175,55,0.2);border-radius:10px;color:var(--text-muted);font-size:0.8rem;cursor:pointer;transition:all 0.3s ease;width:100%;justify-content:center}
+    .filter-reset-btn:hover{background:rgba(139,30,30,0.5);border-color:rgba(212,175,55,0.4);color:var(--text-light)}
+    .filter-reset-btn svg{width:14px;height:14px}
     .spells-loading{text-align:center;padding:3rem;color:var(--text-muted);font-size:1.1rem}
     .spells-loading .spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(212,175,55,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:1rem}
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -126,7 +144,45 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
             </div>
-            <input type="text" id="spellSearch" class="spell-search" placeholder="Cerca per nome o livello (es. 'fireball' o 'livello 3')..." autocomplete="off">
+            <input type="text" id="spellSearch" class="spell-search" placeholder="Cerca incantesimi..." autocomplete="off">
+            <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilters()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+              <span class="filter-badge" id="filterBadge" style="display:none">0</span>
+            </button>
+          </div>
+          <div class="filters-section" id="filtersSection">
+          <div class="filters-inner">
+            <div class="filter-group">
+              <div class="filter-group-title">Livello</div>
+              <div class="filter-chips" id="levelChips">
+                <span class="filter-chip" data-level="0">Cantrip</span>
+                <span class="filter-chip" data-level="1">1</span>
+                <span class="filter-chip" data-level="2">2</span>
+                <span class="filter-chip" data-level="3">3</span>
+                <span class="filter-chip" data-level="4">4</span>
+                <span class="filter-chip" data-level="5">5</span>
+                <span class="filter-chip" data-level="6">6</span>
+                <span class="filter-chip" data-level="7">7</span>
+                <span class="filter-chip" data-level="8">8</span>
+                <span class="filter-chip" data-level="9">9</span>
+              </div>
+            </div>
+            <div class="filter-group">
+              <div class="filter-group-title">Scuola</div>
+              <div class="filter-chips" id="schoolChips"></div>
+            </div>
+            <div class="filter-group">
+              <div class="filter-group-title">Proprietà</div>
+              <div class="filter-chips" id="propertyChips">
+                <span class="filter-chip" data-property="ritual">Rituale</span>
+                <span class="filter-chip" data-property="concentration">Concentrazione</span>
+              </div>
+            </div>
+            <button class="filter-reset-btn" id="filterResetBtn" onclick="resetFilters()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Reset Filtri
+            </button>
+          </div>
           </div>
         </div>
         <div id="spellsContainer">
@@ -159,6 +215,118 @@
     let currentPage=0;
     const PAGE_SIZE=50;
     let allSpells=[];
+
+    const activeFilters={levels:new Set(),schools:new Set(),ritual:null,concentration:null};
+
+    function toggleFilters(){
+      const section=document.getElementById('filtersSection');
+      const btn=document.getElementById('filterToggleBtn');
+      section.classList.toggle('open');
+      btn.classList.toggle('active');
+    }
+
+    function getActiveFilterCount(){
+      let count=activeFilters.levels.size+activeFilters.schools.size;
+      if(activeFilters.ritual!==null)count++;
+      if(activeFilters.concentration!==null)count++;
+      return count;
+    }
+
+    function updateFilterBadge(){
+      const badge=document.getElementById('filterBadge');
+      const count=getActiveFilterCount();
+      if(count>0){badge.textContent=count;badge.style.display='inline'}
+      else{badge.style.display='none'}
+    }
+
+    function populateSchoolChips(){
+      const container=document.getElementById('schoolChips');
+      const schools=new Set();
+      allSpells.forEach(s=>{if(s.school)schools.add(s.school)});
+      const sorted=[...schools].sort();
+      container.innerHTML='';
+      sorted.forEach(school=>{
+        const chip=document.createElement('span');
+        chip.className='filter-chip';
+        chip.dataset.school=school;
+        chip.textContent=school;
+        if(activeFilters.schools.has(school))chip.classList.add('active');
+        chip.addEventListener('click',function(){
+          if(activeFilters.schools.has(school)){activeFilters.schools.delete(school);this.classList.remove('active')}
+          else{activeFilters.schools.add(school);this.classList.add('active')}
+          updateFilterBadge();
+          applyFilters();
+        });
+        container.appendChild(chip);
+      });
+    }
+
+    document.querySelectorAll('#levelChips .filter-chip').forEach(chip=>{
+      chip.addEventListener('click',function(){
+        const lvl=parseInt(this.dataset.level);
+        if(activeFilters.levels.has(lvl)){activeFilters.levels.delete(lvl);this.classList.remove('active')}
+        else{activeFilters.levels.add(lvl);this.classList.add('active')}
+        updateFilterBadge();
+        applyFilters();
+      });
+    });
+
+    document.querySelectorAll('#propertyChips .filter-chip').forEach(chip=>{
+      chip.addEventListener('click',function(){
+        const prop=this.dataset.property;
+        if(prop==='ritual'){
+          if(activeFilters.ritual===true){activeFilters.ritual=null;this.classList.remove('active')}
+          else{activeFilters.ritual=true;this.classList.add('active')}
+        }else if(prop==='concentration'){
+          if(activeFilters.concentration===true){activeFilters.concentration=null;this.classList.remove('active')}
+          else{activeFilters.concentration=true;this.classList.add('active')}
+        }
+        updateFilterBadge();
+        applyFilters();
+      });
+    });
+
+    function resetFilters(){
+      activeFilters.levels.clear();
+      activeFilters.schools.clear();
+      activeFilters.ritual=null;
+      activeFilters.concentration=null;
+      document.querySelectorAll('.filter-chip.active').forEach(c=>c.classList.remove('active'));
+      updateFilterBadge();
+      applyFilters();
+    }
+
+    function applyFilters(){
+      const query=(document.getElementById('spellSearch').value||'').toLowerCase().trim();
+      const hasFilters=getActiveFilterCount()>0;
+      const filtered=allSpells.filter(spell=>{
+        if(query){
+          const name=(spell.name||'').toLowerCase();
+          const level=spell.level!=null?spell.level:'';
+          const levelNum=parseInt(level);
+          let textMatch=false;
+          if(name.includes(query))textMatch=true;
+          if(query==='cantrip'&&levelNum===0)textMatch=true;
+          if(query.includes('livello')){
+            const match=query.match(/livello\s*(\d+)/);
+            if(match&&levelNum===parseInt(match[1]))textMatch=true;
+          }
+          if(/^\d+$/.test(query)&&levelNum===parseInt(query))textMatch=true;
+          if(!textMatch)return false;
+        }
+        if(activeFilters.levels.size>0){
+          const lvl=spell.level!=null?parseInt(spell.level):999;
+          if(!activeFilters.levels.has(lvl))return false;
+        }
+        if(activeFilters.schools.size>0){
+          if(!activeFilters.schools.has(spell.school))return false;
+        }
+        if(activeFilters.ritual===true&&!spell.ritual)return false;
+        if(activeFilters.concentration===true&&!spell.concentration)return false;
+        return true;
+      });
+      renderSpells(filtered);
+    }
 
     function renderSpells(spells){
       const container=document.getElementById('spellsContainer');
@@ -219,30 +387,8 @@
       container.appendChild(grid);
     }
 
-    function filterSpells(query){
-      if(!query.trim()){
-        renderSpells(allSpells);
-        return;
-      }
-      const q=query.toLowerCase().trim();
-      const filtered=allSpells.filter(spell=>{
-        const name=(spell.name||'').toLowerCase();
-        const level=spell.level!=null?spell.level:'';
-        const levelNum=parseInt(level);
-        if(name.includes(q))return true;
-        if(q==='cantrip'&&levelNum===0)return true;
-        if(q.includes('livello')){
-          const match=q.match(/livello\s*(\d+)/);
-          if(match&&levelNum===parseInt(match[1]))return true;
-        }
-        if(/^\d+$/.test(q)&&levelNum===parseInt(q))return true;
-        return false;
-      });
-      renderSpells(filtered);
-    }
-
     document.getElementById('spellSearch').addEventListener('input',function(){
-      filterSpells(this.value);
+      applyFilters();
     });
 
     async function loadSpells(page){
@@ -262,7 +408,8 @@
         const totalElements=data.totalElements!=null?data.totalElements:null;
         currentPage=page;
         document.getElementById('spellSearch').value='';
-        renderSpells(allSpells);
+        populateSchoolChips();
+        applyFilters();
         if(totalPages>1){
           const pag=document.createElement('div');
           pag.className='pagination';
