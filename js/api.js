@@ -24,7 +24,8 @@ const API_CONFIG = {
     SPELL_SCHOOLS: '/api/compendium/spell-schools',
     MAGIC_ITEMS: '/api/compendium/magic-items',
     MONSTERS: '/api/compendium/monsters',
-    EQUIPMENT: '/api/compendium/equipment'
+    EQUIPMENT: '/api/compendium/equipment',
+    ARMOR_TYPES: '/api/compendium/armor-types'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -365,6 +366,24 @@ async function getEquipment(page = 0, pageSize = 50) {
 
   } catch (error) {
     console.error('Get equipment error:', error);
+    throw error;
+  }
+}
+
+// ====== GET ARMOR TYPES ======
+async function getArmorTypes() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.ARMOR_TYPES;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Armor types fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get armor types error:', error);
     throw error;
   }
 }
