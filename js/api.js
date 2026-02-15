@@ -25,7 +25,8 @@ const API_CONFIG = {
     MAGIC_ITEMS: '/api/compendium/magic-items',
     MONSTERS: '/api/compendium/monsters',
     EQUIPMENT: '/api/compendium/equipment',
-    ARMOR_TYPES: '/api/compendium/armor-types'
+    ARMOR_TYPES: '/api/compendium/armor-types',
+    WEAPON_TYPES: '/api/compendium/weapon-types'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -384,6 +385,27 @@ async function getArmorTypes() {
 
   } catch (error) {
     console.error('Get armor types error:', error);
+    throw error;
+  }
+}
+
+// ====== GET WEAPON TYPES ======
+async function getWeaponTypes(category) {
+  let url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.WEAPON_TYPES;
+  if (category) {
+    url += '?category=' + encodeURIComponent(category);
+  }
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Weapon types fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get weapon types error:', error);
     throw error;
   }
 }
