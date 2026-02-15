@@ -28,7 +28,8 @@ const API_CONFIG = {
     ARMOR_TYPES: '/api/compendium/armor-types',
     WEAPON_TYPES: '/api/compendium/weapon-types',
     BACKGROUNDS: '/api/compendium/backgrounds',
-    SKILLS: '/api/compendium/skills'
+    SKILLS: '/api/compendium/skills',
+    CONDITIONS: '/api/compendium/conditions'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -444,6 +445,24 @@ async function getSkills() {
 
   } catch (error) {
     console.error('Get skills error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CONDITIONS ======
+async function getConditions() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.CONDITIONS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Conditions fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get conditions error:', error);
     throw error;
   }
 }
