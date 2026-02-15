@@ -38,6 +38,34 @@
     .page-title{font-family:'Cinzel',serif;font-size:3rem;color:var(--gold);text-shadow:0 0 40px rgba(212,175,55,0.5),0 0 80px rgba(212,175,55,0.3);margin-bottom:0.5rem;animation:textGlow 3s ease-in-out infinite}
     @keyframes textGlow{0%,100%{text-shadow:0 0 40px rgba(212,175,55,0.5),0 0 80px rgba(212,175,55,0.3)}50%{text-shadow:0 0 60px rgba(212,175,55,0.8),0 0 100px rgba(212,175,55,0.5),0 0 140px rgba(212,175,55,0.3)}}
     .page-subtitle{font-size:1.1rem;color:var(--text-muted);margin-bottom:2rem;font-style:italic}
+    .items-grid{display:flex;flex-direction:column;gap:0.75rem;width:100%;max-width:500px;margin:0 auto;padding:0 1rem}
+    .item-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(212,175,55,0.25);border-radius:12px;padding:0.8rem 1rem;transition:all 0.3s ease;cursor:pointer;animation:fadeIn 0.5s ease;text-align:left}
+    .item-card:hover{border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,0.2);transform:translateY(-2px)}
+    .item-card.expanded{padding:1.5rem;cursor:pointer;position:relative}
+    .item-card-header{display:flex;justify-content:space-between;align-items:center}
+    .item-card-name{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold);text-shadow:0 0 10px rgba(212,175,55,0.3)}
+    .item-card.expanded .item-card-name{font-size:1.4rem}
+    .item-card-rarity{font-size:0.75rem;color:var(--text-muted);background:rgba(139,30,30,0.4);border:1px solid rgba(212,175,55,0.3);border-radius:8px;padding:0.15rem 0.5rem;white-space:nowrap;margin-left:0.5rem;flex-shrink:0}
+    .item-card-body{display:none;margin-top:1rem;animation:expandIn 0.3s ease}
+    .item-card.expanded .item-card-body{display:block}
+    @keyframes expandIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .item-card-desc{font-size:0.9rem;color:var(--text-muted);line-height:1.6;margin-bottom:0.75rem}
+    .item-card-details{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem}
+    .item-detail-tag{background:rgba(139,30,30,0.4);border:1px solid rgba(212,175,55,0.3);border-radius:8px;padding:0.3rem 0.7rem;font-size:0.75rem;color:var(--gold)}
+    .item-search-container{width:100%;max-width:500px;margin:0 auto 2rem auto;padding:0 1rem}
+    .item-search-bar{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.3);border-radius:12px;transition:all 0.3s ease;overflow:hidden}
+    .item-search-bar:focus-within{border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,0.25);background:rgba(255,255,255,0.08)}
+    .item-search-icon{display:flex;align-items:center;justify-content:center;padding:0 0.5rem 0 1rem;color:var(--text-muted);transition:color 0.3s ease}
+    .item-search-bar:focus-within .item-search-icon{color:var(--gold)}
+    .item-search-icon svg{width:20px;height:20px}
+    .item-search{flex:1;padding:0.9rem 1rem 0.9rem 0.5rem;background:transparent;border:none;color:var(--text-light);font-size:1rem;outline:none}
+    .item-search::placeholder{color:var(--text-muted)}
+    .items-loading{text-align:center;padding:3rem;color:var(--text-muted);font-size:1.1rem}
+    .items-loading .spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(212,175,55,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:1rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .items-error{text-align:center;padding:3rem;color:#ef4444;font-size:1rem}
+    .items-error-btn{margin-top:1rem;padding:0.7rem 1.5rem;background:linear-gradient(135deg,var(--primary),#5a1414);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.9rem;cursor:pointer;transition:all 0.3s ease}
+    .items-error-btn:hover{background:linear-gradient(135deg,#a82525,var(--primary));box-shadow:0 0 20px rgba(212,175,55,0.4)}
     .magic-particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
     .magic-particles span{position:absolute;bottom:-10px;display:block;background:radial-gradient(circle,var(--gold),transparent);border-radius:50%;opacity:0.6;animation:rise linear infinite;box-shadow:0 0 10px var(--gold)}
     @keyframes rise{0%{bottom:-10px;opacity:0.6}50%{opacity:0.8}100%{bottom:110vh;opacity:0}}
@@ -76,7 +104,24 @@
     <main class="main-content">
       <section class="page-section">
         <h1 class="page-title">Background</h1>
-        <p class="page-subtitle">Background reference data</p>
+        <p class="page-subtitle">Catalogo dei background dal compendio</p>
+        <div class="item-search-container">
+          <div class="item-search-bar">
+            <div class="item-search-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+            <input type="text" id="itemSearch" class="item-search" placeholder="Cerca per nome..." autocomplete="off">
+          </div>
+        </div>
+        <div id="itemsContainer">
+          <div class="items-loading" id="itemsLoading">
+            <div class="spinner"></div>
+            <p>Caricamento background dal compendio...</p>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -95,6 +140,87 @@
     const username=localStorage.getItem('username')||'Adventurer';document.getElementById('userName').textContent=username;document.getElementById('userAvatar').textContent=username.charAt(0).toUpperCase();
     const sidebar=document.getElementById('sidebar'),sidebarOverlay=document.getElementById('sidebarOverlay');document.getElementById('mobileMenuBtn').addEventListener('click',()=>{sidebar.classList.toggle('active');sidebarOverlay.classList.toggle('active')});sidebarOverlay.addEventListener('click',()=>{sidebar.classList.remove('active');sidebarOverlay.classList.remove('active')});
     document.getElementById('logoutButton').addEventListener('click',handleLogout);
+
+    function escapeHtml(text){const div=document.createElement('div');div.textContent=String(text);return div.innerHTML;}
+
+    let allItems=[];
+
+    function renderItems(items){
+      const container=document.getElementById('itemsContainer');
+      container.innerHTML='';
+      if(!items||items.length===0){
+        container.innerHTML='<p class="items-loading">Nessun background trovato.</p>';
+        return;
+      }
+      const grid=document.createElement('div');
+      grid.className='items-grid';
+      items.forEach(item=>{
+        const card=document.createElement('div');
+        card.className='item-card';
+        const name=item.name||'Unknown';
+        let html='';
+        html+='<div class="item-card-header"><div class="item-card-name">'+escapeHtml(name)+'</div></div>';
+        html+='<div class="item-card-body">';
+        if(item.description){html+='<div class="item-card-desc">'+escapeHtml(item.description)+'</div>';}
+        const tags=[];
+        if(item.skillProficiencies&&item.skillProficiencies.length>0)tags.push('Competenze: '+item.skillProficiencies.join(', '));
+        if(item.toolProficiencies&&item.toolProficiencies.length>0)tags.push('Strumenti: '+item.toolProficiencies.join(', '));
+        if(item.languages)tags.push('Lingue: '+item.languages);
+        if(item.equipment)tags.push('Equipaggiamento: '+item.equipment);
+        if(item.feature)tags.push('Tratto: '+item.feature);
+        if(tags.length>0){
+          html+='<div class="item-card-details">';
+          tags.forEach(tag=>{html+='<span class="item-detail-tag">'+escapeHtml(String(tag))+'</span>';});
+          html+='</div>';
+        }
+        html+='</div>';
+        card.innerHTML=html;
+        card.addEventListener('click',function(){
+          if(this.classList.contains('expanded')){
+            this.classList.remove('expanded');
+          }else{
+            document.querySelectorAll('.item-card.expanded').forEach(c=>c.classList.remove('expanded'));
+            this.classList.add('expanded');
+            this.scrollIntoView({behavior:'smooth',block:'center'});
+          }
+        });
+        grid.appendChild(card);
+      });
+      container.appendChild(grid);
+    }
+
+    function applyFilter(){
+      const query=(document.getElementById('itemSearch').value||'').toLowerCase().trim();
+      let toRender=allItems;
+      if(query){
+        toRender=allItems.filter(item=>{
+          const name=(item.name||'').toLowerCase();
+          return name.includes(query);
+        });
+      }
+      renderItems(toRender);
+    }
+
+    document.getElementById('itemSearch').addEventListener('input',applyFilter);
+
+    async function loadBackgrounds(){
+      const container=document.getElementById('itemsContainer');
+      container.innerHTML='<div class="items-loading" id="itemsLoading"><div class="spinner"></div><p>Caricamento background dal compendio...</p></div>';
+      try{
+        const data=await getBackgrounds();
+        const itemsRaw=data.content||data;
+        allItems=Array.isArray(itemsRaw)?[...itemsRaw].sort((a,b)=>{
+          return (a.name||'').localeCompare(b.name||'');
+        }):[];
+        applyFilter();
+      }catch(error){
+        console.error('Failed to load backgrounds:',error);
+        const statusInfo=error.status?' (HTTP '+error.status+')':'';
+        container.innerHTML='<div class="items-error"><p>'+getErrorMessage(error)+statusInfo+'</p><button class="items-error-btn" onclick="loadBackgrounds()">Riprova</button></div>';
+      }
+    }
+    loadBackgrounds();
+
     const chatWindow=document.getElementById('chatWindow'),chatToggleBtn=document.getElementById('chatToggleBtn'),chatMessages=document.getElementById('chatMessages'),chatInput=document.getElementById('chatInput'),chatNotification=document.getElementById('chatNotification');let unreadCount=0,currentTab='tavern';const onlineUsers=[{name:'Thorin'},{name:'Elara'},{name:'Grimjaw'}],sampleMessages={tavern:[{sender:'Thorin',text:'Anyone up for a dungeon crawl tonight?',time:'10:30'},{sender:'Elara',text:'I need to finish my spell preparations first!',time:'10:32'},{sender:'Grimjaw',text:'GRIMJAW READY TO SMASH!',time:'10:33'}],party:[{sender:'Thorin',text:'Remember, we meet at the old ruins at midnight.',time:'09:15'},{sender:'Elara',text:"I'll bring the scrolls we discussed.",time:'09:20'}]};function initChat(){loadMessages(currentTab)}function loadMessages(t){chatMessages.innerHTML='';(sampleMessages[t]||[]).forEach(m=>addMessageToChat(m.sender,m.text,m.time,m.sender!==username))}function addMessageToChat(s,t,tm,r){const d=document.createElement('div');d.className='message '+(r?'received':'sent');d.innerHTML='<div class="message-header"><div class="message-avatar">'+s.charAt(0)+'</div><span class="message-sender">'+s+'</span><span class="message-time">'+tm+'</span></div><div class="message-content">'+t+'</div>';chatMessages.appendChild(d);chatMessages.scrollTop=chatMessages.scrollHeight}function toggleChat(){chatWindow.classList.toggle('active');chatToggleBtn.classList.toggle('active');if(chatWindow.classList.contains('active')){unreadCount=0;updateNotificationBadge()}}function sendMessage(){const m=chatInput.value.trim();if(!m)return;const n=new Date(),tm=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');addMessageToChat(username,m,tm,false);chatInput.value='';setTimeout(()=>{const u=onlineUsers[Math.floor(Math.random()*onlineUsers.length)],r=['Interesting!','I agree.','Roll for persuasion!','May the dice be in your favor!','That reminds me of our last quest...'];addMessageToChat(u.name,r[Math.floor(Math.random()*r.length)],tm,true);if(!chatWindow.classList.contains('active')){unreadCount++;updateNotificationBadge()}},1000+Math.random()*2000)}function handleChatKeypress(e){if(e.key==='Enter')sendMessage()}function updateNotificationBadge(){if(unreadCount>0){chatNotification.textContent=unreadCount>9?'9+':unreadCount;chatNotification.classList.add('show')}else{chatNotification.classList.remove('show')}}document.querySelectorAll('.chat-tab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.chat-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');currentTab=t.dataset.tab;loadMessages(currentTab)})});document.querySelectorAll('.online-user').forEach(u=>{u.addEventListener('click',()=>{chatInput.value='@'+u.dataset.user+' '+chatInput.value;chatInput.focus()})});initChat();
     function toggleDiceRoller(){document.getElementById('diceRollerPanel').classList.toggle('active');document.getElementById('diceToggleBtn').classList.toggle('active')}const resultValue=document.getElementById('resultValue'),resultDice=document.getElementById('resultDice'),resultDetails=document.getElementById('resultDetails'),rollAllBtn=document.getElementById('rollAllBtn'),clearBtn=document.getElementById('clearBtn'),diceButtons=document.querySelectorAll('.dice-btn');let isRolling=false;const diceCount={};diceButtons.forEach(b=>diceCount[b.dataset.dice]=0);function getTotalDiceCount(){return Object.values(diceCount).reduce((s,c)=>s+c,0)}function updateUI(){const t=getTotalDiceCount();rollAllBtn.disabled=t===0;rollAllBtn.textContent=t>0?'Lancia ('+t+')':'Lancia';diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d],e=b.querySelector('.dice-count');if(c>0){b.classList.add('selected');e.textContent=c}else{b.classList.remove('selected')}})}function addDice(b){if(isRolling)return;diceCount[b.dataset.dice]++;updateUI()}function removeDice(b){if(isRolling)return;const d=b.dataset.dice;if(diceCount[d]>0){diceCount[d]--;updateUI()}}function clearSelection(){if(isRolling)return;Object.keys(diceCount).forEach(d=>diceCount[d]=0);updateUI();resultValue.textContent='--';resultValue.className='result-value';resultDice.textContent='';resultDetails.textContent='';diceButtons.forEach(b=>{b.querySelector('.dice-value').textContent=parseInt(b.dataset.max)})}function rollSelectedDice(){if(isRolling||getTotalDiceCount()===0)return;isRolling=true;rollAllBtn.disabled=true;const a=[];diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d];if(c>0)a.push({btn:b,dice:d,max:parseInt(b.dataset.max),count:c})});a.forEach(d=>d.btn.classList.add('rolling'));let f=0;const i=setInterval(()=>{a.forEach(d=>{d.btn.querySelector('.dice-value').textContent=Math.floor(Math.random()*d.max)+1});resultValue.textContent='...';resultValue.className='result-value';f++;if(f>=15){clearInterval(i);const r=[];let t=0,cr=false,fu=false;a.forEach(d=>{const ro=[];for(let j=0;j<d.count;j++){const re=Math.floor(Math.random()*d.max)+1;ro.push(re);t+=re;if(d.dice==='d20'&&re===20)cr=true;if(d.dice==='d20'&&re===1)fu=true}d.btn.querySelector('.dice-value').textContent=ro[ro.length-1];r.push({dice:d.dice.toUpperCase(),count:d.count,rolls:ro})});resultValue.textContent=t;resultValue.classList.add('reveal');if(getTotalDiceCount()===1){resultDice.textContent=r[0].dice;resultDetails.textContent=''}else{resultDice.textContent='Totale';resultDetails.textContent=r.map(x=>{const p=x.count>1?x.count+x.dice:x.dice;return p+': '+x.rolls.join('+')}).join(' | ')}if(cr)resultValue.classList.add('critical');else if(fu)resultValue.classList.add('fumble');setTimeout(()=>{a.forEach(d=>d.btn.classList.remove('rolling'));isRolling=false;updateUI()},500)}},50)}diceButtons.forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();addDice(b)});b.addEventListener('contextmenu',e=>{e.preventDefault();removeDice(b)})});rollAllBtn.addEventListener('click',rollSelectedDice);clearBtn.addEventListener('click',clearSelection);let lastTap=0;diceButtons.forEach(b=>{b.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<300){e.preventDefault();removeDice(b)}lastTap=n},{passive:false})});
     const magicContainer=document.querySelector(".magic-particles");for(let i=0;i<60;i++){const p=document.createElement("span");p.style.width=p.style.height=Math.random()*3+2+"px";p.style.left=Math.random()*100+"%";p.style.animationDuration=Math.random()*10+8+"s";p.style.animationDelay=Math.random()*10+"s";magicContainer.appendChild(p)}

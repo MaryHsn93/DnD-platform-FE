@@ -26,7 +26,8 @@ const API_CONFIG = {
     MONSTERS: '/api/compendium/monsters',
     EQUIPMENT: '/api/compendium/equipment',
     ARMOR_TYPES: '/api/compendium/armor-types',
-    WEAPON_TYPES: '/api/compendium/weapon-types'
+    WEAPON_TYPES: '/api/compendium/weapon-types',
+    BACKGROUNDS: '/api/compendium/backgrounds'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -406,6 +407,24 @@ async function getWeaponTypes(category) {
 
   } catch (error) {
     console.error('Get weapon types error:', error);
+    throw error;
+  }
+}
+
+// ====== GET BACKGROUNDS ======
+async function getBackgrounds() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.BACKGROUNDS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Backgrounds fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get backgrounds error:', error);
     throw error;
   }
 }
