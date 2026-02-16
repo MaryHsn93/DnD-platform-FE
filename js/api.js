@@ -32,7 +32,8 @@ const API_CONFIG = {
     CONDITIONS: '/api/compendium/conditions',
     DAMAGE_TYPES: '/api/compendium/damage-types',
     LANGUAGES: '/api/compendium/languages',
-    ALIGNMENTS: '/api/compendium/alignments'
+    ALIGNMENTS: '/api/compendium/alignments',
+    TOOL_TYPES: '/api/compendium/tool-types'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -520,6 +521,24 @@ async function getAlignments() {
 
   } catch (error) {
     console.error('Get alignments error:', error);
+    throw error;
+  }
+}
+
+// ====== GET TOOL TYPES ======
+async function getToolTypes() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.TOOL_TYPES;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Tool types fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get tool types error:', error);
     throw error;
   }
 }
