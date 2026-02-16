@@ -33,7 +33,8 @@ const API_CONFIG = {
     DAMAGE_TYPES: '/api/compendium/damage-types',
     LANGUAGES: '/api/compendium/languages',
     ALIGNMENTS: '/api/compendium/alignments',
-    TOOL_TYPES: '/api/compendium/tool-types'
+    TOOL_TYPES: '/api/compendium/tool-types',
+    PROFICIENCY_TYPES: '/api/compendium/proficiency-types'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -539,6 +540,24 @@ async function getToolTypes() {
 
   } catch (error) {
     console.error('Get tool types error:', error);
+    throw error;
+  }
+}
+
+// ====== GET PROFICIENCY TYPES ======
+async function getProficiencyTypes() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.PROFICIENCY_TYPES;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Proficiency types fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get proficiency types error:', error);
     throw error;
   }
 }
