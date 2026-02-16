@@ -30,7 +30,8 @@ const API_CONFIG = {
     BACKGROUNDS: '/api/compendium/backgrounds',
     SKILLS: '/api/compendium/skills',
     CONDITIONS: '/api/compendium/conditions',
-    DAMAGE_TYPES: '/api/compendium/damage-types'
+    DAMAGE_TYPES: '/api/compendium/damage-types',
+    LANGUAGES: '/api/compendium/languages'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -482,6 +483,24 @@ async function getDamageTypes() {
 
   } catch (error) {
     console.error('Get damage types error:', error);
+    throw error;
+  }
+}
+
+// ====== GET LANGUAGES ======
+async function getLanguages() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.LANGUAGES;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Languages fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get languages error:', error);
     throw error;
   }
 }
