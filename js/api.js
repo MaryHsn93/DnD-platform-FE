@@ -1,23 +1,23 @@
 // ====== API CONFIGURATION ======
 const API_CONFIG = {
   LOGIN: {
-    BASE_URL: 'http://192.168.3.70:8081',
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.AUTH_PORT}`,
     ENDPOINT: '/auth/login-tokens'
   },
   LOGOUT: {
-    BASE_URL: 'http://192.168.3.70:8081',
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.AUTH_PORT}`,
     ENDPOINT: '/auth/login-tokens'
   },
   REFRESH: {
-    BASE_URL: 'http://192.168.3.70:8081',
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.AUTH_PORT}`,
     ENDPOINT: '/auth/login-tokens/refreshed'
   },
   REGISTER: {
-    BASE_URL: 'http://192.168.3.70:8089',
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.REGISTER_PORT}`,
     ENDPOINT: '/users'
   },
   COMPENDIUM: {
-    BASE_URL: 'http://192.168.3.70:8090',
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.COMPENDIUM_PORT}`,
     CLASSES: '/api/compendium/classes',
     SPECIES: '/api/compendium/species',
     SPELLS: '/api/compendium/spells',
@@ -29,7 +29,8 @@ const API_CONFIG = {
     WEAPON_TYPES: '/api/compendium/weapon-types',
     BACKGROUNDS: '/api/compendium/backgrounds',
     SKILLS: '/api/compendium/skills',
-    CONDITIONS: '/api/compendium/conditions'
+    CONDITIONS: '/api/compendium/conditions',
+    DAMAGE_TYPES: '/api/compendium/damage-types'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -463,6 +464,24 @@ async function getConditions() {
 
   } catch (error) {
     console.error('Get conditions error:', error);
+    throw error;
+  }
+}
+
+// ====== GET DAMAGE TYPES ======
+async function getDamageTypes() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.DAMAGE_TYPES;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Damage types fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get damage types error:', error);
     throw error;
   }
 }
