@@ -31,7 +31,8 @@ const API_CONFIG = {
     SKILLS: '/api/compendium/skills',
     CONDITIONS: '/api/compendium/conditions',
     DAMAGE_TYPES: '/api/compendium/damage-types',
-    LANGUAGES: '/api/compendium/languages'
+    LANGUAGES: '/api/compendium/languages',
+    ALIGNMENTS: '/api/compendium/alignments'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -501,6 +502,24 @@ async function getLanguages() {
 
   } catch (error) {
     console.error('Get languages error:', error);
+    throw error;
+  }
+}
+
+// ====== GET ALIGNMENTS ======
+async function getAlignments() {
+  const url = API_CONFIG.COMPENDIUM.BASE_URL + API_CONFIG.COMPENDIUM.ALIGNMENTS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Alignments fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get alignments error:', error);
     throw error;
   }
 }
