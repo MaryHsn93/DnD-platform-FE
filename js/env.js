@@ -1,7 +1,7 @@
 // ====== ENVIRONMENT CONFIGURATION ======
 // Change the backend IP/hostname here — all API calls will use these values.
 const ENV = {
-  API_HOST: '192.168.3.201',
+  API_HOST: '192.168.3.200',
   AUTH_PORT: 8081,
   REGISTER_PORT: 8089,
   COMPENDIUM_PORT: 8090
