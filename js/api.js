@@ -43,6 +43,11 @@ const API_CONFIG = {
     CONVERSATIONS_READ: '/api/chat/conversations/{id}/read',
     MESSAGES: '/api/chat/conversations/{conversationId}/messages'
   },
+  CHARACTER: {
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.CHARACTER_PORT}`,
+    CHARACTERS: '/characters',
+    IMPORT_SHEET: '/characters/import-sheet'
+  },
   TIMEOUT: 10000 // 10 seconds
 };
 
@@ -565,6 +570,101 @@ async function getProficiencyTypes() {
 
   } catch (error) {
     console.error('Get proficiency types error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CHARACTERS (PAGINATED) ======
+async function getCharacters(page = 0, size = 20) {
+  const url = API_CONFIG.CHARACTER.BASE_URL + API_CONFIG.CHARACTER.CHARACTERS
+    + '?page=' + page + '&size=' + size;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Characters fetched successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get characters error:', error);
+    throw error;
+  }
+}
+
+// ====== CREATE CHARACTER ======
+async function createCharacter(characterData) {
+  const url = API_CONFIG.CHARACTER.BASE_URL + API_CONFIG.CHARACTER.CHARACTERS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(characterData)
+    });
+
+    console.log('Character created successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Create character error:', error);
+    throw error;
+  }
+}
+
+// ====== IMPORT CHARACTER FROM PDF ======
+async function importCharacterSheet(file) {
+  const url = API_CONFIG.CHARACTER.BASE_URL + API_CONFIG.CHARACTER.IMPORT_SHEET;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    let token = getAuthToken();
+    if (isAccessTokenExpired()) {
+      try {
+        if (!_refreshPromise) {
+          _refreshPromise = refreshAccessToken().finally(() => { _refreshPromise = null; });
+        }
+        token = await _refreshPromise;
+      } catch (refreshError) {
+        token = await showReloginOverlay();
+      }
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      body: formData,
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      data = {};
+    }
+
+    if (!response.ok) {
+      const error = new Error(data.message || `HTTP ${response.status}`);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+
+    console.log('Character imported successfully:', data);
+    return data;
+
+  } catch (error) {
+    console.error('Import character error:', error);
     throw error;
   }
 }

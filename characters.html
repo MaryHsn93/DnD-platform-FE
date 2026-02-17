@@ -1217,6 +1217,808 @@
       .chat-toggle-btn { width: 55px; height: 55px; }
     }
 
+    /* ====== CHARACTERS PAGE ====== */
+    .main-content {
+      justify-content: flex-start;
+      padding-top: 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      z-index: 1;
+      animation: fadeIn 1s ease;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .page-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 25px rgba(212, 175, 55, 0.3);
+      border-color: var(--gold);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .action-btn svg { width: 18px; height: 18px; }
+
+    .action-btn.secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    /* Character Grid */
+    .characters-container {
+      width: 100%;
+      max-width: 1200px;
+      z-index: 1;
+      animation: fadeIn 1s ease 0.2s both;
+    }
+
+    .characters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .character-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .character-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+
+    .character-card:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 175, 55, 0.15);
+    }
+
+    .character-card:hover::before { left: 100%; }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .char-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .card-identity h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1.1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-identity p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .card-level {
+      margin-left: auto;
+      text-align: center;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 10px;
+      padding: 0.4rem 0.7rem;
+      flex-shrink: 0;
+    }
+
+    .card-level .level-num {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .card-level .level-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-stats {
+      display: flex;
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .card-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    .card-stat svg { width: 16px; height: 16px; color: var(--gold); opacity: 0.7; }
+
+    .card-stat .stat-val { color: var(--text-light); font-weight: 600; }
+    .card-stat .stat-label { color: var(--text-muted); font-size: 0.75rem; }
+
+    .hp-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .hp-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .hp-bar-fill.hp-high { background: #4ade80; }
+    .hp-bar-fill.hp-mid { background: #fbbf24; }
+    .hp-bar-fill.hp-low { background: #ef4444; }
+
+    /* Loading & Empty States */
+    .loading-state, .empty-state, .error-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      width: 100%;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state svg { color: var(--gold); opacity: 0.5; margin-bottom: 1rem; }
+    .empty-state h3 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 0.5rem; }
+    .empty-state p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .error-state h3 { color: #ef4444; margin-bottom: 0.5rem; }
+    .error-state p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-bottom: 2rem;
+    }
+
+    .page-btn {
+      padding: 0.5rem 0.9rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+
+    .page-btn.active {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold);
+      border-color: var(--gold);
+      font-weight: 600;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* ====== MODAL ====== */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: rgba(30, 30, 35, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 20px;
+      width: 95%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(212, 175, 55, 0.15);
+      animation: modalSlideUp 0.4s ease;
+    }
+
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal::-webkit-scrollbar { width: 6px; }
+    .modal::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 3px; }
+    .modal::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 3px; }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .modal-header h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1.4rem;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(139, 30, 30, 0.4);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* Form Styles */
+    .form-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-row.three-col {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group label .required { color: #ef4444; }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.7rem 0.9rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 10px;
+      color: var(--text-light);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+
+    .form-group select option {
+      background: #26262b;
+      color: var(--text-light);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(181, 181, 181, 0.5);
+    }
+
+    .ability-scores-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .ability-input {
+      text-align: center;
+    }
+
+    .ability-input label {
+      display: block;
+      text-align: center;
+      margin-bottom: 0.3rem;
+    }
+
+    .ability-input input {
+      width: 100%;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 0.6rem;
+    }
+
+    .tag-input-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 10px;
+      min-height: 42px;
+      cursor: text;
+      transition: all 0.3s ease;
+    }
+
+    .tag-input-wrapper:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .tag-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 6px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      color: var(--gold);
+    }
+
+    .tag-remove {
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .tag-remove:hover { opacity: 1; }
+
+    .tag-input {
+      border: none !important;
+      background: transparent !important;
+      padding: 0.2rem !important;
+      min-width: 80px;
+      flex: 1;
+      font-size: 0.85rem !important;
+      box-shadow: none !important;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .btn-submit {
+      padding: 0.8rem 2rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 25px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-cancel {
+      padding: 0.8rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+    }
+
+    .form-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      min-height: 1.2em;
+    }
+
+    /* ====== DETAIL MODAL ====== */
+    .detail-modal { max-width: 800px; }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .detail-identity h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .detail-identity p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .detail-level-badge {
+      margin-left: auto;
+      text-align: center;
+      background: rgba(212, 175, 55, 0.15);
+      border: 2px solid rgba(212, 175, 55, 0.4);
+      border-radius: 14px;
+      padding: 0.6rem 1rem;
+    }
+
+    .detail-level-badge .level-num {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .detail-level-badge .level-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-block {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .detail-block.full-width { grid-column: 1 / -1; }
+
+    .detail-block h4 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0;
+      font-size: 0.85rem;
+    }
+
+    .stat-row .stat-name { color: var(--text-muted); }
+    .stat-row .stat-value { color: var(--text-light); font-weight: 600; }
+
+    .ability-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .ability-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 0.5rem 0.25rem;
+    }
+
+    .ability-box .ability-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .ability-box .ability-val {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .ability-box .ability-mod {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .tag.proficient { border-color: #4ade80; color: #4ade80; }
+    .tag.prepared { border-color: #60a5fa; color: #60a5fa; }
+
+    /* Import area */
+    .import-drop-area {
+      border: 2px dashed rgba(212, 175, 55, 0.3);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+
+    .import-drop-area:hover,
+    .import-drop-area.dragover {
+      border-color: var(--gold);
+      background: rgba(212, 175, 55, 0.05);
+    }
+
+    .import-drop-area svg { color: var(--gold); opacity: 0.5; margin-bottom: 1rem; }
+    .import-drop-area p { color: var(--text-muted); font-size: 0.9rem; }
+    .import-drop-area .file-name { color: var(--gold); font-weight: 600; margin-top: 0.5rem; }
+
+    /* Steps indicator */
+    .form-steps {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .step-dot.active {
+      background: var(--gold);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    .step-dot.completed { background: rgba(212, 175, 55, 0.5); }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(30, 30, 35, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      z-index: 3000;
+      transition: transform 0.4s ease;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: #4ade80; }
+    .toast.error { border-color: #ef4444; }
+
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr; }
+      .form-row.three-col { grid-template-columns: 1fr 1fr; }
+      .ability-scores-grid { grid-template-columns: repeat(3, 1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+      .ability-grid { grid-template-columns: repeat(3, 1fr); }
+      .detail-header { flex-wrap: wrap; }
+      .characters-grid { grid-template-columns: 1fr; }
+      .page-title { font-size: 2.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      .form-row.three-col { grid-template-columns: 1fr; }
+      .ability-scores-grid { grid-template-columns: repeat(2, 1fr); }
+      .ability-grid { grid-template-columns: repeat(2, 1fr); }
+      .page-title { font-size: 2rem; }
+      .modal { padding: 1.25rem; }
+    }
+
   </style>
 </head>
 <body>
@@ -1282,12 +2084,276 @@
     </aside>
 
     <main class="main-content">
-      <section class="page-section">
+      <div class="page-header">
         <h1 class="page-title">My Characters</h1>
         <p class="page-subtitle">Manage your heroes and their stories</p>
-        <p class="page-tagline">"Every hero has a beginning..."</p>
-      </section>
+        <div class="page-actions">
+          <button class="action-btn" id="createCharBtn" onclick="openCreateModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Create Character
+          </button>
+          <button class="action-btn secondary" id="importCharBtn" onclick="openImportModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="characters-container">
+        <div id="charactersContent">
+          <div class="loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p style="color: var(--text-muted);">Summoning your heroes...</p>
+          </div>
+        </div>
+        <div id="paginationContainer" class="pagination" style="display:none;"></div>
+      </div>
     </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Create Character Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Forge a New Hero</h2>
+        <button class="modal-close" onclick="closeCreateModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="form-steps">
+        <span class="step-dot active" data-step="1"></span>
+        <span class="step-dot" data-step="2"></span>
+        <span class="step-dot" data-step="3"></span>
+        <span class="step-dot" data-step="4"></span>
+      </div>
+
+      <div class="form-error" id="createError"></div>
+
+      <form id="createCharForm" onsubmit="return false;">
+        <!-- Step 1: Basic Info -->
+        <div class="form-step active" data-step="1">
+          <div class="form-section">
+            <div class="form-section-title">Basic Information</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Name <span class="required">*</span></label>
+                <input type="text" id="charName" placeholder="Thorin Ironforge" maxlength="100" required>
+              </div>
+              <div class="form-group">
+                <label>Level <span class="required">*</span></label>
+                <input type="number" id="charLevel" min="1" max="20" value="1" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Species <span class="required">*</span></label>
+                <select id="charSpecies" required><option value="">Select species...</option></select>
+              </div>
+              <div class="form-group">
+                <label>Subrace</label>
+                <input type="text" id="charSubrace" placeholder="Hill Dwarf" maxlength="50">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Class <span class="required">*</span></label>
+                <select id="charClass" required><option value="">Select class...</option></select>
+              </div>
+              <div class="form-group">
+                <label>Subclass</label>
+                <input type="text" id="charSubclass" placeholder="Life Domain" maxlength="50">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Background</label>
+                <select id="charBackground"><option value="">Select background...</option></select>
+              </div>
+              <div class="form-group">
+                <label>Alignment</label>
+                <select id="charAlignment"><option value="">Select alignment...</option></select>
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="closeCreateModal()">Cancel</button>
+            <button type="button" class="btn-submit" onclick="goToStep(2)">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Ability Scores -->
+        <div class="form-step" data-step="2">
+          <div class="form-section">
+            <div class="form-section-title">Ability Scores</div>
+            <div class="ability-scores-grid">
+              <div class="ability-input">
+                <label>STR <span class="required">*</span></label>
+                <input type="number" id="abilStr" min="1" max="30" value="10" required>
+              </div>
+              <div class="ability-input">
+                <label>DEX <span class="required">*</span></label>
+                <input type="number" id="abilDex" min="1" max="30" value="10" required>
+              </div>
+              <div class="ability-input">
+                <label>CON <span class="required">*</span></label>
+                <input type="number" id="abilCon" min="1" max="30" value="10" required>
+              </div>
+              <div class="ability-input">
+                <label>INT <span class="required">*</span></label>
+                <input type="number" id="abilInt" min="1" max="30" value="10" required>
+              </div>
+              <div class="ability-input">
+                <label>WIS <span class="required">*</span></label>
+                <input type="number" id="abilWis" min="1" max="30" value="10" required>
+              </div>
+              <div class="ability-input">
+                <label>CHA <span class="required">*</span></label>
+                <input type="number" id="abilCha" min="1" max="30" value="10" required>
+              </div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Saving Throw Proficiencies</div>
+            <div class="form-row three-col">
+              <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="STR" class="save-prof-cb"> STR</label>
+              <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="DEX" class="save-prof-cb"> DEX</label>
+              <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="CON" class="save-prof-cb"> CON</label>
+              <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="INT" class="save-prof-cb"> INT</label>
+              <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="WIS" class="save-prof-cb"> WIS</label>
+              <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="CHA" class="save-prof-cb"> CHA</label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="goToStep(1)">Back</button>
+            <button type="button" class="btn-submit" onclick="goToStep(3)">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Skills, Languages, Proficiencies -->
+        <div class="form-step" data-step="3">
+          <div class="form-section">
+            <div class="form-section-title">Skill Proficiencies</div>
+            <div class="form-group">
+              <div class="tag-input-wrapper" id="skillsWrapper">
+                <input type="text" class="tag-input" id="skillInput" placeholder="Type a skill and press Enter...">
+              </div>
+              <div id="skillSuggestions" style="font-size:0.75rem;color:var(--text-muted);margin-top:0.3rem;"></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Languages</div>
+            <div class="form-group">
+              <div class="tag-input-wrapper" id="languagesWrapper">
+                <input type="text" class="tag-input" id="languageInput" placeholder="Type a language and press Enter...">
+              </div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Spells</div>
+            <div class="form-group">
+              <div class="tag-input-wrapper" id="spellsWrapper">
+                <input type="text" class="tag-input" id="spellInput" placeholder="Type a spell name and press Enter...">
+              </div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Equipment</div>
+            <div id="equipmentList"></div>
+            <button type="button" class="action-btn secondary" onclick="addEquipmentRow()" style="margin-top:0.5rem;font-size:0.8rem;padding:0.5rem 1rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Item
+            </button>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="goToStep(2)">Back</button>
+            <button type="button" class="btn-submit" onclick="goToStep(4)">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Personality & Physical -->
+        <div class="form-step" data-step="4">
+          <div class="form-section">
+            <div class="form-section-title">Personality</div>
+            <div class="form-group" style="margin-bottom:0.75rem">
+              <label>Personality Traits</label>
+              <textarea id="charTraits" placeholder="I quote sacred texts in almost every situation." rows="2"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:0.75rem">
+              <label>Ideals</label>
+              <textarea id="charIdeals" placeholder="Faith. I trust that my deity will guide my actions." rows="2"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:0.75rem">
+              <label>Bonds</label>
+              <textarea id="charBonds" placeholder="I will do anything to protect the temple where I served." rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Flaws</label>
+              <textarea id="charFlaws" placeholder="I judge others harshly, and myself even more severely." rows="2"></textarea>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Physical Characteristics</div>
+            <div class="form-row three-col">
+              <div class="form-group"><label>Age</label><input type="text" id="physAge" placeholder="45"></div>
+              <div class="form-group"><label>Height</label><input type="text" id="physHeight" placeholder="4'5&quot;"></div>
+              <div class="form-group"><label>Weight</label><input type="text" id="physWeight" placeholder="150 lbs"></div>
+            </div>
+            <div class="form-row three-col">
+              <div class="form-group"><label>Eyes</label><input type="text" id="physEyes" placeholder="Brown"></div>
+              <div class="form-group"><label>Hair</label><input type="text" id="physHair" placeholder="Black"></div>
+              <div class="form-group"><label>Skin</label><input type="text" id="physSkin" placeholder="Tan"></div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="goToStep(3)">Back</button>
+            <button type="button" class="btn-submit" id="submitCharBtn" onclick="submitCharacter()">Create Hero</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Import PDF Modal -->
+  <div class="modal-overlay" id="importModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Import Character Sheet</h2>
+        <button class="modal-close" onclick="closeImportModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="form-error" id="importError"></div>
+      <div class="import-drop-area" id="importDropArea">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+        <p>Drag & drop your D&D character sheet PDF here</p>
+        <p style="font-size:0.8rem;margin-top:0.25rem;">or click to browse</p>
+        <p class="file-name" id="importFileName"></p>
+        <input type="file" id="importFileInput" accept=".pdf" style="display:none;">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" onclick="closeImportModal()">Cancel</button>
+        <button type="button" class="btn-submit" id="importSubmitBtn" onclick="submitImport()" disabled>Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Character Detail Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal detail-modal">
+      <div class="modal-header">
+        <h2>Character Details</h2>
+        <button class="modal-close" onclick="closeDetailModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="detailContent">
+        <div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Loading details...</p></div>
+      </div>
+    </div>
   </div>
 
   <!-- Dice Roller Widget -->
@@ -1433,165 +2499,100 @@
     let isRolling = false;
 
     const diceCount = {};
-    diceButtons.forEach(btn => {
-      diceCount[btn.dataset.dice] = 0;
-    });
+    diceButtons.forEach(btn => { diceCount[btn.dataset.dice] = 0; });
 
     function getTotalDiceCount() {
-      return Object.values(diceCount).reduce((sum, count) => sum + count, 0);
+      return Object.values(diceCount).reduce((sum, c) => sum + c, 0);
     }
 
-    function updateUI() {
+    function updateDiceUI() {
       const total = getTotalDiceCount();
       rollAllBtn.disabled = total === 0;
-      rollAllBtn.textContent = total > 0 ? `Lancia (${total})` : 'Lancia';
-
+      rollAllBtn.textContent = total > 0 ? 'Lancia (' + total + ')' : 'Lancia';
       diceButtons.forEach(btn => {
         const dice = btn.dataset.dice;
         const count = diceCount[dice];
         const countEl = btn.querySelector('.dice-count');
-
-        if (count > 0) {
-          btn.classList.add('selected');
-          countEl.textContent = count;
-        } else {
-          btn.classList.remove('selected');
-        }
+        if (count > 0) { btn.classList.add('selected'); countEl.textContent = count; }
+        else { btn.classList.remove('selected'); }
       });
-    }
-
-    function addDice(btn) {
-      if (isRolling) return;
-      const dice = btn.dataset.dice;
-      diceCount[dice]++;
-      updateUI();
-    }
-
-    function removeDice(btn) {
-      if (isRolling) return;
-      const dice = btn.dataset.dice;
-      if (diceCount[dice] > 0) {
-        diceCount[dice]--;
-        updateUI();
-      }
-    }
-
-    function clearSelection() {
-      if (isRolling) return;
-      Object.keys(diceCount).forEach(dice => diceCount[dice] = 0);
-      updateUI();
-      resultValue.textContent = '--';
-      resultValue.className = 'result-value';
-      resultDice.textContent = '';
-      resultDetails.textContent = '';
-      diceButtons.forEach(btn => {
-        const max = parseInt(btn.dataset.max);
-        btn.querySelector('.dice-value').textContent = max;
-      });
-    }
-
-    function rollSelectedDice() {
-      if (isRolling || getTotalDiceCount() === 0) return;
-
-      isRolling = true;
-      rollAllBtn.disabled = true;
-
-      const activeDice = [];
-      diceButtons.forEach(btn => {
-        const dice = btn.dataset.dice;
-        const count = diceCount[dice];
-        if (count > 0) {
-          activeDice.push({ btn, dice, max: parseInt(btn.dataset.max), count });
-        }
-      });
-
-      activeDice.forEach(d => d.btn.classList.add('rolling'));
-
-      let flickerCount = 0;
-      const flickerInterval = setInterval(() => {
-        activeDice.forEach(d => {
-          const randomVal = Math.floor(Math.random() * d.max) + 1;
-          d.btn.querySelector('.dice-value').textContent = randomVal;
-        });
-        resultValue.textContent = '...';
-        resultValue.className = 'result-value';
-        flickerCount++;
-
-        if (flickerCount >= 15) {
-          clearInterval(flickerInterval);
-
-          const allResults = [];
-          let total = 0;
-          let hasD20Crit = false;
-          let hasD20Fumble = false;
-
-          activeDice.forEach(d => {
-            const rolls = [];
-            for (let i = 0; i < d.count; i++) {
-              const result = Math.floor(Math.random() * d.max) + 1;
-              rolls.push(result);
-              total += result;
-
-              if (d.dice === 'd20' && result === 20) hasD20Crit = true;
-              if (d.dice === 'd20' && result === 1) hasD20Fumble = true;
-            }
-            d.btn.querySelector('.dice-value').textContent = rolls[rolls.length - 1];
-            allResults.push({ dice: d.dice.toUpperCase(), count: d.count, rolls });
-          });
-
-          resultValue.textContent = total;
-          resultValue.classList.add('reveal');
-
-          const totalDice = getTotalDiceCount();
-          if (totalDice === 1) {
-            resultDice.textContent = allResults[0].dice;
-            resultDetails.textContent = '';
-          } else {
-            resultDice.textContent = 'Totale';
-            const detailsText = allResults.map(r => {
-              const prefix = r.count > 1 ? `${r.count}${r.dice}` : r.dice;
-              return `${prefix}: ${r.rolls.join('+')}`;
-            }).join(' | ');
-            resultDetails.textContent = detailsText;
-          }
-
-          if (hasD20Crit) {
-            resultValue.classList.add('critical');
-          } else if (hasD20Fumble) {
-            resultValue.classList.add('fumble');
-          }
-
-          setTimeout(() => {
-            activeDice.forEach(d => d.btn.classList.remove('rolling'));
-            isRolling = false;
-            updateUI();
-          }, 500);
-        }
-      }, 50);
     }
 
     diceButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        addDice(btn);
+        if (isRolling) return;
+        diceCount[btn.dataset.dice]++;
+        updateDiceUI();
       });
       btn.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        removeDice(btn);
+        if (isRolling) return;
+        if (diceCount[btn.dataset.dice] > 0) { diceCount[btn.dataset.dice]--; updateDiceUI(); }
       });
     });
 
-    rollAllBtn.addEventListener('click', rollSelectedDice);
-    clearBtn.addEventListener('click', clearSelection);
+    clearBtn.addEventListener('click', () => {
+      if (isRolling) return;
+      Object.keys(diceCount).forEach(d => diceCount[d] = 0);
+      updateDiceUI();
+      resultValue.textContent = '--';
+      resultValue.className = 'result-value';
+      resultDice.textContent = '';
+      resultDetails.textContent = '';
+      diceButtons.forEach(b => { b.querySelector('.dice-value').textContent = b.dataset.max; });
+    });
+
+    rollAllBtn.addEventListener('click', () => {
+      if (isRolling || getTotalDiceCount() === 0) return;
+      isRolling = true;
+      rollAllBtn.disabled = true;
+      const activeDice = [];
+      diceButtons.forEach(btn => {
+        const count = diceCount[btn.dataset.dice];
+        if (count > 0) activeDice.push({ btn, dice: btn.dataset.dice, max: parseInt(btn.dataset.max), count });
+      });
+      activeDice.forEach(d => d.btn.classList.add('rolling'));
+      let flickerCount = 0;
+      const flickerInterval = setInterval(() => {
+        activeDice.forEach(d => { d.btn.querySelector('.dice-value').textContent = Math.floor(Math.random() * d.max) + 1; });
+        resultValue.textContent = '...';
+        resultValue.className = 'result-value';
+        flickerCount++;
+        if (flickerCount >= 15) {
+          clearInterval(flickerInterval);
+          const allResults = [];
+          let total = 0, hasD20Crit = false, hasD20Fumble = false;
+          activeDice.forEach(d => {
+            const rolls = [];
+            for (let i = 0; i < d.count; i++) {
+              const r = Math.floor(Math.random() * d.max) + 1;
+              rolls.push(r); total += r;
+              if (d.dice === 'd20' && r === 20) hasD20Crit = true;
+              if (d.dice === 'd20' && r === 1) hasD20Fumble = true;
+            }
+            d.btn.querySelector('.dice-value').textContent = rolls[rolls.length - 1];
+            allResults.push({ dice: d.dice.toUpperCase(), count: d.count, rolls });
+          });
+          resultValue.textContent = total;
+          resultValue.classList.add('reveal');
+          if (getTotalDiceCount() === 1) { resultDice.textContent = allResults[0].dice; resultDetails.textContent = ''; }
+          else {
+            resultDice.textContent = 'Totale';
+            resultDetails.textContent = allResults.map(r => { const p = r.count > 1 ? r.count + r.dice : r.dice; return p + ': ' + r.rolls.join('+'); }).join(' | ');
+          }
+          if (hasD20Crit) resultValue.classList.add('critical');
+          else if (hasD20Fumble) resultValue.classList.add('fumble');
+          setTimeout(() => { activeDice.forEach(d => d.btn.classList.remove('rolling')); isRolling = false; updateDiceUI(); }, 500);
+        }
+      }, 50);
+    });
 
     let lastTap = 0;
     diceButtons.forEach(btn => {
       btn.addEventListener('touchend', (e) => {
         const now = Date.now();
-        if (now - lastTap < 300) {
-          e.preventDefault();
-          removeDice(btn);
-        }
+        if (now - lastTap < 300) { e.preventDefault(); if (!isRolling && diceCount[btn.dataset.dice] > 0) { diceCount[btn.dataset.dice]--; updateDiceUI(); } }
         lastTap = now;
       }, { passive: false });
     });
@@ -1600,12 +2601,564 @@
     const magicContainer = document.querySelector(".magic-particles");
     for (let i = 0; i < 60; i++) {
       const p = document.createElement("span");
-      p.style.width = p.style.height = `${Math.random() * 3 + 2}px`;
-      p.style.left = `${Math.random() * 100}%`;
-      p.style.animationDuration = `${Math.random() * 10 + 8}s`;
-      p.style.animationDelay = `${Math.random() * 10}s`;
+      p.style.width = p.style.height = (Math.random() * 3 + 2) + 'px';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
       magicContainer.appendChild(p);
     }
+
+    // ====== CHARACTER MANAGEMENT ======
+    let currentPage = 0;
+    let totalPages = 0;
+    let totalCharacters = 0;
+    const PAGE_SIZE = 12;
+    let compendiumData = {};
+    let currentStep = 1;
+    const tagData = { skills: [], languages: [], spells: [] };
+    let selectedImportFile = null;
+
+    // Toast
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + (type || '');
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    }
+
+    // Ability modifier calc
+    function abilityMod(score) {
+      const mod = Math.floor((score - 10) / 2);
+      return mod >= 0 ? '+' + mod : '' + mod;
+    }
+
+    // HP bar color
+    function hpClass(current, max) {
+      if (max === 0) return 'hp-high';
+      const pct = current / max;
+      if (pct > 0.5) return 'hp-high';
+      if (pct > 0.25) return 'hp-mid';
+      return 'hp-low';
+    }
+
+    // ====== LOAD CHARACTERS ======
+    async function loadCharacters(page) {
+      const container = document.getElementById('charactersContent');
+      container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Summoning your heroes...</p></div>';
+      document.getElementById('paginationContainer').style.display = 'none';
+
+      try {
+        const data = await getCharacters(page, PAGE_SIZE);
+        currentPage = data.page;
+        totalPages = data.totalPages;
+        totalCharacters = data.totalElements;
+
+        document.getElementById('charCountBadge').textContent = totalCharacters;
+
+        if (!data.content || data.content.length === 0) {
+          container.innerHTML = '<div class="empty-state">' +
+            '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
+            '<h3>No Heroes Yet</h3>' +
+            '<p>Your party awaits! Create your first character to begin your adventure.</p>' +
+            '</div>';
+          return;
+        }
+
+        let html = '<div class="characters-grid">';
+        data.content.forEach(function(ch) {
+          const hpPct = ch.hitPointsMax > 0 ? Math.round((ch.hitPointsCurrent / ch.hitPointsMax) * 100) : 100;
+          const hpColor = hpClass(ch.hitPointsCurrent, ch.hitPointsMax);
+          html += '<div class="character-card" onclick="openDetailModal(' + ch.id + ')">' +
+            '<div class="card-top">' +
+              '<div class="char-avatar">' + (ch.name ? ch.name.charAt(0).toUpperCase() : '?') + '</div>' +
+              '<div class="card-identity">' +
+                '<h3>' + escapeHtml(ch.name) + '</h3>' +
+                '<p>' + escapeHtml(ch.species || '') + ' ' + escapeHtml(ch.characterClass || '') + '</p>' +
+              '</div>' +
+              '<div class="card-level">' +
+                '<div class="level-num">' + (ch.level || 1) + '</div>' +
+                '<div class="level-label">Level</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="card-stats">' +
+              '<div class="card-stat">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+                '<span class="stat-val">' + ch.hitPointsCurrent + '/' + ch.hitPointsMax + '</span>' +
+                '<div class="hp-bar"><div class="hp-bar-fill ' + hpColor + '" style="width:' + hpPct + '%"></div></div>' +
+              '</div>' +
+              '<div class="card-stat">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' +
+                '<span class="stat-val">' + (ch.armorClass || '--') + '</span>' +
+                '<span class="stat-label">AC</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+
+        renderPagination();
+      } catch (error) {
+        console.error('Failed to load characters:', error);
+        container.innerHTML = '<div class="error-state">' +
+          '<h3>Failed to Load Characters</h3>' +
+          '<p>' + getErrorMessage(error) + '</p>' +
+          '<button class="action-btn" onclick="loadCharacters(' + page + ')">Try Again</button>' +
+          '</div>';
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ====== PAGINATION ======
+    function renderPagination() {
+      const container = document.getElementById('paginationContainer');
+      if (totalPages <= 1) { container.style.display = 'none'; return; }
+      container.style.display = 'flex';
+
+      let html = '<button class="page-btn" onclick="loadCharacters(' + (currentPage - 1) + ')" ' + (currentPage === 0 ? 'disabled' : '') + '>&laquo;</button>';
+      for (let i = 0; i < totalPages; i++) {
+        if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 0 && i !== totalPages - 1) {
+          if (i === 1 && currentPage > 3) { html += '<span class="page-btn" style="border:none;cursor:default">...</span>'; }
+          else if (i === totalPages - 2 && currentPage < totalPages - 4) { html += '<span class="page-btn" style="border:none;cursor:default">...</span>'; }
+          continue;
+        }
+        html += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" onclick="loadCharacters(' + i + ')">' + (i + 1) + '</button>';
+      }
+      html += '<button class="page-btn" onclick="loadCharacters(' + (currentPage + 1) + ')" ' + (currentPage >= totalPages - 1 ? 'disabled' : '') + '>&raquo;</button>';
+      container.innerHTML = html;
+    }
+
+    // ====== DETAIL MODAL ======
+    function openDetailModal(characterId) {
+      document.getElementById('detailModal').classList.add('active');
+      document.getElementById('detailContent').innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Loading details...</p></div>';
+      loadCharacterDetail(characterId);
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    async function loadCharacterDetail(characterId) {
+      // The GET /characters endpoint returns summary data; we render from that.
+      // Since there's no GET by ID endpoint, we fetch page and find the character.
+      // For now, we fetch all and find by ID (API may add detail endpoint later).
+      try {
+        // Search across pages to find this character
+        let found = null;
+        let page = 0;
+        while (!found && page < 50) {
+          const data = await getCharacters(page, 50);
+          found = data.content.find(function(c) { return c.id === characterId; });
+          if (data.content.length === 0 || page >= data.totalPages) break;
+          page++;
+        }
+
+        if (!found) {
+          document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Character Not Found</h3><p>Could not find the character details.</p></div>';
+          return;
+        }
+
+        renderCharacterDetail(found);
+      } catch (error) {
+        document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
+      }
+    }
+
+    function renderCharacterDetail(ch) {
+      const hpPct = ch.hitPointsMax > 0 ? Math.round((ch.hitPointsCurrent / ch.hitPointsMax) * 100) : 100;
+      const hpColor = hpClass(ch.hitPointsCurrent, ch.hitPointsMax);
+
+      let html = '<div class="detail-header">' +
+        '<div class="detail-avatar">' + (ch.name ? ch.name.charAt(0).toUpperCase() : '?') + '</div>' +
+        '<div class="detail-identity">' +
+          '<h2>' + escapeHtml(ch.name) + '</h2>' +
+          '<p>' + escapeHtml(ch.species || '') + ' ' + escapeHtml(ch.characterClass || '') + '</p>' +
+        '</div>' +
+        '<div class="detail-level-badge">' +
+          '<div class="level-num">' + (ch.level || 1) + '</div>' +
+          '<div class="level-label">Level</div>' +
+        '</div>' +
+      '</div>';
+
+      html += '<div class="detail-grid">';
+
+      // Combat Stats
+      html += '<div class="detail-block">' +
+        '<h4>Combat</h4>' +
+        '<div class="stat-row"><span class="stat-name">Hit Points</span><span class="stat-val">' + ch.hitPointsCurrent + ' / ' + ch.hitPointsMax + '</span></div>' +
+        '<div style="margin:0.4rem 0"><div class="hp-bar" style="height:8px"><div class="hp-bar-fill ' + hpColor + '" style="width:' + hpPct + '%"></div></div></div>' +
+        '<div class="stat-row"><span class="stat-name">Armor Class</span><span class="stat-value">' + (ch.armorClass || '--') + '</span></div>' +
+      '</div>';
+
+      // Info
+      html += '<div class="detail-block">' +
+        '<h4>Info</h4>' +
+        '<div class="stat-row"><span class="stat-name">Species</span><span class="stat-value">' + escapeHtml(ch.species || '--') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Class</span><span class="stat-value">' + escapeHtml(ch.characterClass || '--') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Level</span><span class="stat-value">' + (ch.level || '--') + '</span></div>' +
+      '</div>';
+
+      html += '</div>';
+
+      document.getElementById('detailContent').innerHTML = html;
+    }
+
+    // ====== CREATE CHARACTER MODAL ======
+    function openCreateModal() {
+      document.getElementById('createModal').classList.add('active');
+      document.getElementById('createError').textContent = '';
+      currentStep = 1;
+      updateSteps();
+      loadCompendiumDropdowns();
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+      document.getElementById('createCharForm').reset();
+      tagData.skills = [];
+      tagData.languages = [];
+      tagData.spells = [];
+      renderTags('skillsWrapper', 'skillInput', tagData.skills);
+      renderTags('languagesWrapper', 'languageInput', tagData.languages);
+      renderTags('spellsWrapper', 'spellInput', tagData.spells);
+      document.getElementById('equipmentList').innerHTML = '';
+      currentStep = 1;
+      updateSteps();
+    }
+
+    // Step Navigation
+    function goToStep(step) {
+      // Validate current step before advancing
+      if (step > currentStep) {
+        if (currentStep === 1) {
+          const name = document.getElementById('charName').value.trim();
+          const species = document.getElementById('charSpecies').value;
+          const charClass = document.getElementById('charClass').value;
+          const level = document.getElementById('charLevel').value;
+          if (!name || !species || !charClass || !level) {
+            document.getElementById('createError').textContent = 'Please fill in all required fields (Name, Species, Class, Level).';
+            return;
+          }
+        }
+      }
+      document.getElementById('createError').textContent = '';
+      currentStep = step;
+      updateSteps();
+    }
+
+    function updateSteps() {
+      document.querySelectorAll('.form-step').forEach(function(el) {
+        el.classList.toggle('active', parseInt(el.dataset.step) === currentStep);
+      });
+      document.querySelectorAll('.step-dot').forEach(function(el) {
+        const s = parseInt(el.dataset.step);
+        el.classList.toggle('active', s === currentStep);
+        el.classList.toggle('completed', s < currentStep);
+      });
+    }
+
+    // Load compendium data for dropdowns
+    async function loadCompendiumDropdowns() {
+      if (compendiumData.loaded) return;
+      try {
+        const [speciesData, classesData, backgroundsData, alignmentsData, skillsData, languagesData] = await Promise.all([
+          getSpecies(), getClasses(), getBackgrounds(), getAlignments(), getSkills(), getLanguages()
+        ]);
+
+        compendiumData.species = speciesData;
+        compendiumData.classes = classesData;
+        compendiumData.backgrounds = backgroundsData;
+        compendiumData.alignments = alignmentsData;
+        compendiumData.skills = skillsData;
+        compendiumData.languages = languagesData;
+        compendiumData.loaded = true;
+
+        populateSelect('charSpecies', speciesData, 'name');
+        populateSelect('charClass', classesData, 'name');
+        populateSelect('charBackground', backgroundsData, 'name');
+        populateSelect('charAlignment', alignmentsData, 'name');
+
+        // Show skill suggestions
+        if (Array.isArray(skillsData)) {
+          const names = skillsData.map(function(s) { return s.name || s; });
+          document.getElementById('skillSuggestions').textContent = 'Available: ' + names.join(', ');
+        }
+      } catch (error) {
+        console.error('Failed to load compendium data:', error);
+      }
+    }
+
+    function populateSelect(selectId, data, nameField) {
+      const select = document.getElementById(selectId);
+      if (!select || !Array.isArray(data)) return;
+      // Keep first option
+      const firstOption = select.options[0];
+      select.innerHTML = '';
+      select.appendChild(firstOption);
+      data.forEach(function(item) {
+        const opt = document.createElement('option');
+        const name = typeof item === 'string' ? item : (item[nameField] || item.name || item);
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
+
+    // ====== TAG INPUTS ======
+    function setupTagInput(wrapperId, inputId, dataArray) {
+      const input = document.getElementById(inputId);
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const val = input.value.trim();
+          if (val && !dataArray.includes(val)) {
+            dataArray.push(val);
+            renderTags(wrapperId, inputId, dataArray);
+          }
+          input.value = '';
+        }
+      });
+    }
+
+    function renderTags(wrapperId, inputId, dataArray) {
+      const wrapper = document.getElementById(wrapperId);
+      const input = document.getElementById(inputId);
+      // Remove old tags
+      wrapper.querySelectorAll('.tag-item').forEach(function(el) { el.remove(); });
+      dataArray.forEach(function(tag, idx) {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'tag-item';
+        tagEl.innerHTML = escapeHtml(tag) + ' <span class="tag-remove" data-idx="' + idx + '">&times;</span>';
+        wrapper.insertBefore(tagEl, input);
+      });
+      wrapper.querySelectorAll('.tag-remove').forEach(function(el) {
+        el.addEventListener('click', function() {
+          const i = parseInt(el.dataset.idx);
+          dataArray.splice(i, 1);
+          renderTags(wrapperId, inputId, dataArray);
+        });
+      });
+    }
+
+    setupTagInput('skillsWrapper', 'skillInput', tagData.skills);
+    setupTagInput('languagesWrapper', 'languageInput', tagData.languages);
+    setupTagInput('spellsWrapper', 'spellInput', tagData.spells);
+
+    // ====== EQUIPMENT ROWS ======
+    function addEquipmentRow() {
+      const list = document.getElementById('equipmentList');
+      const row = document.createElement('div');
+      row.className = 'form-row';
+      row.style.alignItems = 'end';
+      row.innerHTML = '<div class="form-group"><label>Item Name</label><input type="text" class="eq-name" placeholder="Longsword"></div>' +
+        '<div class="form-group" style="max-width:80px"><label>Qty</label><input type="number" class="eq-qty" min="1" value="1"></div>' +
+        '<div class="form-group" style="max-width:80px;align-items:center"><label>Equipped</label><input type="checkbox" class="eq-equipped" style="width:20px;height:20px"></div>' +
+        '<button type="button" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0.5rem" onclick="this.parentElement.remove()">&times;</button>';
+      list.appendChild(row);
+    }
+
+    // ====== SUBMIT CHARACTER ======
+    async function submitCharacter() {
+      const btn = document.getElementById('submitCharBtn');
+      const errorEl = document.getElementById('createError');
+      errorEl.textContent = '';
+
+      const name = document.getElementById('charName').value.trim();
+      const species = document.getElementById('charSpecies').value;
+      const charClass = document.getElementById('charClass').value;
+      const level = parseInt(document.getElementById('charLevel').value);
+
+      if (!name || !species || !charClass || !level) {
+        errorEl.textContent = 'Please fill in all required fields.';
+        goToStep(1);
+        return;
+      }
+
+      const abilityScores = {
+        strength: parseInt(document.getElementById('abilStr').value) || 10,
+        dexterity: parseInt(document.getElementById('abilDex').value) || 10,
+        constitution: parseInt(document.getElementById('abilCon').value) || 10,
+        intelligence: parseInt(document.getElementById('abilInt').value) || 10,
+        wisdom: parseInt(document.getElementById('abilWis').value) || 10,
+        charisma: parseInt(document.getElementById('abilCha').value) || 10
+      };
+
+      // Saving throw proficiencies
+      const savingThrowProficiencies = [];
+      document.querySelectorAll('.save-prof-cb:checked').forEach(function(cb) {
+        savingThrowProficiencies.push(cb.value);
+      });
+
+      // Equipment
+      const equipment = [];
+      document.querySelectorAll('#equipmentList .form-row').forEach(function(row) {
+        const eName = row.querySelector('.eq-name').value.trim();
+        if (eName) {
+          equipment.push({
+            name: eName,
+            quantity: parseInt(row.querySelector('.eq-qty').value) || 1,
+            equipped: row.querySelector('.eq-equipped').checked
+          });
+        }
+      });
+
+      // Physical characteristics
+      const physicalCharacteristics = {};
+      const physAge = document.getElementById('physAge').value.trim();
+      const physHeight = document.getElementById('physHeight').value.trim();
+      const physWeight = document.getElementById('physWeight').value.trim();
+      const physEyes = document.getElementById('physEyes').value.trim();
+      const physHair = document.getElementById('physHair').value.trim();
+      const physSkin = document.getElementById('physSkin').value.trim();
+      if (physAge) physicalCharacteristics.age = physAge;
+      if (physHeight) physicalCharacteristics.height = physHeight;
+      if (physWeight) physicalCharacteristics.weight = physWeight;
+      if (physEyes) physicalCharacteristics.eyes = physEyes;
+      if (physHair) physicalCharacteristics.hair = physHair;
+      if (physSkin) physicalCharacteristics.skin = physSkin;
+
+      const payload = {
+        name: name,
+        species: species,
+        characterClass: charClass,
+        level: level,
+        abilityScores: abilityScores
+      };
+
+      const subrace = document.getElementById('charSubrace').value.trim();
+      const subclass = document.getElementById('charSubclass').value.trim();
+      const background = document.getElementById('charBackground').value;
+      const alignment = document.getElementById('charAlignment').value;
+
+      if (subrace) payload.subrace = subrace;
+      if (subclass) payload.subclass = subclass;
+      if (background) payload.background = background;
+      if (alignment) payload.alignment = alignment;
+      if (savingThrowProficiencies.length > 0) payload.savingThrowProficiencies = savingThrowProficiencies;
+      if (tagData.skills.length > 0) payload.skillProficiencies = tagData.skills;
+      if (tagData.languages.length > 0) payload.languages = tagData.languages;
+      if (tagData.spells.length > 0) payload.spells = tagData.spells;
+      if (equipment.length > 0) payload.equipment = equipment;
+      if (Object.keys(physicalCharacteristics).length > 0) payload.physicalCharacteristics = physicalCharacteristics;
+
+      const traits = document.getElementById('charTraits').value.trim();
+      const ideals = document.getElementById('charIdeals').value.trim();
+      const bonds = document.getElementById('charBonds').value.trim();
+      const flaws = document.getElementById('charFlaws').value.trim();
+      if (traits) payload.personalityTraits = traits;
+      if (ideals) payload.ideals = ideals;
+      if (bonds) payload.bonds = bonds;
+      if (flaws) payload.flaws = flaws;
+
+      btn.disabled = true;
+      btn.textContent = 'Forging...';
+
+      try {
+        await createCharacter(payload);
+        closeCreateModal();
+        showToast('Hero created successfully!', 'success');
+        loadCharacters(0);
+      } catch (error) {
+        errorEl.textContent = getErrorMessage(error);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Hero';
+      }
+    }
+
+    // ====== IMPORT PDF MODAL ======
+    function openImportModal() {
+      document.getElementById('importModal').classList.add('active');
+      document.getElementById('importError').textContent = '';
+      document.getElementById('importFileName').textContent = '';
+      document.getElementById('importSubmitBtn').disabled = true;
+      selectedImportFile = null;
+    }
+
+    function closeImportModal() {
+      document.getElementById('importModal').classList.remove('active');
+      selectedImportFile = null;
+    }
+
+    // Drop area events
+    const dropArea = document.getElementById('importDropArea');
+    const fileInput = document.getElementById('importFileInput');
+
+    dropArea.addEventListener('click', function() { fileInput.click(); });
+    dropArea.addEventListener('dragover', function(e) { e.preventDefault(); dropArea.classList.add('dragover'); });
+    dropArea.addEventListener('dragleave', function() { dropArea.classList.remove('dragover'); });
+    dropArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) {
+        handleImportFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files.length > 0) {
+        handleImportFile(fileInput.files[0]);
+      }
+    });
+
+    function handleImportFile(file) {
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        document.getElementById('importError').textContent = 'Please select a PDF file.';
+        return;
+      }
+      selectedImportFile = file;
+      document.getElementById('importFileName').textContent = file.name;
+      document.getElementById('importSubmitBtn').disabled = false;
+      document.getElementById('importError').textContent = '';
+    }
+
+    async function submitImport() {
+      if (!selectedImportFile) return;
+
+      const btn = document.getElementById('importSubmitBtn');
+      const errorEl = document.getElementById('importError');
+      errorEl.textContent = '';
+      btn.disabled = true;
+      btn.textContent = 'Importing...';
+
+      try {
+        await importCharacterSheet(selectedImportFile);
+        closeImportModal();
+        showToast('Character imported successfully!', 'success');
+        loadCharacters(0);
+      } catch (error) {
+        errorEl.textContent = getErrorMessage(error);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Import';
+      }
+    }
+
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          overlay.classList.remove('active');
+        }
+      });
+    });
+
+    // Close modals on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(function(m) { m.classList.remove('active'); });
+      }
+    });
+
+    // ====== INIT ======
+    loadCharacters(0);
   </script>
 </body>
 </html>
