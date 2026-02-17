@@ -36,6 +36,13 @@ const API_CONFIG = {
     TOOL_TYPES: '/api/compendium/tool-types',
     PROFICIENCY_TYPES: '/api/compendium/proficiency-types'
   },
+  CHAT: {
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.CHAT_PORT}`,
+    WS: '/api/chat/ws',
+    CONVERSATIONS: '/api/chat/conversations',
+    CONVERSATIONS_READ: '/api/chat/conversations/{id}/read',
+    MESSAGES: '/api/chat/conversations/{conversationId}/messages'
+  },
   TIMEOUT: 10000 // 10 seconds
 };
 

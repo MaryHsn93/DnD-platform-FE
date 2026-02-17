@@ -1448,23 +1448,19 @@
         <div class="chat-tab" data-tab="party">My Party</div>
       </div>
 
-      <div class="online-users" id="onlineUsers">
-        <div class="online-user" data-user="Thorin"><div class="online-user-avatar">T</div><span class="online-user-name">Thorin</span></div>
-        <div class="online-user" data-user="Elara"><div class="online-user-avatar">E</div><span class="online-user-name">Elara</span></div>
-        <div class="online-user" data-user="Grimjaw"><div class="online-user-avatar">G</div><span class="online-user-name">Grimjaw</span></div>
-      </div>
+      <div class="online-users" id="onlineUsers"></div>
 
       <div class="chat-messages" id="chatMessages"></div>
 
       <div class="chat-input-area">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
-        <button class="chat-send-btn" onclick="sendMessage()">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="TavernChat.handleKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
+        <button class="chat-send-btn" onclick="TavernChat.sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
         </button>
       </div>
     </div>
 
-    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="TavernChat.toggleChat()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="chat-notification" id="chatNotification">0</span>
     </button>
@@ -1473,6 +1469,7 @@
   <script src="js/env.js"></script>
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
+  <script src="js/chat.js"></script>
   <script>
     // Auth Guard
     const token = localStorage.getItem('authToken');
@@ -1500,83 +1497,7 @@
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
 
     // Chat
-    const chatWindow = document.getElementById('chatWindow');
-    const chatToggleBtn = document.getElementById('chatToggleBtn');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatInput = document.getElementById('chatInput');
-    const chatNotification = document.getElementById('chatNotification');
-    let unreadCount = 0, currentTab = 'tavern';
-
-    const onlineUsers = [{ name: 'Thorin' }, { name: 'Elara' }, { name: 'Grimjaw' }];
-    const sampleMessages = {
-      tavern: [
-        { sender: 'Thorin', text: 'Anyone up for a dungeon crawl tonight?', time: '10:30' },
-        { sender: 'Elara', text: 'I need to finish my spell preparations first!', time: '10:32' },
-        { sender: 'Grimjaw', text: 'GRIMJAW READY TO SMASH!', time: '10:33' }
-      ],
-      party: [
-        { sender: 'Thorin', text: 'Remember, we meet at the old ruins at midnight.', time: '09:15' },
-        { sender: 'Elara', text: "I'll bring the scrolls we discussed.", time: '09:20' }
-      ]
-    };
-
-    function initChat() { loadMessages(currentTab); }
-
-    function loadMessages(tab) {
-      chatMessages.innerHTML = '';
-      (sampleMessages[tab] || []).forEach(msg => addMessageToChat(msg.sender, msg.text, msg.time, msg.sender !== username));
-    }
-
-    function addMessageToChat(sender, text, time, isReceived = true) {
-      const div = document.createElement('div');
-      div.className = `message ${isReceived ? 'received' : 'sent'}`;
-      div.innerHTML = `<div class="message-header"><div class="message-avatar">${sender.charAt(0)}</div><span class="message-sender">${sender}</span><span class="message-time">${time}</span></div><div class="message-content">${text}</div>`;
-      chatMessages.appendChild(div);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function toggleChat() {
-      chatWindow.classList.toggle('active');
-      chatToggleBtn.classList.toggle('active');
-      if (chatWindow.classList.contains('active')) { unreadCount = 0; updateNotificationBadge(); }
-    }
-
-    function sendMessage() {
-      const message = chatInput.value.trim();
-      if (!message) return;
-      const now = new Date();
-      const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-      addMessageToChat(username, message, time, false);
-      chatInput.value = '';
-      setTimeout(() => {
-        const randomUser = onlineUsers[Math.floor(Math.random() * onlineUsers.length)];
-        const responses = ['Interesting!', 'I agree.', 'Roll for persuasion!', 'May the dice be in your favor!', 'That reminds me of our last quest...'];
-        addMessageToChat(randomUser.name, responses[Math.floor(Math.random() * responses.length)], time, true);
-        if (!chatWindow.classList.contains('active')) { unreadCount++; updateNotificationBadge(); }
-      }, 1000 + Math.random() * 2000);
-    }
-
-    function handleChatKeypress(e) { if (e.key === 'Enter') sendMessage(); }
-
-    function updateNotificationBadge() {
-      if (unreadCount > 0) { chatNotification.textContent = unreadCount > 9 ? '9+' : unreadCount; chatNotification.classList.add('show'); }
-      else { chatNotification.classList.remove('show'); }
-    }
-
-    document.querySelectorAll('.chat-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentTab = tab.dataset.tab;
-        loadMessages(currentTab);
-      });
-    });
-
-    document.querySelectorAll('.online-user').forEach(user => {
-      user.addEventListener('click', () => { chatInput.value = `@${user.dataset.user} ` + chatInput.value; chatInput.focus(); });
-    });
-
-    initChat();
+    TavernChat.init();
 
     // ====== iOS/iPad Keyboard Handling ======
     (function() {
