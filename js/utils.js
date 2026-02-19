@@ -328,39 +328,26 @@ function showReloginOverlay() {
           margin-bottom: 1rem;
           min-height: 1.2em;
         }
-        .relogin-forgot-link {
-          display: block;
+        .relogin-toggle {
           text-align: center;
-          color: #d4af37;
-          font-size: 0.85rem;
-          margin-top: 0.5rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          text-decoration: none;
-          background: none;
-          border: none;
-          font-family: 'Inter', sans-serif;
-          padding: 0;
-        }
-        .relogin-forgot-link:hover {
-          color: #f0d060;
-          text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-        }
-        .relogin-back-link {
-          display: block;
-          text-align: center;
+          margin-top: 1rem;
           color: #b5b5b5;
-          font-size: 0.85rem;
-          margin-top: 0.75rem;
           cursor: pointer;
           transition: all 0.3s ease;
-          background: none;
-          border: none;
           font-family: 'Inter', sans-serif;
-          padding: 0;
+          font-size: 0.85rem;
         }
-        .relogin-back-link:hover {
+        .relogin-toggle:hover {
           color: #f5f5f5;
+        }
+        .relogin-toggle span {
+          color: #d4af37;
+          text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+          transition: all 0.3s ease;
+        }
+        .relogin-toggle span:hover {
+          color: #f0d060;
+          text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
         }
       </style>
       <div class="relogin-card">
@@ -374,7 +361,7 @@ function showReloginOverlay() {
             <input type="password" id="relogin-password" placeholder="Password" required />
             <button type="submit">Accedi</button>
           </form>
-          <button type="button" class="relogin-forgot-link" id="relogin-forgot-btn">Password dimenticata?</button>
+          <div class="relogin-toggle" id="relogin-forgot-btn"><span>Password dimenticata?</span></div>
         </div>
         <!-- Forgot Password View -->
         <div id="relogin-forgot-view" style="display: none;">
@@ -386,7 +373,7 @@ function showReloginOverlay() {
             <input type="email" id="relogin-forgot-email" placeholder="Email" required />
             <button type="submit">Invia Email di Recupero</button>
           </form>
-          <button type="button" class="relogin-back-link" id="relogin-back-btn">Torna al login</button>
+          <div class="relogin-toggle" id="relogin-back-btn"><span>Torna al login</span></div>
         </div>
       </div>
     `;
