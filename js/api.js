@@ -16,6 +16,10 @@ const API_CONFIG = {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.REGISTER_PORT}`,
     ENDPOINT: '/users'
   },
+  PASSWORD_RESET: {
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.AUTH_PORT}`,
+    ENDPOINT: '/auth/password-reset'
+  },
   COMPENDIUM: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.COMPENDIUM_PORT}`,
     CLASSES: '/api/compendium/classes',
@@ -665,6 +669,27 @@ async function importCharacterSheet(file) {
 
   } catch (error) {
     console.error('Import character error:', error);
+    throw error;
+  }
+}
+
+// ====== REQUEST PASSWORD RESET ======
+async function requestPasswordReset(email) {
+  const url = API_CONFIG.PASSWORD_RESET.BASE_URL + API_CONFIG.PASSWORD_RESET.ENDPOINT;
+
+  console.log('Requesting password reset for:', email);
+
+  try {
+    const result = await apiRequest(url, {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+
+    console.log('Password reset request successful:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Password reset request error:', error);
     throw error;
   }
 }

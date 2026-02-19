@@ -321,45 +321,107 @@ function showReloginOverlay() {
           margin-bottom: 1rem;
           min-height: 1.2em;
         }
+        .relogin-success {
+          color: #51cf66;
+          text-align: center;
+          font-size: 0.85rem;
+          margin-bottom: 1rem;
+          min-height: 1.2em;
+        }
+        .relogin-forgot-link {
+          display: block;
+          text-align: center;
+          color: #d4af37;
+          font-size: 0.85rem;
+          margin-top: 0.5rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          background: none;
+          border: none;
+          font-family: 'Inter', sans-serif;
+          padding: 0;
+        }
+        .relogin-forgot-link:hover {
+          color: #f0d060;
+          text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        .relogin-back-link {
+          display: block;
+          text-align: center;
+          color: #b5b5b5;
+          font-size: 0.85rem;
+          margin-top: 0.75rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          background: none;
+          border: none;
+          font-family: 'Inter', sans-serif;
+          padding: 0;
+        }
+        .relogin-back-link:hover {
+          color: #f5f5f5;
+        }
       </style>
       <div class="relogin-card">
-        <h3>Session Expired</h3>
-        <p class="relogin-subtitle">Your session has expired. Please log in again to continue.</p>
-        <div class="relogin-error" id="relogin-error"></div>
-        <form id="relogin-form">
-          <input type="text" id="relogin-username" placeholder="Username" required />
-          <input type="email" id="relogin-email" placeholder="Email" required />
-          <input type="password" id="relogin-password" placeholder="Password" required />
-          <button type="submit">Sign In</button>
-        </form>
+        <!-- Login View -->
+        <div id="relogin-login-view">
+          <h3>Sessione Scaduta</h3>
+          <p class="relogin-subtitle">La tua sessione è scaduta. Accedi di nuovo per continuare.</p>
+          <div class="relogin-error" id="relogin-error"></div>
+          <form id="relogin-form">
+            <input type="text" id="relogin-identifier" placeholder="Email o Username" required />
+            <input type="password" id="relogin-password" placeholder="Password" required />
+            <button type="submit">Accedi</button>
+          </form>
+          <button type="button" class="relogin-forgot-link" id="relogin-forgot-btn">Password dimenticata?</button>
+        </div>
+        <!-- Forgot Password View -->
+        <div id="relogin-forgot-view" style="display: none;">
+          <h3>Recupera Password</h3>
+          <p class="relogin-subtitle">Inserisci la tua email e ti invieremo un link per reimpostare la password.</p>
+          <div class="relogin-error" id="relogin-forgot-error"></div>
+          <div class="relogin-success" id="relogin-forgot-success"></div>
+          <form id="relogin-forgot-form">
+            <input type="email" id="relogin-forgot-email" placeholder="Email" required />
+            <button type="submit">Invia Email di Recupero</button>
+          </form>
+          <button type="button" class="relogin-back-link" id="relogin-back-btn">Torna al login</button>
+        </div>
       </div>
     `;
 
     document.body.appendChild(overlay);
 
+    // === Login View ===
     const form = document.getElementById('relogin-form');
     const errorEl = document.getElementById('relogin-error');
+    const loginView = document.getElementById('relogin-login-view');
+    const forgotView = document.getElementById('relogin-forgot-view');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = form.querySelector('button');
-      const username = document.getElementById('relogin-username').value.trim();
-      const email = document.getElementById('relogin-email').value.trim();
+      const identifier = document.getElementById('relogin-identifier').value.trim();
       const password = document.getElementById('relogin-password').value;
 
       errorEl.textContent = '';
       btn.disabled = true;
-      btn.textContent = 'Signing in...';
+      btn.textContent = 'Accesso in corso...';
 
       try {
-        const data = await loginUser(username, email, password);
+        const isEmail = identifier.includes('@');
+        const username = isEmail ? identifier.split('@')[0] : identifier;
+        const email = isEmail ? identifier : '';
+
+        const data = await loginUser(username, isEmail ? identifier : '', password);
         saveAuthData(
           data.accessToken,
           data.refreshToken,
           data.accessTokenExpiresAt,
           data.refreshTokenExpiresAt,
           username,
-          email,
+          email || identifier,
           data.userId
         );
 
@@ -369,7 +431,52 @@ function showReloginOverlay() {
       } catch (err) {
         errorEl.textContent = getErrorMessage(err);
         btn.disabled = false;
-        btn.textContent = 'Sign In';
+        btn.textContent = 'Accedi';
+      }
+    });
+
+    // === Forgot Password Toggle ===
+    document.getElementById('relogin-forgot-btn').addEventListener('click', () => {
+      loginView.style.display = 'none';
+      forgotView.style.display = 'block';
+    });
+
+    document.getElementById('relogin-back-btn').addEventListener('click', () => {
+      forgotView.style.display = 'none';
+      loginView.style.display = 'block';
+    });
+
+    // === Forgot Password Form ===
+    const forgotForm = document.getElementById('relogin-forgot-form');
+    const forgotErrorEl = document.getElementById('relogin-forgot-error');
+    const forgotSuccessEl = document.getElementById('relogin-forgot-success');
+
+    forgotForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = forgotForm.querySelector('button');
+      const email = document.getElementById('relogin-forgot-email').value.trim();
+
+      forgotErrorEl.textContent = '';
+      forgotSuccessEl.textContent = '';
+
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.valid) {
+        forgotErrorEl.textContent = emailValidation.message;
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Invio in corso...';
+
+      try {
+        await requestPasswordReset(email);
+        forgotSuccessEl.textContent = 'Email inviata! Controlla la tua casella di posta per il link di recupero.';
+        forgotForm.querySelector('input').disabled = true;
+        btn.style.display = 'none';
+      } catch (err) {
+        forgotErrorEl.textContent = getErrorMessage(err);
+        btn.disabled = false;
+        btn.textContent = 'Invia Email di Recupero';
       }
     });
   });

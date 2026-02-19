@@ -464,6 +464,59 @@
       display: flex;
       align-items: center;
     }
+
+    /* ====== FORGOT PASSWORD ====== */
+    .forgot-link {
+      display: block;
+      text-align: center;
+      color: var(--gold);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: none;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      padding: 0;
+      width: 100%;
+    }
+    .forgot-link:hover {
+      color: #f0d060;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+    .back-to-login {
+      display: block;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: none;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      padding: 0;
+      width: 100%;
+    }
+    .back-to-login:hover {
+      color: var(--text-light);
+    }
+    .success-message {
+      background: rgba(81, 207, 102, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: #a8e6a3;
+      padding: 0.8rem;
+      border-radius: 12px;
+      border: 1px solid rgba(81, 207, 102, 0.4);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      animation: slideDown 0.3s ease;
+      box-shadow:
+        0 4px 16px rgba(81, 207, 102, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
   </style>
 </head>
 <body>
@@ -481,17 +534,28 @@
 
   <section class="auth">
     <div class="card" id="authCard">
-      <h3>Login</h3>
-      <div id="loginErrorContainer"></div>
-      <input type="text" id="loginEmail" placeholder="Email o Username" required>
-      <div class="input-wrapper">
-        <input type="password" id="loginPassword" placeholder="Password" required>
-        
+      <!-- Login View -->
+      <div id="loginView">
+        <h3>Login</h3>
+        <div id="loginErrorContainer"></div>
+        <input type="text" id="loginEmail" placeholder="Email o Username" required>
+        <div class="input-wrapper">
+          <input type="password" id="loginPassword" placeholder="Password" required>
+        </div>
+        <button id="loginButton" type="button">Sign In</button>
+        <button type="button" class="forgot-link" id="forgotPasswordBtn">Password dimenticata?</button>
+        <div class="toggle" onclick="toggleForm()">
+          Don't have an account? <span>Register</span>
+        </div>
       </div>
-    
-      <button id="loginButton" type="button">Sign In</button>
-      <div class="toggle" onclick="toggleForm()">
-        Don't have an account? <span>Register</span>
+      <!-- Forgot Password View -->
+      <div id="forgotView" style="display: none;">
+        <h3>Recupera Password</h3>
+        <div id="forgotErrorContainer"></div>
+        <div id="forgotSuccessContainer"></div>
+        <input type="email" id="forgotEmail" placeholder="Email" required>
+        <button id="forgotSendBtn" type="button">Invia Email di Recupero</button>
+        <button type="button" class="back-to-login" id="backToLoginBtn">Torna al login</button>
       </div>
     </div>
   </section>
@@ -505,16 +569,26 @@
       isLogin = !isLogin;
       card.innerHTML = isLogin
         ? `
-          <h3>Login</h3>
-          <div id="loginErrorContainer"></div>
-          <input type="text" id="loginEmail" placeholder="Email o Username" required>
-          <div class="input-wrapper">
-            <input type="password" id="loginPassword" placeholder="Password" required>
-          
-          </div>
+          <div id="loginView">
+            <h3>Login</h3>
+            <div id="loginErrorContainer"></div>
+            <input type="text" id="loginEmail" placeholder="Email o Username" required>
+            <div class="input-wrapper">
+              <input type="password" id="loginPassword" placeholder="Password" required>
+            </div>
             <button id="loginButton" type="button">Sign In</button>
-          <div class="toggle" onclick="toggleForm()">
-            Don't have an account? <span>Register</span>
+            <button type="button" class="forgot-link" id="forgotPasswordBtn">Password dimenticata?</button>
+            <div class="toggle" onclick="toggleForm()">
+              Don't have an account? <span>Register</span>
+            </div>
+          </div>
+          <div id="forgotView" style="display: none;">
+            <h3>Recupera Password</h3>
+            <div id="forgotErrorContainer"></div>
+            <div id="forgotSuccessContainer"></div>
+            <input type="email" id="forgotEmail" placeholder="Email" required>
+            <button id="forgotSendBtn" type="button">Invia Email di Recupero</button>
+            <button type="button" class="back-to-login" id="backToLoginBtn">Torna al login</button>
           </div>
         `
         : `
@@ -539,6 +613,11 @@
       // Re-attach caps lock listeners
       attachCapsLockListeners();
       setupPasswordToggle();
+
+      // Re-attach forgot password listeners
+      if (isLogin) {
+        attachForgotPasswordListeners();
+      }
     }
 
     
@@ -604,10 +683,81 @@
       });
     }
 
-    // Initialize caps lock listeners on page load
+    // ====== FORGOT PASSWORD ======
+    function attachForgotPasswordListeners() {
+      const forgotBtn = document.getElementById('forgotPasswordBtn');
+      const backBtn = document.getElementById('backToLoginBtn');
+      const sendBtn = document.getElementById('forgotSendBtn');
+      const loginView = document.getElementById('loginView');
+      const forgotView = document.getElementById('forgotView');
+
+      if (forgotBtn && loginView && forgotView) {
+        forgotBtn.addEventListener('click', () => {
+          loginView.style.display = 'none';
+          forgotView.style.display = 'block';
+        });
+      }
+
+      if (backBtn && loginView && forgotView) {
+        backBtn.addEventListener('click', () => {
+          forgotView.style.display = 'none';
+          loginView.style.display = 'block';
+          // Clear forgot password state
+          const forgotErrorContainer = document.getElementById('forgotErrorContainer');
+          const forgotSuccessContainer = document.getElementById('forgotSuccessContainer');
+          const forgotEmail = document.getElementById('forgotEmail');
+          if (forgotErrorContainer) forgotErrorContainer.innerHTML = '';
+          if (forgotSuccessContainer) forgotSuccessContainer.innerHTML = '';
+          if (forgotEmail) { forgotEmail.disabled = false; forgotEmail.value = ''; }
+          if (sendBtn) { sendBtn.style.display = ''; sendBtn.disabled = false; sendBtn.textContent = 'Invia Email di Recupero'; }
+        });
+      }
+
+      if (sendBtn) {
+        sendBtn.addEventListener('click', async () => {
+          const email = document.getElementById('forgotEmail').value.trim();
+          const forgotErrorContainer = document.getElementById('forgotErrorContainer');
+          const forgotSuccessContainer = document.getElementById('forgotSuccessContainer');
+
+          // Clear previous messages
+          if (forgotErrorContainer) forgotErrorContainer.innerHTML = '';
+          if (forgotSuccessContainer) forgotSuccessContainer.innerHTML = '';
+
+          // Validate email
+          const emailValidation = validateEmail(email);
+          if (!emailValidation.valid) {
+            showError(emailValidation.message, 'forgotErrorContainer');
+            return;
+          }
+
+          sendBtn.disabled = true;
+          sendBtn.textContent = 'Invio in corso...';
+
+          try {
+            await requestPasswordReset(email);
+            // Show success message
+            if (forgotSuccessContainer) {
+              const successDiv = document.createElement('div');
+              successDiv.className = 'success-message';
+              successDiv.textContent = 'Email inviata! Controlla la tua casella di posta per il link di recupero.';
+              forgotSuccessContainer.appendChild(successDiv);
+            }
+            document.getElementById('forgotEmail').disabled = true;
+            sendBtn.style.display = 'none';
+          } catch (err) {
+            showError(getErrorMessage(err), 'forgotErrorContainer');
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Invia Email di Recupero';
+          }
+        });
+      }
+    }
+
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
       attachCapsLockListeners();
       setupPasswordToggle();
+      attachForgotPasswordListeners();
     });
 
     // ====== MAGIC PARTICLES ======
