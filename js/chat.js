@@ -1,6 +1,6 @@
 // ====== TAVERN CHAT MODULE ======
 // WebSocket + REST integration with chat-service (port 8086)
-// Tabs: Tavern (global GROUP), Groups (custom groups)
+// Tabs: Tavern (global GROUP), Groups (custom groups), Private (1-to-1 DMs)
 const TavernChat = (function () {
   'use strict';
 
@@ -13,7 +13,7 @@ const TavernChat = (function () {
   let _wsConnectedOnce = false;
   let _wsConnectTimeout = null;
 
-  let _currentTab = 'tavern';           // 'tavern' | 'groups'
+  let _currentTab = 'tavern';           // 'tavern' | 'groups' | 'private'
   let _tavernConvId = null;              // ID of the Tavern GROUP conversation
   let _tavernMessages = [];              // messages for Tavern
   let _messageIds = new Set();
@@ -34,9 +34,12 @@ const TavernChat = (function () {
   let _messagesByConv = {};              // convId -> [msgs]
   let _pagesByConv = {};                 // convId -> pageNum
   let _hasMoreByConv = {};               // convId -> bool
-  let _activeConv = { groups: null };    // currently open convId per tab
-  let _viewMode = { groups: 'list' };    // 'list' | 'messages' | 'new'
+  let _activeConv = { groups: null, private: null };    // currently open convId per tab
+  let _viewMode = { groups: 'list', private: 'list' };  // 'list' | 'messages' | 'new'
   let _selectedGroupMembers = [];
+
+  // Private (DM) state
+  let _privateConversations = [];        // [{id, type, name, participants, lastMessage, lastMessageTime, unreadCount}]
   let _searchDebounce = null;
 
   const MAX_RECONNECT_DELAY = 30000;
@@ -246,9 +249,11 @@ const TavernChat = (function () {
     var subHeader = document.querySelector('.chat-sub-header');
     var chatWindow = document.getElementById('chatWindow');
 
+    var title = tab === 'private' ? 'Private' : 'Groups';
+
     if (subHeader) {
       subHeader.classList.add('active');
-      subHeader.querySelector('.chat-sub-title').textContent = 'Groups';
+      subHeader.querySelector('.chat-sub-title').textContent = title;
       subHeader.querySelector('.chat-back-btn').style.display = 'none';
       subHeader.querySelector('.chat-new-btn').style.display = 'flex';
     }
@@ -260,6 +265,12 @@ const TavernChat = (function () {
 
   function _showNewView(tab) {
     if (!tab) tab = _currentTab;
+
+    if (tab === 'private') {
+      _showNewPrivateView();
+      return;
+    }
+
     _viewMode[tab] = 'new';
     _selectedGroupMembers = [];
 
@@ -313,11 +324,50 @@ const TavernChat = (function () {
     }));
   }
 
+  function _showNewPrivateView() {
+    _viewMode['private'] = 'new';
+
+    var subHeader = document.querySelector('.chat-sub-header');
+    var chatWindow = document.getElementById('chatWindow');
+
+    if (subHeader) {
+      subHeader.classList.add('active');
+      subHeader.querySelector('.chat-sub-title').textContent = 'New Message';
+      subHeader.querySelector('.chat-back-btn').style.display = 'flex';
+      subHeader.querySelector('.chat-new-btn').style.display = 'none';
+    }
+
+    if (chatWindow) chatWindow.classList.add('hide-input');
+
+    var container = document.getElementById('chatMessages');
+    if (!container) return;
+
+    container.innerHTML =
+      '<div class="chat-new-view">' +
+        '<input type="text" class="chat-search-input" placeholder="Search users..." id="chatUserSearch">' +
+        '<div id="chatSearchResults"></div>' +
+      '</div>';
+
+    var searchInput = document.getElementById('chatUserSearch');
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        var q = searchInput.value.trim();
+        clearTimeout(_searchDebounce);
+        _searchDebounce = setTimeout(function () { _searchUsersForDM(q); }, 300);
+      });
+    }
+
+    // Show online users as initial suggestions
+    _renderDMUserResults(_onlineUsers.filter(function (u) {
+      return u.id && u.id.toString() !== _userId;
+    }));
+  }
+
   function _renderConversationList(tab) {
     var container = document.getElementById('chatMessages');
     if (!container) return;
 
-    var list = _groupConversations;
+    var list = tab === 'private' ? _privateConversations : _groupConversations;
 
     // Sort by lastMessageTime descending
     list.sort(function (a, b) {
@@ -327,8 +377,8 @@ const TavernChat = (function () {
     });
 
     if (list.length === 0) {
-      var msg = 'No groups yet';
-      var hint = 'Tap + to create a group';
+      var msg = tab === 'private' ? 'No private messages yet' : 'No groups yet';
+      var hint = 'Tap + to start a conversation';
       container.innerHTML =
         '<div class="chat-empty-state">' +
           '<p style="font-family:Cinzel,serif;color:var(--gold);margin-bottom:0.5rem;">' + msg + '</p>' +
@@ -548,6 +598,98 @@ const TavernChat = (function () {
     }
   }
 
+  // ====== PRIVATE (DM) ======
+
+  async function _searchUsersForDM(query) {
+    var resultsContainer = document.getElementById('chatSearchResults');
+    if (!resultsContainer) return;
+
+    if (!query || query.length < 1) {
+      _renderDMUserResults(_onlineUsers.filter(function (u) {
+        return u.id && u.id.toString() !== _userId;
+      }));
+      return;
+    }
+
+    try {
+      var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.USERS_SEARCH + '?q=' + encodeURIComponent(query);
+      var result = await authenticatedRequest(url, { method: 'GET' });
+      var users = Array.isArray(result.data) ? result.data : (result.data && result.data.content ? result.data.content : []);
+      _renderDMUserResults(users.filter(function (u) {
+        return (u.id || u.userId) && (u.id || u.userId).toString() !== _userId;
+      }));
+    } catch (e) {
+      var filtered = _onlineUsers.filter(function (u) {
+        return u.username && u.username.toLowerCase().indexOf(query.toLowerCase()) !== -1 &&
+               u.id && u.id.toString() !== _userId;
+      });
+      _renderDMUserResults(filtered);
+    }
+  }
+
+  function _renderDMUserResults(users) {
+    var resultsContainer = document.getElementById('chatSearchResults');
+    if (!resultsContainer) return;
+
+    resultsContainer.innerHTML = '';
+    if (!users || users.length === 0) {
+      resultsContainer.innerHTML = '<div class="chat-empty-state">No users found</div>';
+      return;
+    }
+
+    users.forEach(function (user) {
+      var uid = user.id || user.userId;
+      var uname = user.username || 'Unknown';
+      var initial = uname.charAt(0).toUpperCase();
+
+      var item = document.createElement('div');
+      item.className = 'chat-user-result';
+      item.innerHTML =
+        '<div class="conv-list-avatar">' + initial + '</div>' +
+        '<span style="color:var(--text-light);font-size:0.85rem;">' + _escapeHtml(uname) + '</span>';
+
+      item.addEventListener('click', function () {
+        _openOrCreateDM(uid, uname);
+      });
+      resultsContainer.appendChild(item);
+    });
+  }
+
+  function _findExistingDM(userId) {
+    return _privateConversations.find(function (c) {
+      return c.participants && c.participants.some(function (p) {
+        var pid = p.userId || p.id;
+        return pid && pid.toString() === userId.toString();
+      });
+    }) || null;
+  }
+
+  async function _openOrCreateDM(userId, username) {
+    var existing = _findExistingDM(userId);
+    if (existing) {
+      _openConversation(existing.id, 'private');
+      return;
+    }
+    await _createPrivateConversation(userId, username);
+  }
+
+  async function _createPrivateConversation(userId, username) {
+    var created = await _createConversation('PRIVATE', null, [userId]);
+    if (created) {
+      var conv = {
+        id: created.id,
+        type: 'PRIVATE',
+        name: created.name || username,
+        participants: created.participants || [{ userId: userId, username: username }],
+        lastMessage: null,
+        lastMessageTime: null,
+        unreadCount: 0
+      };
+      _privateConversations.unshift(conv);
+      _openConversation(created.id, 'private');
+    }
+  }
+
   // ====== WEBSOCKET ======
 
   async function _connectWebSocket() {
@@ -758,9 +900,9 @@ const TavernChat = (function () {
       });
     }
 
-    // Poll active Groups conversation
+    // Poll active Groups or Private conversation
     var activeTab = _currentTab;
-    if (activeTab === 'groups' && _viewMode[activeTab] === 'messages') {
+    if ((activeTab === 'groups' || activeTab === 'private') && _viewMode[activeTab] === 'messages') {
       var convId = _activeConv[activeTab];
       if (convId) {
         _fetchMessages(convId, 0).then(function (msgs) {
@@ -859,7 +1001,11 @@ const TavernChat = (function () {
     var found = convs.find(function (c) { return c.id === convId; });
     if (!found) return;
 
-    if (found.type === 'GROUP' && found.name !== 'Tavern') {
+    if (found.type === 'PRIVATE') {
+      if (!_privateConversations.find(function (c) { return c.id === found.id; })) {
+        _privateConversations.unshift(_normalizeConversation(found));
+      }
+    } else if (found.type === 'GROUP' && found.name !== 'Tavern') {
       if (!_groupConversations.find(function (c) { return c.id === found.id; })) {
         _groupConversations.unshift(_normalizeConversation(found));
       }
@@ -896,11 +1042,14 @@ const TavernChat = (function () {
       if (created) _tavernConvId = created.id;
     }
 
-    // Collect group conversations (excluding Tavern)
+    // Collect group and private conversations (excluding Tavern)
     _groupConversations = [];
+    _privateConversations = [];
 
     convs.forEach(function (c) {
-      if (c.type === 'GROUP' && c.name !== 'Tavern') {
+      if (c.type === 'PRIVATE') {
+        _privateConversations.push(_normalizeConversation(c));
+      } else if (c.type === 'GROUP' && c.name !== 'Tavern') {
         _groupConversations.push(_normalizeConversation(c));
       }
     });
@@ -913,7 +1062,7 @@ const TavernChat = (function () {
         _renderTavernMessages();
         _scrollToBottom();
       }
-    } else if (_currentTab === 'groups') {
+    } else if (_currentTab === 'groups' || _currentTab === 'private') {
       _showListView(_currentTab);
     }
   }
@@ -978,11 +1127,14 @@ const TavernChat = (function () {
   function _getTabForConversation(convId) {
     if (_tavernConvId === convId) return 'tavern';
     if (_groupConversations.find(function (c) { return c.id === convId; })) return 'groups';
+    if (_privateConversations.find(function (c) { return c.id === convId; })) return 'private';
     return null;
   }
 
   function _findConversation(convId) {
-    return _groupConversations.find(function (c) { return c.id === convId; }) || null;
+    return _groupConversations.find(function (c) { return c.id === convId; }) ||
+           _privateConversations.find(function (c) { return c.id === convId; }) ||
+           null;
   }
 
   function _updateConversationPreview(convId, msg) {
@@ -1296,6 +1448,17 @@ const TavernChat = (function () {
 
   function _getConvDisplayName(conv) {
     if (!conv) return 'Chat';
+    if (conv.type === 'PRIVATE') {
+      // Show the other participant's username
+      if (conv.participants && conv.participants.length > 0) {
+        var other = conv.participants.find(function (p) {
+          var pid = (p.userId || p.id || '').toString();
+          return pid !== _userId;
+        });
+        if (other) return other.username || 'Unknown';
+      }
+      return conv.name || 'Private';
+    }
     return conv.name || 'Group';
   }
 
