@@ -1932,6 +1932,99 @@
     .tag.proficient { border-color: #4ade80; color: #4ade80; }
     .tag.prepared { border-color: #60a5fa; color: #60a5fa; }
 
+    .detail-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .detail-actions .btn-edit {
+      flex: 1;
+      padding: 0.7rem 1.25rem;
+      border: 1px solid var(--gold);
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .detail-actions .btn-edit:hover {
+      background: rgba(212, 175, 55, 0.2);
+    }
+
+    .detail-actions .btn-delete {
+      padding: 0.7rem 1.25rem;
+      border: 1px solid #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .detail-actions .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .confirm-dialog {
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .confirm-dialog h3 {
+      font-family: 'Cinzel', serif;
+      color: #ef4444;
+      margin-bottom: 0.75rem;
+    }
+
+    .confirm-dialog p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .confirm-dialog .confirm-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .confirm-dialog .btn-confirm-delete {
+      padding: 0.6rem 1.5rem;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .confirm-dialog .btn-confirm-delete:hover {
+      background: #dc2626;
+    }
+
+    .confirm-dialog .btn-confirm-delete:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     /* Import area */
     .import-drop-area {
       border: 2px dashed rgba(212, 175, 55, 0.3);
@@ -2119,7 +2212,7 @@
   <div class="modal-overlay" id="createModal">
     <div class="modal">
       <div class="modal-header">
-        <h2>Forge a New Hero</h2>
+        <h2 id="createModalTitle">Forge a New Hero</h2>
         <button class="modal-close" onclick="closeCreateModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2353,6 +2446,27 @@
       </div>
       <div id="detailContent">
         <div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Loading details...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <h2>Delete Character</h2>
+        <button class="modal-close" onclick="closeDeleteModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="confirm-dialog">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5" style="margin-bottom:0.75rem"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        <h3>Are you sure?</h3>
+        <p>You are about to delete <strong id="deleteCharName"></strong>. This action cannot be undone.</p>
+        <div class="confirm-actions">
+          <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+          <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2619,6 +2733,8 @@
     let currentStep = 1;
     const tagData = { skills: [], languages: [], spells: [] };
     let selectedImportFile = null;
+    let editingCharacterId = null;
+    let deleteCharacterId = null;
 
     // Toast
     function showToast(message, type) {
@@ -2773,7 +2889,10 @@
       }
     }
 
+    let currentDetailCharacter = null;
+
     function renderCharacterDetail(ch) {
+      currentDetailCharacter = ch;
       const hpPct = ch.hitPointsMax > 0 ? Math.round((ch.hitPointsCurrent / ch.hitPointsMax) * 100) : 100;
       const hpColor = hpClass(ch.hitPointsCurrent, ch.hitPointsMax);
 
@@ -2805,15 +2924,50 @@
         '<div class="stat-row"><span class="stat-name">Species</span><span class="stat-value">' + escapeHtml(ch.species || '--') + '</span></div>' +
         '<div class="stat-row"><span class="stat-name">Class</span><span class="stat-value">' + escapeHtml(ch.characterClass || '--') + '</span></div>' +
         '<div class="stat-row"><span class="stat-name">Level</span><span class="stat-value">' + (ch.level || '--') + '</span></div>' +
+        (ch.subrace ? '<div class="stat-row"><span class="stat-name">Subrace</span><span class="stat-value">' + escapeHtml(ch.subrace) + '</span></div>' : '') +
+        (ch.subclass ? '<div class="stat-row"><span class="stat-name">Subclass</span><span class="stat-value">' + escapeHtml(ch.subclass) + '</span></div>' : '') +
+        (ch.background ? '<div class="stat-row"><span class="stat-name">Background</span><span class="stat-value">' + escapeHtml(ch.background) + '</span></div>' : '') +
+        (ch.alignment ? '<div class="stat-row"><span class="stat-name">Alignment</span><span class="stat-value">' + escapeHtml(ch.alignment) + '</span></div>' : '') +
       '</div>';
 
+      // Ability Scores
+      if (ch.abilityScores) {
+        var as = ch.abilityScores;
+        html += '<div class="detail-block full-width">' +
+          '<h4>Ability Scores</h4>' +
+          '<div class="ability-grid">' +
+            '<div class="ability-box"><div class="ability-label">STR</div><div class="ability-val">' + (as.strength || 10) + '</div><div class="ability-mod">' + abilityMod(as.strength || 10) + '</div></div>' +
+            '<div class="ability-box"><div class="ability-label">DEX</div><div class="ability-val">' + (as.dexterity || 10) + '</div><div class="ability-mod">' + abilityMod(as.dexterity || 10) + '</div></div>' +
+            '<div class="ability-box"><div class="ability-label">CON</div><div class="ability-val">' + (as.constitution || 10) + '</div><div class="ability-mod">' + abilityMod(as.constitution || 10) + '</div></div>' +
+            '<div class="ability-box"><div class="ability-label">INT</div><div class="ability-val">' + (as.intelligence || 10) + '</div><div class="ability-mod">' + abilityMod(as.intelligence || 10) + '</div></div>' +
+            '<div class="ability-box"><div class="ability-label">WIS</div><div class="ability-val">' + (as.wisdom || 10) + '</div><div class="ability-mod">' + abilityMod(as.wisdom || 10) + '</div></div>' +
+            '<div class="ability-box"><div class="ability-label">CHA</div><div class="ability-val">' + (as.charisma || 10) + '</div><div class="ability-mod">' + abilityMod(as.charisma || 10) + '</div></div>' +
+          '</div>' +
+        '</div>';
+      }
+
       html += '</div>';
+
+      // Action buttons
+      html += '<div class="detail-actions">' +
+        '<button class="btn-edit" onclick="editCharacter(' + ch.id + ')">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+          'Edit Character' +
+        '</button>' +
+        '<button class="btn-delete" onclick="openDeleteModal(' + ch.id + ', \'' + escapeHtml(ch.name).replace(/'/g, "\\'") + '\')">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+          'Delete' +
+        '</button>' +
+      '</div>';
 
       document.getElementById('detailContent').innerHTML = html;
     }
 
     // ====== CREATE CHARACTER MODAL ======
     function openCreateModal() {
+      editingCharacterId = null;
+      document.getElementById('createModalTitle').textContent = 'Forge a New Hero';
+      document.getElementById('submitCharBtn').textContent = 'Create Hero';
       document.getElementById('createModal').classList.add('active');
       document.getElementById('createError').textContent = '';
       currentStep = 1;
@@ -2831,6 +2985,7 @@
       renderTags('languagesWrapper', 'languageInput', tagData.languages);
       renderTags('spellsWrapper', 'spellInput', tagData.spells);
       document.getElementById('equipmentList').innerHTML = '';
+      editingCharacterId = null;
       currentStep = 1;
       updateSteps();
     }
@@ -3060,18 +3215,151 @@
       if (flaws) payload.flaws = flaws;
 
       btn.disabled = true;
-      btn.textContent = 'Forging...';
+
+      if (editingCharacterId) {
+        btn.textContent = 'Saving...';
+        try {
+          await updateCharacter(editingCharacterId, payload);
+          closeCreateModal();
+          closeDetailModal();
+          showToast('Character updated successfully!', 'success');
+          loadCharacters(currentPage);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Save Changes';
+        }
+      } else {
+        btn.textContent = 'Forging...';
+        try {
+          await createCharacter(payload);
+          closeCreateModal();
+          showToast('Hero created successfully!', 'success');
+          loadCharacters(0);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Create Hero';
+        }
+      }
+    }
+
+    // ====== EDIT CHARACTER ======
+    async function editCharacter(characterId) {
+      if (!currentDetailCharacter || currentDetailCharacter.id !== characterId) return;
+      const ch = currentDetailCharacter;
+
+      closeDetailModal();
+
+      editingCharacterId = characterId;
+      document.getElementById('createModalTitle').textContent = 'Edit Character';
+      document.getElementById('submitCharBtn').textContent = 'Save Changes';
+      document.getElementById('createModal').classList.add('active');
+      document.getElementById('createError').textContent = '';
+      currentStep = 1;
+      updateSteps();
+
+      await loadCompendiumDropdowns();
+
+      // Pre-fill basic info
+      document.getElementById('charName').value = ch.name || '';
+      document.getElementById('charLevel').value = ch.level || 1;
+      document.getElementById('charSpecies').value = ch.species || '';
+      document.getElementById('charSubrace').value = ch.subrace || '';
+      document.getElementById('charClass').value = ch.characterClass || '';
+      document.getElementById('charSubclass').value = ch.subclass || '';
+      document.getElementById('charBackground').value = ch.background || '';
+      document.getElementById('charAlignment').value = ch.alignment || '';
+
+      // Pre-fill ability scores
+      if (ch.abilityScores) {
+        document.getElementById('abilStr').value = ch.abilityScores.strength || 10;
+        document.getElementById('abilDex').value = ch.abilityScores.dexterity || 10;
+        document.getElementById('abilCon').value = ch.abilityScores.constitution || 10;
+        document.getElementById('abilInt').value = ch.abilityScores.intelligence || 10;
+        document.getElementById('abilWis').value = ch.abilityScores.wisdom || 10;
+        document.getElementById('abilCha').value = ch.abilityScores.charisma || 10;
+      }
+
+      // Pre-fill saving throw proficiencies
+      document.querySelectorAll('.save-prof-cb').forEach(function(cb) {
+        cb.checked = ch.savingThrowProficiencies && ch.savingThrowProficiencies.includes(cb.value);
+      });
+
+      // Pre-fill skills
+      tagData.skills = ch.skillProficiencies ? ch.skillProficiencies.slice() : [];
+      renderTags('skillsWrapper', 'skillInput', tagData.skills);
+
+      // Pre-fill languages
+      tagData.languages = ch.languages ? ch.languages.slice() : [];
+      renderTags('languagesWrapper', 'languageInput', tagData.languages);
+
+      // Pre-fill spells
+      tagData.spells = ch.spells ? ch.spells.slice() : [];
+      renderTags('spellsWrapper', 'spellInput', tagData.spells);
+
+      // Pre-fill equipment
+      document.getElementById('equipmentList').innerHTML = '';
+      if (ch.equipment && ch.equipment.length > 0) {
+        ch.equipment.forEach(function(item) {
+          addEquipmentRow();
+          var rows = document.querySelectorAll('#equipmentList .form-row');
+          var lastRow = rows[rows.length - 1];
+          lastRow.querySelector('.eq-name').value = item.name || '';
+          lastRow.querySelector('.eq-qty').value = item.quantity || 1;
+          lastRow.querySelector('.eq-equipped').checked = !!item.equipped;
+        });
+      }
+
+      // Pre-fill personality
+      document.getElementById('charTraits').value = ch.personalityTraits || '';
+      document.getElementById('charIdeals').value = ch.ideals || '';
+      document.getElementById('charBonds').value = ch.bonds || '';
+      document.getElementById('charFlaws').value = ch.flaws || '';
+
+      // Pre-fill physical characteristics
+      if (ch.physicalCharacteristics) {
+        document.getElementById('physAge').value = ch.physicalCharacteristics.age || '';
+        document.getElementById('physHeight').value = ch.physicalCharacteristics.height || '';
+        document.getElementById('physWeight').value = ch.physicalCharacteristics.weight || '';
+        document.getElementById('physEyes').value = ch.physicalCharacteristics.eyes || '';
+        document.getElementById('physHair').value = ch.physicalCharacteristics.hair || '';
+        document.getElementById('physSkin').value = ch.physicalCharacteristics.skin || '';
+      }
+    }
+
+    // ====== DELETE CHARACTER ======
+    function openDeleteModal(characterId, characterName) {
+      deleteCharacterId = characterId;
+      document.getElementById('deleteCharName').textContent = characterName;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+      deleteCharacterId = null;
+    }
+
+    async function confirmDelete() {
+      if (!deleteCharacterId) return;
+      const btn = document.getElementById('confirmDeleteBtn');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
 
       try {
-        await createCharacter(payload);
-        closeCreateModal();
-        showToast('Hero created successfully!', 'success');
-        loadCharacters(0);
+        await deleteCharacter(deleteCharacterId);
+        closeDeleteModal();
+        closeDetailModal();
+        showToast('Character deleted successfully!', 'success');
+        loadCharacters(currentPage);
       } catch (error) {
-        errorEl.textContent = getErrorMessage(error);
+        closeDeleteModal();
+        showToast('Failed to delete: ' + getErrorMessage(error), 'error');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Create Hero';
+        btn.textContent = 'Delete';
       }
     }
 

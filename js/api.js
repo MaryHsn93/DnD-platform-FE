@@ -617,6 +617,43 @@ async function createCharacter(characterData) {
   }
 }
 
+// ====== UPDATE CHARACTER ======
+async function updateCharacter(characterId, characterData) {
+  const url = API_CONFIG.CHARACTER.BASE_URL + API_CONFIG.CHARACTER.CHARACTERS + '/' + characterId;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'PUT',
+      body: JSON.stringify(characterData)
+    });
+
+    console.log('Character updated successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Update character error:', error);
+    throw error;
+  }
+}
+
+// ====== DELETE CHARACTER ======
+async function deleteCharacter(characterId) {
+  const url = API_CONFIG.CHARACTER.BASE_URL + API_CONFIG.CHARACTER.CHARACTERS + '/' + characterId;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'DELETE'
+    });
+
+    console.log('Character deleted successfully:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Delete character error:', error);
+    throw error;
+  }
+}
+
 // ====== IMPORT CHARACTER FROM PDF ======
 async function importCharacterSheet(file) {
   const url = API_CONFIG.CHARACTER.BASE_URL + API_CONFIG.CHARACTER.IMPORT_SHEET;
