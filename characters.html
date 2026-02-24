@@ -8,6 +8,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/chat.css">
+  <link rel="stylesheet" href="css/pdf-viewer.css">
 
   <style>
     :root {
@@ -2208,6 +2209,32 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
+  <!-- PDF Viewer Overlay -->
+  <div id="pdfViewerOverlay" class="pdf-viewer-overlay">
+    <div class="pdf-viewer-toolbar">
+      <div class="pdf-toolbar-left">
+        <span id="pdfCharName" class="pdf-char-name"></span>
+      </div>
+      <div class="pdf-toolbar-center">
+        <button class="pdf-tool-btn" id="pdfZoomOut" title="Zoom Out">&minus;</button>
+        <span id="pdfZoomLevel" class="pdf-zoom-level">150%</span>
+        <button class="pdf-tool-btn" id="pdfZoomIn" title="Zoom In">+</button>
+      </div>
+      <div class="pdf-toolbar-right">
+        <button class="pdf-tool-btn pdf-save-btn" id="pdfSaveBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save
+        </button>
+        <button class="pdf-tool-btn pdf-download-btn" id="pdfDownloadBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+        <button class="pdf-tool-btn pdf-close-btn" id="pdfCloseBtn">&times;</button>
+      </div>
+    </div>
+    <div id="pdfViewerBody" class="pdf-viewer-body"></div>
+  </div>
+
   <!-- Create Character Modal -->
   <div class="modal-overlay" id="createModal">
     <div class="modal">
@@ -2569,6 +2596,16 @@
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/chat.js"></script>
+  <script src="js/pdf-viewer.js"></script>
+
+  <!-- PDF.js (ESM module, exposes pdfjsLib globally) -->
+  <script type="module">
+    import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.min.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs';
+    window.pdfjsLib = pdfjsLib;
+  </script>
+  <!-- pdf-lib (UMD, exposes PDFLib globally) -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script>
     // Auth Guard
     const token = localStorage.getItem('authToken');
@@ -2788,6 +2825,7 @@
           const hpPct = ch.hitPointsMax > 0 ? Math.round((ch.hitPointsCurrent / ch.hitPointsMax) * 100) : 100;
           const hpColor = hpClass(ch.hitPointsCurrent, ch.hitPointsMax);
           html += '<div class="character-card" onclick="openDetailModal(' + ch.id + ')">' +
+            '<button class="card-sheet-btn" onclick="event.stopPropagation(); PDFSheetViewer.openSheet(' + ch.id + ', \'' + escapeHtml(ch.name).replace(/'/g, "\\'") + '\')" title="Character Sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></button>' +
             '<div class="card-top">' +
               '<div class="char-avatar">' + (ch.name ? ch.name.charAt(0).toUpperCase() : '?') + '</div>' +
               '<div class="card-identity">' +
@@ -2950,6 +2988,10 @@
 
       // Action buttons
       html += '<div class="detail-actions">' +
+        '<button class="btn-sheet" onclick="closeDetailModal(); PDFSheetViewer.openSheet(' + ch.id + ', \'' + escapeHtml(ch.name).replace(/'/g, "\\'") + '\')">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' +
+          'Character Sheet' +
+        '</button>' +
         '<button class="btn-edit" onclick="editCharacter(' + ch.id + ')">' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
           'Edit Character' +
@@ -3052,7 +3094,7 @@
       }
     }
 
-    function populateSelect(selectId, data, nameField) {
+    function populateSelect(selectId, data, nameField, valueField) {
       const select = document.getElementById(selectId);
       if (!select || !Array.isArray(data)) return;
       // Keep first option
@@ -3062,7 +3104,8 @@
       data.forEach(function(item) {
         const opt = document.createElement('option');
         const name = typeof item === 'string' ? item : (item[nameField] || item.name || item);
-        opt.value = name;
+        const val = typeof item === 'string' ? item : (valueField && item[valueField] != null ? item[valueField] : name);
+        opt.value = val;
         opt.textContent = name;
         select.appendChild(opt);
       });
@@ -3182,6 +3225,7 @@
       if (physSkin) physicalCharacteristics.skin = physSkin;
 
       const payload = {
+        userId: parseInt(localStorage.getItem('userId'), 10),
         name: name,
         species: species,
         characterClass: charClass,
@@ -3225,7 +3269,9 @@
           showToast('Character updated successfully!', 'success');
           loadCharacters(currentPage);
         } catch (error) {
-          errorEl.textContent = getErrorMessage(error);
+          var msg = getErrorMessage(error);
+          errorEl.textContent = msg;
+          showToast(msg, 'error');
         } finally {
           btn.disabled = false;
           btn.textContent = 'Save Changes';
@@ -3238,7 +3284,9 @@
           showToast('Hero created successfully!', 'success');
           loadCharacters(0);
         } catch (error) {
-          errorEl.textContent = getErrorMessage(error);
+          var msg = getErrorMessage(error);
+          errorEl.textContent = msg;
+          showToast(msg, 'error');
         } finally {
           btn.disabled = false;
           btn.textContent = 'Create Hero';
@@ -3449,6 +3497,7 @@
 
     // ====== INIT ======
     loadCharacters(0);
+    PDFSheetViewer.init();
   </script>
 </body>
 </html>

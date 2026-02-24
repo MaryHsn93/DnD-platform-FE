@@ -515,6 +515,8 @@ function getErrorMessage(error) {
       return error.data?.message || 'Invalid request. Please check your input.';
     case 401:
       return 'Invalid credentials. Check your Email/Username and Password.';
+    case 404:
+      return 'The requested resource was not found. Please check your input.';
     case 409:
       return 'A hero with this email already exists. Try logging in instead.';
     case 500:

@@ -51,7 +51,8 @@ const API_CONFIG = {
   CHARACTER: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.CHARACTER_PORT}`,
     CHARACTERS: '/characters',
-    IMPORT_SHEET: '/characters/import-sheet'
+    IMPORT_SHEET: '/characters/import-sheet',
+    SHEET: '/characters/{id}/sheet'
   },
   TIMEOUT: 10000 // 10 seconds
 };
@@ -707,6 +708,52 @@ async function importCharacterSheet(file) {
 
   } catch (error) {
     console.error('Import character error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CHARACTER SHEET PDF ======
+async function getCharacterSheet(characterId) {
+  const url = API_CONFIG.CHARACTER.BASE_URL + API_CONFIG.CHARACTER.SHEET.replace('{id}', characterId);
+
+  try {
+    let token = getAuthToken();
+    if (isAccessTokenExpired()) {
+      try {
+        if (!_refreshPromise) {
+          _refreshPromise = refreshAccessToken().finally(() => { _refreshPromise = null; });
+        }
+        token = await _refreshPromise;
+      } catch (refreshError) {
+        token = await showReloginOverlay();
+      }
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    console.log('Character sheet fetched successfully, size:', arrayBuffer.byteLength);
+    return arrayBuffer;
+
+  } catch (error) {
+    console.error('Get character sheet error:', error);
     throw error;
   }
 }
