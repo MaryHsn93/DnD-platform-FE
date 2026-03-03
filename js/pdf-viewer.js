@@ -158,10 +158,12 @@ const PDFSheetViewer = (function () {
     canvas.style.display = 'block';
     wrapper.appendChild(canvas);
 
-    // Render page to canvas
+    // Render page to canvas (disable annotation rendering on canvas
+    // to avoid doubled text — our HTML annotation layer handles form fields)
     await page.render({
       canvasContext: context,
-      viewport: viewport
+      viewport: viewport,
+      annotationMode: 0
     }).promise;
 
     // Annotation layer for form fields
