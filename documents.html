@@ -297,18 +297,18 @@
       margin-left: var(--sidebar-width);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
       min-height: 100dvh;
       padding: 2rem;
       position: relative;
     }
 
-    .page-section {
+    /* ====== PAGE HEADER ====== */
+    .page-header {
       text-align: center;
       z-index: 1;
       animation: fadeIn 1s ease;
+      margin-bottom: 2rem;
     }
 
     @keyframes fadeIn {
@@ -321,7 +321,7 @@
       font-size: 3rem;
       color: var(--gold);
       text-shadow: 0 0 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.3);
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       animation: textGlow 3s ease-in-out infinite;
     }
 
@@ -331,17 +331,647 @@
     }
 
     .page-subtitle {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--text-muted);
-      margin-bottom: 2rem;
     }
 
-    .page-tagline {
+    /* ====== TOOLBAR ====== */
+    .toolbar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      z-index: 1;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 12px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .upload-btn {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .upload-btn:hover {
+      background: linear-gradient(135deg, #a82525, var(--primary));
+      border-color: var(--gold);
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .view-toggle {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .view-toggle button {
+      padding: 0.7rem 0.85rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .view-toggle button.active {
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold);
+    }
+
+    .view-toggle button:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-light);
+    }
+
+    /* ====== DROP ZONE ====== */
+    .drop-zone {
+      border: 2px dashed rgba(212, 175, 55, 0.3);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      z-index: 1;
+      margin-bottom: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+    }
+
+    .drop-zone.drag-over {
+      border-color: var(--gold);
+      background: rgba(212, 175, 55, 0.08);
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+    }
+
+    .drop-zone-icon {
+      color: var(--gold);
+      margin-bottom: 1rem;
+      opacity: 0.7;
+    }
+
+    .drop-zone-text {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .drop-zone-hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    /* ====== DOCUMENTS GRID ====== */
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      z-index: 1;
+    }
+
+    .docs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 1;
+    }
+
+    /* ====== DOCUMENT CARD (GRID) ====== */
+    .doc-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 14px;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      animation: fadeIn 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doc-card:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(255, 255, 255, 0.07);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 175, 55, 0.1);
+    }
+
+    .doc-preview {
+      width: 100%;
+      height: 140px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .doc-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .doc-preview canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .doc-preview .file-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .doc-preview .file-icon svg {
+      opacity: 0.5;
+    }
+
+    .doc-preview .file-ext {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold);
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .doc-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.25rem;
+    }
+
+    .doc-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .doc-actions {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: flex;
+      gap: 0.25rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .doc-card:hover .doc-actions {
+      opacity: 1;
+    }
+
+    .doc-action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: var(--text-light);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .doc-action-btn:hover {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .doc-action-btn.delete:hover {
+      background: rgba(200, 30, 30, 0.4);
+      border-color: #ff6b6b;
+      color: #ff6b6b;
+    }
+
+    /* ====== DOCUMENT ROW (LIST) ====== */
+    .doc-row {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .doc-row:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .doc-row-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+
+    .doc-row-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .doc-row-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .doc-row-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .doc-row-actions {
+      display: flex;
+      gap: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    /* ====== EMPTY STATE ====== */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      z-index: 1;
+    }
+
+    .empty-state svg {
+      color: var(--gold);
+      opacity: 0.3;
+      margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* ====== PREVIEW MODAL ====== */
+    .preview-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .preview-overlay.active {
+      display: flex;
+    }
+
+    .preview-modal {
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      background: rgba(30, 30, 35, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      background: rgba(139, 30, 30, 0.2);
+    }
+
+    .preview-title {
+      flex: 1;
       font-family: 'Cinzel', serif;
       font-size: 1rem;
+      color: var(--gold);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: var(--text-light);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .preview-header-btn:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .preview-body {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      min-height: 300px;
+    }
+
+    .preview-body img {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 8px;
+    }
+
+    .preview-body iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      border-radius: 8px;
+      background: white;
+    }
+
+    .preview-body .no-preview {
+      text-align: center;
       color: var(--text-muted);
-      opacity: 0.7;
-      font-style: italic;
+    }
+
+    .preview-body .no-preview svg {
+      color: var(--gold);
+      opacity: 0.3;
+      margin-bottom: 1rem;
+    }
+
+    .preview-body .no-preview p {
+      margin-bottom: 1rem;
+    }
+
+    .preview-body .no-preview .download-preview-btn {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .preview-body .no-preview .download-preview-btn:hover {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    /* ====== RENAME MODAL ====== */
+    .rename-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rename-overlay.active {
+      display: flex;
+    }
+
+    .rename-modal {
+      background: rgba(38, 38, 43, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 16px;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .rename-modal h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .rename-modal input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 10px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .rename-modal input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .rename-modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .rename-modal-actions button {
+      padding: 0.6rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .rename-cancel {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      color: var(--text-muted);
+    }
+
+    .rename-cancel:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+    }
+
+    .rename-confirm {
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .rename-confirm:hover {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    /* ====== STORAGE INFO ====== */
+    .storage-info {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 10px;
+      z-index: 1;
+    }
+
+    .storage-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .storage-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #b8962e);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .storage-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ====== TOAST ====== */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(38, 38, 43, 0.95);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      z-index: 3000;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
 
     /* ====== MAGIC PARTICLES ====== */
@@ -457,12 +1087,18 @@
     }
 
     @media (max-width: 768px) {
-      .page-title { font-size: 2.5rem; }
+      .page-title { font-size: 2.2rem; }
+      .docs-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+      .toolbar { gap: 0.75rem; }
+      .doc-actions { opacity: 1; }
     }
 
     @media (max-width: 480px) {
-      .page-title { font-size: 2rem; }
-      .page-subtitle { font-size: 1rem; }
+      .page-title { font-size: 1.8rem; }
+      .main-content { padding: 1rem; }
+      .docs-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .drop-zone { padding: 2rem 1rem; }
+      .doc-row-actions { display: none; }
     }
 
     /* ====== CHAT WIDGET ====== */
@@ -567,7 +1203,7 @@
     .result-value.reveal { animation: resultReveal 0.3s ease; }
     @media (max-width: 768px) { .dice-roller-widget { top: 1rem; right: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } .chat-window { width: 320px; height: 480px; right: -0.5rem; } }
     @media (max-width: 480px) { .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; } .chat-widget { right: 1rem; bottom: 1rem; } .chat-toggle-btn { width: 55px; height: 55px; } }
-      </style>
+  </style>
 </head>
 <body>
   <div class="magic-particles"></div>
@@ -613,7 +1249,7 @@
             <span class="nav-text">Campaigns</span>
           </a>
           <a href="documents.html" class="nav-item active">
-            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
             <span class="nav-text">Documents</span>
           </a>
           <a href="compendium.html" class="nav-item">
@@ -632,13 +1268,92 @@
     </aside>
 
     <main class="main-content">
-      <section class="page-section">
+      <!-- Page Header -->
+      <div class="page-header">
         <h1 class="page-title">Documents</h1>
-        <p class="page-subtitle">Tools and resources for Dungeon Masters</p>
-        <p class="page-tagline">"A good DM shapes worlds, a great DM shapes memories..."</p>
-      </section>
+        <p class="page-subtitle">La tua libreria personale di avventure</p>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Cerca documenti..." autocomplete="off">
+        </div>
+        <button class="upload-btn" id="uploadBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Carica
+        </button>
+        <div class="view-toggle">
+          <button id="gridViewBtn" class="active" title="Vista griglia">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button id="listViewBtn" title="Vista lista">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Drop Zone -->
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-zone-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <p class="drop-zone-text">Trascina i file qui o clicca per caricare</p>
+        <p class="drop-zone-hint">PDF, immagini, documenti e altri file</p>
+      </div>
+
+      <!-- Hidden file input -->
+      <input type="file" id="fileInput" multiple style="display: none">
+
+      <!-- Documents Container -->
+      <div class="docs-grid" id="docsContainer"></div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <h3>Nessun documento</h3>
+        <p>Carica il tuo primo documento per iniziare</p>
+      </div>
+
+      <!-- Storage Info -->
+      <div class="storage-info" id="storageInfo">
+        <div class="storage-bar"><div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div></div>
+        <span class="storage-text" id="storageText">0 documenti - 0 B utilizzati</span>
+      </div>
     </main>
   </div>
+
+  <!-- Preview Modal -->
+  <div class="preview-overlay" id="previewOverlay">
+    <div class="preview-modal">
+      <div class="preview-header">
+        <span class="preview-title" id="previewTitle">Document</span>
+        <button class="preview-header-btn" id="previewDownloadBtn" title="Scarica">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="preview-header-btn" id="previewCloseBtn" title="Chiudi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="preview-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <!-- Rename Modal -->
+  <div class="rename-overlay" id="renameOverlay">
+    <div class="rename-modal">
+      <h3>Rinomina Documento</h3>
+      <input type="text" id="renameInput" placeholder="Nuovo nome...">
+      <div class="rename-modal-actions">
+        <button class="rename-cancel" id="renameCancelBtn">Annulla</button>
+        <button class="rename-confirm" id="renameConfirmBtn">Rinomina</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
   <!-- Dice Roller Widget -->
   <div class="dice-roller-widget">
@@ -719,9 +1434,9 @@
     // Logout
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
 
-    // Chat & Dice Widgets
-    // Chat
-    TavernChat.init();function toggleDiceRoller(){document.getElementById('diceRollerPanel').classList.toggle('active');document.getElementById('diceToggleBtn').classList.toggle('active')}const resultValue=document.getElementById('resultValue'),resultDice=document.getElementById('resultDice'),resultDetails=document.getElementById('resultDetails'),rollAllBtn=document.getElementById('rollAllBtn'),clearBtn=document.getElementById('clearBtn'),diceButtons=document.querySelectorAll('.dice-btn');let isRolling=false;const diceCount={};diceButtons.forEach(b=>diceCount[b.dataset.dice]=0);function getTotalDiceCount(){return Object.values(diceCount).reduce((s,c)=>s+c,0)}function updateUI(){const t=getTotalDiceCount();rollAllBtn.disabled=t===0;rollAllBtn.textContent=t>0?`Lancia (${t})`:'Lancia';diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d],e=b.querySelector('.dice-count');if(c>0){b.classList.add('selected');e.textContent=c}else{b.classList.remove('selected')}})}function addDice(b){if(isRolling)return;diceCount[b.dataset.dice]++;updateUI()}function removeDice(b){if(isRolling)return;const d=b.dataset.dice;if(diceCount[d]>0){diceCount[d]--;updateUI()}}function clearSelection(){if(isRolling)return;Object.keys(diceCount).forEach(d=>diceCount[d]=0);updateUI();resultValue.textContent='--';resultValue.className='result-value';resultDice.textContent='';resultDetails.textContent='';diceButtons.forEach(b=>{const m=parseInt(b.dataset.max);b.querySelector('.dice-value').textContent=m})}function rollSelectedDice(){if(isRolling||getTotalDiceCount()===0)return;isRolling=true;rollAllBtn.disabled=true;const a=[];diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d];if(c>0)a.push({btn:b,dice:d,max:parseInt(b.dataset.max),count:c})});a.forEach(d=>d.btn.classList.add('rolling'));let f=0;const i=setInterval(()=>{a.forEach(d=>{const r=Math.floor(Math.random()*d.max)+1;d.btn.querySelector('.dice-value').textContent=r});resultValue.textContent='...';resultValue.className='result-value';f++;if(f>=15){clearInterval(i);const r=[];let t=0,cr=false,fu=false;a.forEach(d=>{const ro=[];for(let j=0;j<d.count;j++){const re=Math.floor(Math.random()*d.max)+1;ro.push(re);t+=re;if(d.dice==='d20'&&re===20)cr=true;if(d.dice==='d20'&&re===1)fu=true}d.btn.querySelector('.dice-value').textContent=ro[ro.length-1];r.push({dice:d.dice.toUpperCase(),count:d.count,rolls:ro})});resultValue.textContent=t;resultValue.classList.add('reveal');const td=getTotalDiceCount();if(td===1){resultDice.textContent=r[0].dice;resultDetails.textContent=''}else{resultDice.textContent='Totale';resultDetails.textContent=r.map(x=>{const p=x.count>1?`${x.count}${x.dice}`:x.dice;return`${p}: ${x.rolls.join('+')}`}).join(' | ')}if(cr)resultValue.classList.add('critical');else if(fu)resultValue.classList.add('fumble');setTimeout(()=>{a.forEach(d=>d.btn.classList.remove('rolling'));isRolling=false;updateUI()},500)}},50)}diceButtons.forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();addDice(b)});b.addEventListener('contextmenu',e=>{e.preventDefault();removeDice(b)})});rollAllBtn.addEventListener('click',rollSelectedDice);clearBtn.addEventListener('click',clearSelection);let lastTap=0;diceButtons.forEach(b=>{b.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<300){e.preventDefault();removeDice(b)}lastTap=n},{passive:false})});
+    // Chat & Dice
+    TavernChat.init();
+    function toggleDiceRoller(){document.getElementById('diceRollerPanel').classList.toggle('active');document.getElementById('diceToggleBtn').classList.toggle('active')}const resultValue=document.getElementById('resultValue'),resultDice=document.getElementById('resultDice'),resultDetails=document.getElementById('resultDetails'),rollAllBtn=document.getElementById('rollAllBtn'),clearBtn=document.getElementById('clearBtn'),diceButtons=document.querySelectorAll('.dice-btn');let isRolling=false;const diceCount={};diceButtons.forEach(b=>diceCount[b.dataset.dice]=0);function getTotalDiceCount(){return Object.values(diceCount).reduce((s,c)=>s+c,0)}function updateUI(){const t=getTotalDiceCount();rollAllBtn.disabled=t===0;rollAllBtn.textContent=t>0?`Lancia (${t})`:'Lancia';diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d],e=b.querySelector('.dice-count');if(c>0){b.classList.add('selected');e.textContent=c}else{b.classList.remove('selected')}})}function addDice(b){if(isRolling)return;diceCount[b.dataset.dice]++;updateUI()}function removeDice(b){if(isRolling)return;const d=b.dataset.dice;if(diceCount[d]>0){diceCount[d]--;updateUI()}}function clearSelection(){if(isRolling)return;Object.keys(diceCount).forEach(d=>diceCount[d]=0);updateUI();resultValue.textContent='--';resultValue.className='result-value';resultDice.textContent='';resultDetails.textContent='';diceButtons.forEach(b=>{const m=parseInt(b.dataset.max);b.querySelector('.dice-value').textContent=m})}function rollSelectedDice(){if(isRolling||getTotalDiceCount()===0)return;isRolling=true;rollAllBtn.disabled=true;const a=[];diceButtons.forEach(b=>{const d=b.dataset.dice,c=diceCount[d];if(c>0)a.push({btn:b,dice:d,max:parseInt(b.dataset.max),count:c})});a.forEach(d=>d.btn.classList.add('rolling'));let f=0;const i=setInterval(()=>{a.forEach(d=>{const r=Math.floor(Math.random()*d.max)+1;d.btn.querySelector('.dice-value').textContent=r});resultValue.textContent='...';resultValue.className='result-value';f++;if(f>=15){clearInterval(i);const r=[];let t=0,cr=false,fu=false;a.forEach(d=>{const ro=[];for(let j=0;j<d.count;j++){const re=Math.floor(Math.random()*d.max)+1;ro.push(re);t+=re;if(d.dice==='d20'&&re===20)cr=true;if(d.dice==='d20'&&re===1)fu=true}d.btn.querySelector('.dice-value').textContent=ro[ro.length-1];r.push({dice:d.dice.toUpperCase(),count:d.count,rolls:ro})});resultValue.textContent=t;resultValue.classList.add('reveal');const td=getTotalDiceCount();if(td===1){resultDice.textContent=r[0].dice;resultDetails.textContent=''}else{resultDice.textContent='Totale';resultDetails.textContent=r.map(x=>{const p=x.count>1?`${x.count}${x.dice}`:x.dice;return`${p}: ${x.rolls.join('+')}`}).join(' | ')}if(cr)resultValue.classList.add('critical');else if(fu)resultValue.classList.add('fumble');setTimeout(()=>{a.forEach(d=>d.btn.classList.remove('rolling'));isRolling=false;updateUI()},500)}},50)}diceButtons.forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();addDice(b)});b.addEventListener('contextmenu',e=>{e.preventDefault();removeDice(b)})});rollAllBtn.addEventListener('click',rollSelectedDice);clearBtn.addEventListener('click',clearSelection);let lastTap=0;diceButtons.forEach(b=>{b.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<300){e.preventDefault();removeDice(b)}lastTap=n},{passive:false})});
 
     // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
@@ -733,6 +1448,405 @@
       p.style.animationDelay = `${Math.random() * 10}s`;
       magicContainer.appendChild(p);
     }
+
+    // ====== DOCUMENT LIBRARY ======
+    const DB_NAME = 'TavernDocuments';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'documents';
+    const MAX_STORAGE_MB = 100;
+
+    let db = null;
+    let documents = [];
+    let currentView = 'grid';
+    let searchQuery = '';
+    let renameDocId = null;
+
+    // IndexedDB
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            store.createIndex('name', 'name', { unique: false });
+            store.createIndex('createdAt', 'createdAt', { unique: false });
+          }
+        };
+        req.onsuccess = (e) => resolve(e.target.result);
+        req.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    function dbGetAll() {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function dbPut(doc) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.put(doc);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function dbDelete(id) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    // Helpers
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    }
+
+    function formatSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function formatDate(timestamp) {
+      const d = new Date(timestamp);
+      return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function getFileExtension(name) {
+      const parts = name.split('.');
+      return parts.length > 1 ? parts.pop().toLowerCase() : '';
+    }
+
+    function getFileNameWithoutExt(name) {
+      const ext = getFileExtension(name);
+      return ext ? name.slice(0, -(ext.length + 1)) : name;
+    }
+
+    function isImage(type) {
+      return type.startsWith('image/');
+    }
+
+    function isPDF(type) {
+      return type === 'application/pdf';
+    }
+
+    function getFileIconSvg() {
+      return '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // Upload files
+    async function handleFiles(files) {
+      for (const file of files) {
+        const reader = new FileReader();
+        await new Promise((resolve) => {
+          reader.onload = async (e) => {
+            const doc = {
+              id: generateId(),
+              name: file.name,
+              type: file.type || 'application/octet-stream',
+              size: file.size,
+              data: e.target.result,
+              createdAt: Date.now()
+            };
+            await dbPut(doc);
+            documents.push(doc);
+            resolve();
+          };
+          reader.readAsArrayBuffer(file);
+        });
+      }
+      renderDocuments();
+      updateStorageInfo();
+      showToast(files.length === 1 ? 'Documento caricato!' : `${files.length} documenti caricati!`);
+    }
+
+    // Download
+    function downloadDoc(doc) {
+      const blob = new Blob([doc.data], { type: doc.type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = doc.name;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Delete
+    async function deleteDoc(id) {
+      await dbDelete(id);
+      documents = documents.filter(d => d.id !== id);
+      renderDocuments();
+      updateStorageInfo();
+      showToast('Documento eliminato');
+    }
+
+    // Rename
+    function openRename(id) {
+      renameDocId = id;
+      const doc = documents.find(d => d.id === id);
+      if (!doc) return;
+      const input = document.getElementById('renameInput');
+      input.value = getFileNameWithoutExt(doc.name);
+      document.getElementById('renameOverlay').classList.add('active');
+      setTimeout(() => { input.focus(); input.select(); }, 100);
+    }
+
+    async function confirmRename() {
+      if (!renameDocId) return;
+      const doc = documents.find(d => d.id === renameDocId);
+      if (!doc) return;
+      const newName = document.getElementById('renameInput').value.trim();
+      if (!newName) return;
+      const ext = getFileExtension(doc.name);
+      doc.name = ext ? newName + '.' + ext : newName;
+      await dbPut(doc);
+      renderDocuments();
+      closeRename();
+      showToast('Documento rinominato');
+    }
+
+    function closeRename() {
+      renameDocId = null;
+      document.getElementById('renameOverlay').classList.remove('active');
+    }
+
+    // Preview
+    function openPreview(doc) {
+      document.getElementById('previewTitle').textContent = doc.name;
+      const body = document.getElementById('previewBody');
+      body.innerHTML = '';
+
+      document.getElementById('previewDownloadBtn').onclick = () => downloadDoc(doc);
+
+      if (isImage(doc.type)) {
+        const blob = new Blob([doc.data], { type: doc.type });
+        const url = URL.createObjectURL(blob);
+        const img = document.createElement('img');
+        img.src = url;
+        img.onload = () => URL.revokeObjectURL(url);
+        body.appendChild(img);
+      } else if (isPDF(doc.type)) {
+        const blob = new Blob([doc.data], { type: doc.type });
+        const url = URL.createObjectURL(blob);
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        body.appendChild(iframe);
+      } else {
+        body.innerHTML = `
+          <div class="no-preview">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p>Anteprima non disponibile per questo tipo di file</p>
+            <button class="download-preview-btn" onclick="downloadDoc(documents.find(d=>d.id==='${doc.id}'))">Scarica File</button>
+          </div>`;
+      }
+
+      document.getElementById('previewOverlay').classList.add('active');
+    }
+
+    function closePreview() {
+      document.getElementById('previewOverlay').classList.remove('active');
+      const body = document.getElementById('previewBody');
+      const iframes = body.querySelectorAll('iframe');
+      iframes.forEach(f => { try { URL.revokeObjectURL(f.src); } catch(e){} });
+      body.innerHTML = '';
+    }
+
+    // Action buttons HTML
+    function actionBtns(docId, btnClass) {
+      return `
+        <button class="${btnClass}" onclick="event.stopPropagation();openRename('${docId}')" title="Rinomina">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="${btnClass}" onclick="event.stopPropagation();downloadDoc(documents.find(d=>d.id==='${docId}'))" title="Scarica">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="${btnClass} delete" onclick="event.stopPropagation();if(confirm('Eliminare questo documento?'))deleteDoc('${docId}')" title="Elimina">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>`;
+    }
+
+    // Render
+    function renderDocuments() {
+      const container = document.getElementById('docsContainer');
+      const emptyState = document.getElementById('emptyState');
+      const filtered = documents
+        .filter(d => !searchQuery || d.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .sort((a, b) => b.createdAt - a.createdAt);
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        container.className = '';
+        emptyState.style.display = 'block';
+        if (documents.length > 0 && searchQuery) {
+          emptyState.querySelector('h3').textContent = 'Nessun risultato';
+          emptyState.querySelector('p').textContent = 'Nessun documento trovato per "' + searchQuery + '"';
+        } else {
+          emptyState.querySelector('h3').textContent = 'Nessun documento';
+          emptyState.querySelector('p').textContent = 'Carica il tuo primo documento per iniziare';
+        }
+        return;
+      }
+
+      emptyState.style.display = 'none';
+
+      if (currentView === 'grid') {
+        container.className = 'docs-grid';
+        container.innerHTML = filtered.map(doc => {
+          const ext = getFileExtension(doc.name);
+          let previewHtml;
+          if (isImage(doc.type)) {
+            const blob = new Blob([doc.data], { type: doc.type });
+            const url = URL.createObjectURL(blob);
+            previewHtml = `<img src="${url}" alt="${doc.name}">`;
+          } else {
+            previewHtml = `<div class="file-icon">${getFileIconSvg()}${ext ? `<span class="file-ext">${ext}</span>` : ''}</div>`;
+          }
+          return `
+            <div class="doc-card" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
+              <div class="doc-actions">${actionBtns(doc.id, 'doc-action-btn')}</div>
+              <div class="doc-preview">${previewHtml}</div>
+              <div class="doc-name" title="${doc.name}">${doc.name}</div>
+              <div class="doc-meta">${formatSize(doc.size)} &middot; ${formatDate(doc.createdAt)}</div>
+            </div>`;
+        }).join('');
+      } else {
+        container.className = 'docs-list';
+        container.innerHTML = filtered.map(doc => {
+          const ext = getFileExtension(doc.name);
+          return `
+            <div class="doc-row" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
+              <div class="doc-row-icon">${ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg()}</div>
+              <div class="doc-row-info">
+                <div class="doc-row-name" title="${doc.name}">${doc.name}</div>
+                <div class="doc-row-meta">${formatSize(doc.size)} &middot; ${formatDate(doc.createdAt)}</div>
+              </div>
+              <div class="doc-row-actions">${actionBtns(doc.id, 'doc-action-btn')}</div>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    function updateStorageInfo() {
+      const totalSize = documents.reduce((s, d) => s + d.size, 0);
+      const pct = Math.min((totalSize / (MAX_STORAGE_MB * 1024 * 1024)) * 100, 100);
+      document.getElementById('storageBarFill').style.width = pct + '%';
+      document.getElementById('storageText').textContent =
+        `${documents.length} document${documents.length !== 1 ? 'i' : 'o'} - ${formatSize(totalSize)} utilizzati`;
+    }
+
+    // Event listeners
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    document.getElementById('uploadBtn').addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFiles(Array.from(e.target.files));
+        fileInput.value = '';
+      }
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      if (e.dataTransfer.files.length > 0) {
+        handleFiles(Array.from(e.dataTransfer.files));
+      }
+    });
+
+    // Full-page drag over
+    document.addEventListener('dragover', (e) => e.preventDefault());
+    document.addEventListener('drop', (e) => e.preventDefault());
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderDocuments();
+    });
+
+    // View toggle
+    document.getElementById('gridViewBtn').addEventListener('click', () => {
+      currentView = 'grid';
+      document.getElementById('gridViewBtn').classList.add('active');
+      document.getElementById('listViewBtn').classList.remove('active');
+      renderDocuments();
+    });
+
+    document.getElementById('listViewBtn').addEventListener('click', () => {
+      currentView = 'list';
+      document.getElementById('listViewBtn').classList.add('active');
+      document.getElementById('gridViewBtn').classList.remove('active');
+      renderDocuments();
+    });
+
+    // Preview close
+    document.getElementById('previewCloseBtn').addEventListener('click', closePreview);
+    document.getElementById('previewOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closePreview();
+    });
+
+    // Rename
+    document.getElementById('renameConfirmBtn').addEventListener('click', confirmRename);
+    document.getElementById('renameCancelBtn').addEventListener('click', closeRename);
+    document.getElementById('renameOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeRename();
+    });
+    document.getElementById('renameInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') confirmRename();
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePreview();
+        closeRename();
+      }
+    });
+
+    // Init
+    (async function init() {
+      try {
+        db = await openDB();
+        documents = await dbGetAll();
+        renderDocuments();
+        updateStorageInfo();
+      } catch (err) {
+        console.error('Failed to open document database:', err);
+        showToast('Errore nel caricamento dei documenti');
+      }
+    })();
   </script>
 </body>
 </html>
