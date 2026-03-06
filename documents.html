@@ -1405,6 +1405,14 @@
     </button>
   </div>
 
+  <!-- PDF.js for PDF thumbnails -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+
   <script src="js/env.js"></script>
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
@@ -1555,18 +1563,70 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
+    // Thumbnail generation
+    const THUMB_MAX = 280;
+
+    function generateImageThumbnail(arrayBuffer, mimeType) {
+      return new Promise((resolve) => {
+        const blob = new Blob([arrayBuffer], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const scale = Math.min(THUMB_MAX / img.width, THUMB_MAX / img.height, 1);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+        img.src = url;
+      });
+    }
+
+    async function generatePdfThumbnail(arrayBuffer) {
+      if (typeof pdfjsLib === 'undefined') return null;
+      try {
+        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 1 });
+        const scale = Math.min(THUMB_MAX / viewport.width, THUMB_MAX / viewport.height, 1);
+        const scaledViewport = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        canvas.width = scaledViewport.width;
+        canvas.height = scaledViewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
+        return canvas.toDataURL('image/jpeg', 0.7);
+      } catch (e) {
+        console.warn('PDF thumbnail generation failed:', e);
+        return null;
+      }
+    }
+
     // Upload files
     async function handleFiles(files) {
       for (const file of files) {
         const reader = new FileReader();
         await new Promise((resolve) => {
           reader.onload = async (e) => {
+            const data = e.target.result;
+            const type = file.type || 'application/octet-stream';
+            let thumbnail = null;
+            if (isImage(type)) {
+              thumbnail = await generateImageThumbnail(data, type);
+            } else if (isPDF(type)) {
+              thumbnail = await generatePdfThumbnail(data);
+            }
             const doc = {
               id: generateId(),
               name: file.name,
-              type: file.type || 'application/octet-stream',
+              type: type,
               size: file.size,
-              data: e.target.result,
+              data: data,
+              thumbnail: thumbnail,
               createdAt: Date.now()
             };
             await dbPut(doc);
@@ -1715,7 +1775,9 @@
         container.innerHTML = filtered.map(doc => {
           const ext = getFileExtension(doc.name);
           let previewHtml;
-          if (isImage(doc.type)) {
+          if (doc.thumbnail) {
+            previewHtml = `<img src="${doc.thumbnail}" alt="${doc.name}">`;
+          } else if (isImage(doc.type)) {
             const blob = new Blob([doc.data], { type: doc.type });
             const url = URL.createObjectURL(blob);
             previewHtml = `<img src="${url}" alt="${doc.name}">`;
@@ -1736,7 +1798,7 @@
           const ext = getFileExtension(doc.name);
           return `
             <div class="doc-row" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
-              <div class="doc-row-icon">${ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg()}</div>
+              <div class="doc-row-icon">${doc.thumbnail ? `<img src="${doc.thumbnail}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">` : ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg()}</div>
               <div class="doc-row-info">
                 <div class="doc-row-name" title="${doc.name}">${doc.name}</div>
                 <div class="doc-row-meta">${formatSize(doc.size)} &middot; ${formatDate(doc.createdAt)}</div>
@@ -1835,6 +1897,26 @@
       }
     });
 
+    // Generate missing thumbnails for existing docs
+    async function migrateThumbnails() {
+      let changed = false;
+      for (const doc of documents) {
+        if (doc.thumbnail) continue;
+        let thumb = null;
+        if (isImage(doc.type)) {
+          thumb = await generateImageThumbnail(doc.data, doc.type);
+        } else if (isPDF(doc.type)) {
+          thumb = await generatePdfThumbnail(doc.data);
+        }
+        if (thumb) {
+          doc.thumbnail = thumb;
+          await dbPut(doc);
+          changed = true;
+        }
+      }
+      if (changed) renderDocuments();
+    }
+
     // Init
     (async function init() {
       try {
@@ -1842,6 +1924,7 @@
         documents = await dbGetAll();
         renderDocuments();
         updateStorageInfo();
+        migrateThumbnails();
       } catch (err) {
         console.error('Failed to open document database:', err);
         showToast('Errore nel caricamento dei documenti');
