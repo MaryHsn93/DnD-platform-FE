@@ -1406,10 +1406,13 @@
   </div>
 
   <!-- PDF.js for PDF thumbnails -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
   <script>
     if (typeof pdfjsLib !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      console.log('PDF.js loaded successfully, version:', pdfjsLib.version);
+    } else {
+      console.warn('PDF.js failed to load - PDF thumbnails will not be available');
     }
   </script>
 
@@ -1587,9 +1590,14 @@
     }
 
     async function generatePdfThumbnail(arrayBuffer) {
-      if (typeof pdfjsLib === 'undefined') return null;
+      if (typeof pdfjsLib === 'undefined') {
+        console.warn('pdfjsLib not available, skipping PDF thumbnail');
+        return null;
+      }
       try {
-        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+        const data = new Uint8Array(arrayBuffer.slice ? arrayBuffer.slice(0) : arrayBuffer);
+        const loadingTask = pdfjsLib.getDocument({ data });
+        const pdf = await loadingTask.promise;
         const page = await pdf.getPage(1);
         const viewport = page.getViewport({ scale: 1 });
         const scale = Math.min(THUMB_MAX / viewport.width, THUMB_MAX / viewport.height, 1);
@@ -1598,10 +1606,14 @@
         canvas.width = scaledViewport.width;
         canvas.height = scaledViewport.height;
         const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
-        return canvas.toDataURL('image/jpeg', 0.7);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        pdf.destroy();
+        return dataUrl;
       } catch (e) {
-        console.warn('PDF thumbnail generation failed:', e);
+        console.error('PDF thumbnail generation failed:', e);
         return null;
       }
     }
