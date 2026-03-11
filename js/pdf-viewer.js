@@ -234,7 +234,11 @@ const PDFSheetViewer = (function () {
         if (fontSize < 1) fontSize = Math.min(height * 0.75, 14 * _scale);
 
         input.style.fontSize = fontSize + 'px';
-        input.style.lineHeight = height + 'px';
+        if (isMultiLine) {
+          input.style.lineHeight = '1.3';
+        } else {
+          input.style.lineHeight = height + 'px';
+        }
 
         if (annotation.readOnly) {
           input.readOnly = true;
@@ -377,6 +381,12 @@ const PDFSheetViewer = (function () {
         console.warn('Failed to set field "' + name + '":', err.message);
       }
     });
+
+    try {
+      form.updateFieldAppearances();
+    } catch (e) {
+      console.warn('Could not update field appearances:', e.message);
+    }
 
     return pdfDoc.save();
   }

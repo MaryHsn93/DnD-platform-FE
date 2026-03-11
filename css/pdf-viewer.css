@@ -175,7 +175,7 @@
 .pdf-page-wrapper .annotationLayer .textWidgetAnnotation input,
 .pdf-page-wrapper .annotationLayer .textWidgetAnnotation textarea,
 .pdf-page-wrapper .annotationLayer .choiceWidgetAnnotation select {
-  background: transparent;
+  background: #fff;
   border: none;
   font-size: inherit;
   color: #000;
@@ -191,14 +191,14 @@
 .pdf-page-wrapper .annotationLayer .textWidgetAnnotation input:focus,
 .pdf-page-wrapper .annotationLayer .textWidgetAnnotation textarea:focus,
 .pdf-page-wrapper .annotationLayer .choiceWidgetAnnotation select:focus {
-  background: rgba(70, 130, 255, 0.12);
+  background: #e8edff;
   outline: 1px solid rgba(70, 130, 255, 0.5);
   border-radius: 2px;
 }
 
 .pdf-page-wrapper .annotationLayer .textWidgetAnnotation input:hover,
 .pdf-page-wrapper .annotationLayer .textWidgetAnnotation textarea:hover {
-  background: rgba(70, 130, 255, 0.06);
+  background: #f5f7ff;
 }
 
 .pdf-page-wrapper .annotationLayer .buttonWidgetAnnotation.checkBox input[type="checkbox"],
