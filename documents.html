@@ -1212,6 +1212,36 @@
     .result-value.reveal { animation: resultReveal 0.3s ease; }
     @media (max-width: 768px) { .dice-roller-widget { top: 1rem; right: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } .chat-window { width: 320px; height: 480px; right: -0.5rem; } }
     @media (max-width: 480px) { .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; } .chat-widget { right: 1rem; bottom: 1rem; } .chat-toggle-btn { width: 55px; height: 55px; } }
+
+    .upload-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .upload-overlay.active {
+      display: flex;
+    }
+    .upload-spinner {
+      width: 56px;
+      height: 56px;
+      border: 4px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spinRotate 0.8s linear infinite;
+    }
+    .upload-overlay-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    }
+    @keyframes spinRotate { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -1314,6 +1344,12 @@
 
       <!-- Hidden file input -->
       <input type="file" id="fileInput" multiple style="display: none">
+
+      <!-- Upload loading overlay -->
+      <div class="upload-overlay" id="uploadOverlay">
+        <div class="upload-spinner"></div>
+        <span class="upload-overlay-text">Caricamento in corso...</span>
+      </div>
 
       <!-- Documents Container -->
       <div class="docs-grid" id="docsContainer"></div>
@@ -1629,37 +1665,43 @@
 
     // Upload files
     async function handleFiles(files) {
-      for (const file of files) {
-        const reader = new FileReader();
-        await new Promise((resolve) => {
-          reader.onload = async (e) => {
-            const data = e.target.result;
-            const type = file.type || 'application/octet-stream';
-            let thumbnail = null;
-            if (isImage(type)) {
-              thumbnail = await generateImageThumbnail(data, type);
-            } else if (isPDF(type)) {
-              thumbnail = await generatePdfThumbnail(data);
-            }
-            const doc = {
-              id: generateId(),
-              name: file.name,
-              type: type,
-              size: file.size,
-              data: data,
-              thumbnail: thumbnail,
-              createdAt: Date.now()
+      const overlay = document.getElementById('uploadOverlay');
+      overlay.classList.add('active');
+      try {
+        for (const file of files) {
+          const reader = new FileReader();
+          await new Promise((resolve) => {
+            reader.onload = async (e) => {
+              const data = e.target.result;
+              const type = file.type || 'application/octet-stream';
+              let thumbnail = null;
+              if (isImage(type)) {
+                thumbnail = await generateImageThumbnail(data, type);
+              } else if (isPDF(type)) {
+                thumbnail = await generatePdfThumbnail(data);
+              }
+              const doc = {
+                id: generateId(),
+                name: file.name,
+                type: type,
+                size: file.size,
+                data: data,
+                thumbnail: thumbnail,
+                createdAt: Date.now()
+              };
+              await dbPut(doc);
+              documents.push(doc);
+              resolve();
             };
-            await dbPut(doc);
-            documents.push(doc);
-            resolve();
-          };
-          reader.readAsArrayBuffer(file);
-        });
+            reader.readAsArrayBuffer(file);
+          });
+        }
+        renderDocuments();
+        updateStorageInfo();
+        showToast(files.length === 1 ? 'Documento caricato!' : `${files.length} documenti caricati!`);
+      } finally {
+        overlay.classList.remove('active');
       }
-      renderDocuments();
-      updateStorageInfo();
-      showToast(files.length === 1 ? 'Documento caricato!' : `${files.length} documenti caricati!`);
     }
 
     // Download
