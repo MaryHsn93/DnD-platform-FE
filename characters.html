@@ -1944,15 +1944,18 @@
 
     .detail-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.75rem;
       margin-top: 1.5rem;
       padding-top: 1.25rem;
       border-top: 1px solid rgba(212, 175, 55, 0.15);
     }
 
+    .detail-actions .btn-sheet,
     .detail-actions .btn-edit {
       flex: 1;
-      padding: 0.7rem 1.25rem;
+      min-width: 0;
+      padding: 0.7rem 1rem;
       border: 1px solid var(--gold);
       background: rgba(212, 175, 55, 0.1);
       color: var(--gold);
@@ -1967,12 +1970,13 @@
       gap: 0.5rem;
     }
 
+    .detail-actions .btn-sheet:hover,
     .detail-actions .btn-edit:hover {
       background: rgba(212, 175, 55, 0.2);
     }
 
     .detail-actions .btn-delete {
-      padding: 0.7rem 1.25rem;
+      padding: 0.7rem 1rem;
       border: 1px solid #ef4444;
       background: rgba(239, 68, 68, 0.1);
       color: #ef4444;
@@ -1989,6 +1993,17 @@
 
     .detail-actions .btn-delete:hover {
       background: rgba(239, 68, 68, 0.25);
+    }
+
+    @media (max-width: 480px) {
+      .detail-actions {
+        flex-direction: column;
+      }
+      .detail-actions .btn-sheet,
+      .detail-actions .btn-edit,
+      .detail-actions .btn-delete {
+        width: 100%;
+      }
     }
 
     .confirm-dialog {
