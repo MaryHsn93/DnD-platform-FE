@@ -552,9 +552,7 @@
       right: 0;
       width: 380px;
       height: 520px;
-      background: rgba(30, 30, 35, 0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(30, 30, 35, 0.98);
       border-radius: 20px;
       border: 1px solid rgba(212, 175, 55, 0.3);
       box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6);
@@ -905,9 +903,7 @@
       position: absolute;
       top: 70px;
       right: 0;
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      background: rgba(38, 38, 43, 0.95);
       border: 1px solid rgba(212, 175, 55, 0.35);
       border-radius: 16px;
       padding: 1rem;
@@ -1303,14 +1299,12 @@
     }
 
     .character-card {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      background: rgba(38, 38, 43, 0.85);
       border: 1px solid rgba(212, 175, 55, 0.2);
       border-radius: 16px;
       padding: 1.5rem;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
       overflow: hidden;
     }
@@ -1504,9 +1498,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 2000;
       display: none;
       align-items: center;
@@ -1517,9 +1509,7 @@
     .modal-overlay.active { display: flex; }
 
     .modal {
-      background: rgba(30, 30, 35, 0.97);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(30, 30, 35, 0.98);
       border: 1px solid rgba(212, 175, 55, 0.35);
       border-radius: 20px;
       width: 95%;
@@ -2780,7 +2770,7 @@
 
     // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 20; i++) {
       const p = document.createElement("span");
       p.style.width = p.style.height = (Math.random() * 3 + 2) + 'px';
       p.style.left = (Math.random() * 100) + '%';
@@ -2794,6 +2784,7 @@
     let totalPages = 0;
     let totalCharacters = 0;
     const PAGE_SIZE = 12;
+    let cachedCharacters = [];
     let compendiumData = {};
     let currentStep = 1;
     const tagData = { skills: [], languages: [], spells: [] };
@@ -2838,6 +2829,7 @@
         totalCharacters = data.totalElements;
 
         document.getElementById('charCountBadge').textContent = totalCharacters;
+        cachedCharacters = data.content || [];
 
         if (!data.content || data.content.length === 0) {
           container.innerHTML = '<div class="empty-state">' +
@@ -2930,29 +2922,26 @@
     }
 
     async function loadCharacterDetail(characterId) {
-      // The GET /characters endpoint returns summary data; we render from that.
-      // Since there's no GET by ID endpoint, we fetch page and find the character.
-      // For now, we fetch all and find by ID (API may add detail endpoint later).
-      try {
-        // Search across pages to find this character
-        let found = null;
-        let page = 0;
-        while (!found && page < 50) {
-          const data = await getCharacters(page, 50);
-          found = data.content.find(function(c) { return c.id === characterId; });
-          if (data.content.length === 0 || page >= data.totalPages) break;
-          page++;
-        }
+      // Look up from cached data first (already loaded by loadCharacters)
+      let found = cachedCharacters.find(function(c) { return c.id === characterId; });
 
-        if (!found) {
-          document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Character Not Found</h3><p>Could not find the character details.</p></div>';
+      // Fallback: fetch current page if not in cache
+      if (!found) {
+        try {
+          const data = await getCharacters(currentPage, PAGE_SIZE);
+          found = data.content.find(function(c) { return c.id === characterId; });
+        } catch (error) {
+          document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
           return;
         }
-
-        renderCharacterDetail(found);
-      } catch (error) {
-        document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
       }
+
+      if (!found) {
+        document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Character Not Found</h3><p>Could not find the character details.</p></div>';
+        return;
+      }
+
+      renderCharacterDetail(found);
     }
 
     let currentDetailCharacter = null;
