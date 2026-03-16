@@ -755,6 +755,7 @@
 
     // ====== 3D D20 ICOSAHEDRON ======
     const canvas = document.getElementById("d20-canvas");
+    try {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({
@@ -955,6 +956,10 @@
     }
 
     animate();
+    } catch (e) {
+      console.warn('D20 rendering failed:', e.message, '— hiding dice');
+      canvas.style.display = 'none';
+    }
 </script>
 
 <!-- Authentication Scripts -->
