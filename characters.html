@@ -2794,6 +2794,7 @@
     let totalPages = 0;
     let totalCharacters = 0;
     const PAGE_SIZE = 12;
+    let cachedCharacters = [];
     let compendiumData = {};
     let currentStep = 1;
     const tagData = { skills: [], languages: [], spells: [] };
@@ -2838,6 +2839,7 @@
         totalCharacters = data.totalElements;
 
         document.getElementById('charCountBadge').textContent = totalCharacters;
+        cachedCharacters = data.content || [];
 
         if (!data.content || data.content.length === 0) {
           container.innerHTML = '<div class="empty-state">' +
@@ -2930,29 +2932,26 @@
     }
 
     async function loadCharacterDetail(characterId) {
-      // The GET /characters endpoint returns summary data; we render from that.
-      // Since there's no GET by ID endpoint, we fetch page and find the character.
-      // For now, we fetch all and find by ID (API may add detail endpoint later).
-      try {
-        // Search across pages to find this character
-        let found = null;
-        let page = 0;
-        while (!found && page < 50) {
-          const data = await getCharacters(page, 50);
-          found = data.content.find(function(c) { return c.id === characterId; });
-          if (data.content.length === 0 || page >= data.totalPages) break;
-          page++;
-        }
+      // Look up from cached data first (already loaded by loadCharacters)
+      let found = cachedCharacters.find(function(c) { return c.id === characterId; });
 
-        if (!found) {
-          document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Character Not Found</h3><p>Could not find the character details.</p></div>';
+      // Fallback: fetch current page if not in cache
+      if (!found) {
+        try {
+          const data = await getCharacters(currentPage, PAGE_SIZE);
+          found = data.content.find(function(c) { return c.id === characterId; });
+        } catch (error) {
+          document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
           return;
         }
-
-        renderCharacterDetail(found);
-      } catch (error) {
-        document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
       }
+
+      if (!found) {
+        document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Character Not Found</h3><p>Could not find the character details.</p></div>';
+        return;
+      }
+
+      renderCharacterDetail(found);
     }
 
     let currentDetailCharacter = null;

@@ -152,7 +152,7 @@ async function refreshAccessToken() {
 }
 
 async function authenticatedRequest(url, options = {}) {
-  // Proactively refresh token if expired (avoids 401 + CORS issues)
+  // Proactively refresh token if we know it's expired
   let token = getAuthToken();
   if (isAccessTokenExpired()) {
     console.log('Access token expired, refreshing proactively...');
@@ -180,32 +180,28 @@ async function authenticatedRequest(url, options = {}) {
   try {
     return await apiRequest(url, reqOptions);
   } catch (error) {
-    if (error.status !== 401 && !error.isNetworkError) {
+    // Only attempt refresh on actual 401 (not network errors — those are connection issues)
+    if (error.status !== 401) {
       throw error;
     }
 
-    // 401 or network error (CORS-blocked 401) — attempt token refresh
+    // 401 — attempt token refresh
+    let newToken;
     try {
       if (!_refreshPromise) {
         _refreshPromise = refreshAccessToken().finally(() => {
           _refreshPromise = null;
         });
       }
-      const newToken = await _refreshPromise;
-
-      // Retry original request with new token
-      reqOptions.headers['Authorization'] = 'Bearer ' + newToken;
-      return await apiRequest(url, reqOptions);
+      newToken = await _refreshPromise;
     } catch (refreshError) {
       console.error('Token refresh failed, showing re-login overlay:', refreshError);
-
-      // Show overlay instead of redirecting — user stays on the current page
-      const newToken = await showReloginOverlay();
-
-      // Retry original request with the token from re-login
-      reqOptions.headers['Authorization'] = 'Bearer ' + newToken;
-      return await apiRequest(url, reqOptions);
+      newToken = await showReloginOverlay();
     }
+
+    // Retry with new token — errors propagate to caller
+    reqOptions.headers['Authorization'] = 'Bearer ' + newToken;
+    return await apiRequest(url, reqOptions);
   }
 }
 

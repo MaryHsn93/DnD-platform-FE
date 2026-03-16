@@ -123,8 +123,22 @@ function getRefreshToken() {
 
 function getAccessTokenExpiresAt() {
   try {
-    const expiresAt = localStorage.getItem('accessTokenExpiresAt');
-    return expiresAt ? parseInt(expiresAt, 10) : null;
+    const raw = localStorage.getItem('accessTokenExpiresAt');
+    if (!raw) return null;
+
+    let expiresAt = Number(raw);
+
+    // If not a valid number, try parsing as ISO date string
+    if (isNaN(expiresAt)) {
+      expiresAt = new Date(raw).getTime();
+    }
+
+    // If value looks like seconds (< 1e12) instead of milliseconds, convert
+    if (expiresAt > 0 && expiresAt < 1e12) {
+      expiresAt *= 1000;
+    }
+
+    return expiresAt > 0 ? expiresAt : null;
   } catch (error) {
     console.error('Failed to get access token expiry:', error);
     return null;
@@ -133,7 +147,7 @@ function getAccessTokenExpiresAt() {
 
 function isAccessTokenExpired() {
   const expiresAt = getAccessTokenExpiresAt();
-  if (!expiresAt) return true;
+  if (!expiresAt) return false; // No expiry info — assume valid, let 401 handler decide
   return Date.now() >= expiresAt;
 }
 
