@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOCTYPE 
+html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -755,226 +756,206 @@
 
     // ====== 3D D20 ICOSAHEDRON ======
     const canvas = document.getElementById("d20-canvas");
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      alpha: true,
+      antialias: true
+    });
 
-    try {
-      if (typeof THREE === 'undefined') throw new Error('Three.js not loaded');
+    renderer.setSize(300, 300);
+    camera.position.z = 5;
 
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({
-        canvas: canvas,
-        alpha: true,
-        antialias: true
-      });
+    // Create D20 as a group of 20 triangular faces
+    const d20Group = new THREE.Group();
 
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(300, 300);
-      camera.position.z = 5;
+    // Function to create texture with number
+    function createNumberTexture(number) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 512;
+      canvas.height = 512;
 
-      // Create D20 as a group of 20 triangular faces
-      const d20Group = new THREE.Group();
+      // Fill with red background
+      ctx.fillStyle = '#8b1e1e';
+      ctx.fillRect(0, 0, 512, 512);
 
-      // Function to create texture with number
-      function createNumberTexture(number) {
-        const texCanvas = document.createElement('canvas');
-        const ctx = texCanvas.getContext('2d');
-        texCanvas.width = 512;
-        texCanvas.height = 512;
+      // Draw subtle gradient for depth (centered lower for triangular mapping)
+      const gradient = ctx.createRadialGradient(256, 340, 0, 256, 340, 200);
+      gradient.addColorStop(0, 'rgba(139, 30, 30, 1)');
+      gradient.addColorStop(1, 'rgba(92, 18, 18, 1)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 512, 512);
 
-        // Fill with red background
-        ctx.fillStyle = '#8b1e1e';
-        ctx.fillRect(0, 0, 512, 512);
+      // Draw number in gold (positioned lower to center on triangular face)
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 180px Cinzel, serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(number.toString(), 256, 340);
 
-        // Draw subtle gradient for depth (centered lower for triangular mapping)
-        const gradient = ctx.createRadialGradient(256, 340, 0, 256, 340, 200);
-        gradient.addColorStop(0, 'rgba(139, 30, 30, 1)');
-        gradient.addColorStop(1, 'rgba(92, 18, 18, 1)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 512, 512);
-
-        // Draw number in gold (positioned lower to center on triangular face)
-        ctx.fillStyle = '#d4af37';
-        ctx.font = 'bold 180px Cinzel, serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(number.toString(), 256, 340);
-
-        const texture = new THREE.CanvasTexture(texCanvas);
-        texture.flipY = false; // Prevent vertical flipping
-        return texture;
-      }
-
-      // Get template geometry for vertices
-      const templateGeometry = new THREE.IcosahedronGeometry(1.5, 0);
-      const positions = templateGeometry.attributes.position;
-      const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-
-      // Create 20 individual triangular faces
-      for (let i = 0; i < 20; i++) {
-        const i1 = i * 3;
-        const i2 = i * 3 + 1;
-        const i3 = i * 3 + 2;
-
-        // Get the 3 vertices of this face
-        const vertices = new Float32Array([
-          positions.getX(i1), positions.getY(i1), positions.getZ(i1),
-          positions.getX(i2), positions.getY(i2), positions.getZ(i2),
-          positions.getX(i3), positions.getY(i3), positions.getZ(i3)
-        ]);
-
-        // UV coordinates for texture mapping (triangle)
-        const uvs = new Float32Array([
-          0.5, 0,    // top center
-          0, 1,      // bottom left
-          1, 1       // bottom right
-        ]);
-
-        // Create custom triangular geometry
-        const faceGeometry = new THREE.BufferGeometry();
-        faceGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-        faceGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-        faceGeometry.computeVertexNormals();
-
-        // Create material with number texture
-        const faceMaterial = new THREE.MeshPhongMaterial({
-          map: createNumberTexture(numbers[i]),
-          shininess: 80,
-          flatShading: true
-        });
-
-        // Create mesh and add to group
-        const faceMesh = new THREE.Mesh(faceGeometry, faceMaterial);
-        d20Group.add(faceMesh);
-      }
-
-      // Add golden edge lines
-      const edges = new THREE.EdgesGeometry(templateGeometry);
-      const lineMaterial = new THREE.LineBasicMaterial({ color: 0xd4af37, linewidth: 2 });
-      const wireframe = new THREE.LineSegments(edges, lineMaterial);
-      d20Group.add(wireframe);
-
-      // Add the group to the scene
-      scene.add(d20Group);
-
-      // Add lighting
-      const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
-      light1.position.set(1, 1, 1);
-      scene.add(light1);
-
-      const light2 = new THREE.DirectionalLight(0xd4af37, 0.4);
-      light2.position.set(-1, -1, -1);
-      scene.add(light2);
-
-      const ambientLight = new THREE.AmbientLight(0x404040);
-      scene.add(ambientLight);
-
-      // Animation variables
-      let floatOffset = 0;
-      let isHovered = false;
-      let rotationSpeed = 0.005;
-
-      // Touch control variables
-      let isTouching = false;
-      let lastTouchX = 0;
-      let lastTouchY = 0;
-      let touchRotationX = 0;
-      let touchRotationY = 0;
-
-      // Activate D20 animation (hover/touch)
-      function activateD20() {
-        isHovered = true;
-        rotationSpeed = 0.05;
-      }
-
-      // Deactivate D20 animation
-      function deactivateD20() {
-        isHovered = false;
-        rotationSpeed = 0.005;
-      }
-
-      // Spin D20 on click/tap
-      function spinD20() {
-        rotationSpeed = 0.2;
-        setTimeout(() => {
-          rotationSpeed = isHovered ? 0.05 : 0.005;
-        }, 1000);
-      }
-
-      // Desktop mouse events
-      canvas.addEventListener('mouseenter', activateD20);
-      canvas.addEventListener('mouseleave', deactivateD20);
-      canvas.addEventListener('click', spinD20);
-
-      // Mobile touch events - drag to rotate
-      canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        isTouching = true;
-        const touch = e.touches[0];
-        lastTouchX = touch.clientX;
-        lastTouchY = touch.clientY;
-        // Salva la rotazione attuale come base
-        touchRotationX = d20Group.rotation.x;
-        touchRotationY = d20Group.rotation.y;
-      }, { passive: false });
-
-      canvas.addEventListener('touchmove', (e) => {
-        if (!isTouching) return;
-        e.preventDefault();
-
-        const touch = e.touches[0];
-        const deltaX = touch.clientX - lastTouchX;
-        const deltaY = touch.clientY - lastTouchY;
-
-        // Ruota il dado in base al movimento del dito
-        // Movimento orizzontale -> rotazione su asse Y
-        // Movimento verticale -> rotazione su asse X
-        const sensitivity = 0.01;
-        d20Group.rotation.y = touchRotationY + (deltaX * sensitivity);
-        d20Group.rotation.x = touchRotationX + (deltaY * sensitivity);
-      }, { passive: false });
-
-      canvas.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        isTouching = false;
-      }, { passive: false });
-
-      canvas.addEventListener('touchcancel', () => {
-        isTouching = false;
-      });
-
-      // Handle WebGL context loss
-      canvas.addEventListener('webglcontextlost', (e) => {
-        e.preventDefault();
-        console.warn('WebGL context lost');
-      });
-
-      canvas.addEventListener('webglcontextrestored', () => {
-        console.log('WebGL context restored');
-      });
-
-      // Animation loop
-      function animate() {
-        requestAnimationFrame(animate);
-
-        // Rotation - solo se non si sta toccando
-        if (!isTouching) {
-          d20Group.rotation.x += rotationSpeed;
-          d20Group.rotation.y += rotationSpeed;
-        }
-
-        // Floating effect
-        floatOffset += 0.02;
-        d20Group.position.y = Math.sin(floatOffset) * 0.2;
-
-        renderer.render(scene, camera);
-      }
-
-      animate();
-
-    } catch (e) {
-      console.error('D20 rendering failed:', e);
-      canvas.style.display = 'none';
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.flipY = false; // Prevent vertical flipping
+      return texture;
     }
+
+    // Get template geometry for vertices
+    const templateGeometry = new THREE.IcosahedronGeometry(1.5, 0);
+    const positions = templateGeometry.attributes.position;
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+    // Create 20 individual triangular faces
+    for (let i = 0; i < 20; i++) {
+      const i1 = i * 3;
+      const i2 = i * 3 + 1;
+      const i3 = i * 3 + 2;
+
+      // Get the 3 vertices of this face
+      const vertices = new Float32Array([
+        positions.getX(i1), positions.getY(i1), positions.getZ(i1),
+        positions.getX(i2), positions.getY(i2), positions.getZ(i2),
+        positions.getX(i3), positions.getY(i3), positions.getZ(i3)
+      ]);
+
+      // UV coordinates for texture mapping (triangle)
+      const uvs = new Float32Array([
+        0.5, 0,    // top center
+        0, 1,      // bottom left
+        1, 1       // bottom right
+      ]);
+
+      // Create custom triangular geometry
+      const faceGeometry = new THREE.BufferGeometry();
+      faceGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      faceGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+      faceGeometry.computeVertexNormals();
+
+      // Create material with number texture
+      const faceMaterial = new THREE.MeshPhongMaterial({
+        map: createNumberTexture(numbers[i]),
+        shininess: 80,
+        flatShading: true
+      });
+
+      // Create mesh and add to group
+      const faceMesh = new THREE.Mesh(faceGeometry, faceMaterial);
+      d20Group.add(faceMesh);
+    }
+
+    // Add golden edge lines
+    const edges = new THREE.EdgesGeometry(templateGeometry);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xd4af37, linewidth: 2 });
+    const wireframe = new THREE.LineSegments(edges, lineMaterial);
+    d20Group.add(wireframe);
+
+    // Add the group to the scene
+    scene.add(d20Group);
+
+    // Add lighting
+    const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+    light1.position.set(1, 1, 1);
+    scene.add(light1);
+
+    const light2 = new THREE.DirectionalLight(0xd4af37, 0.4);
+    light2.position.set(-1, -1, -1);
+    scene.add(light2);
+
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+
+    // Animation variables
+    let floatOffset = 0;
+    let isHovered = false;
+    let rotationSpeed = 0.005;
+
+    // Touch control variables
+    let isTouching = false;
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+    let touchRotationX = 0;
+    let touchRotationY = 0;
+
+    // Activate D20 animation (hover/touch)
+    function activateD20() {
+      isHovered = true;
+      rotationSpeed = 0.05;
+    }
+
+    // Deactivate D20 animation
+    function deactivateD20() {
+      isHovered = false;
+      rotationSpeed = 0.005;
+    }
+
+    // Spin D20 on click/tap
+    function spinD20() {
+      rotationSpeed = 0.2;
+      setTimeout(() => {
+        rotationSpeed = isHovered ? 0.05 : 0.005;
+      }, 1000);
+    }
+
+    // Desktop mouse events
+    canvas.addEventListener('mouseenter', activateD20);
+    canvas.addEventListener('mouseleave', deactivateD20);
+    canvas.addEventListener('click', spinD20);
+
+    // Mobile touch events - drag to rotate
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isTouching = true;
+      const touch = e.touches[0];
+      lastTouchX = touch.clientX;
+      lastTouchY = touch.clientY;
+      // Salva la rotazione attuale come base
+      touchRotationX = d20Group.rotation.x;
+      touchRotationY = d20Group.rotation.y;
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!isTouching) return;
+      e.preventDefault();
+
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - lastTouchX;
+      const deltaY = touch.clientY - lastTouchY;
+
+      // Ruota il dado in base al movimento del dito
+      // Movimento orizzontale -> rotazione su asse Y
+      // Movimento verticale -> rotazione su asse X
+      const sensitivity = 0.01;
+      d20Group.rotation.y = touchRotationY + (deltaX * sensitivity);
+      d20Group.rotation.x = touchRotationX + (deltaY * sensitivity);
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      isTouching = false;
+    }, { passive: false });
+
+    canvas.addEventListener('touchcancel', () => {
+      isTouching = false;
+    });
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Rotation - solo se non si sta toccando
+      if (!isTouching) {
+        d20Group.rotation.x += rotationSpeed;
+        d20Group.rotation.y += rotationSpeed;
+      }
+
+      // Floating effect
+      floatOffset += 0.02;
+      d20Group.position.y = Math.sin(floatOffset) * 0.2;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
 </script>
 
 <!-- Authentication Scripts -->
