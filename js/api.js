@@ -180,12 +180,12 @@ async function authenticatedRequest(url, options = {}) {
   try {
     return await apiRequest(url, reqOptions);
   } catch (error) {
-    // Only attempt refresh on actual 401 (not network errors — those are connection issues)
-    if (error.status !== 401) {
+    // Attempt refresh on 401 or network errors (CORS-blocked 401s appear as network errors)
+    if (error.status !== 401 && !error.isNetworkError) {
       throw error;
     }
 
-    // 401 — attempt token refresh
+    // 401 or CORS-blocked 401 — attempt token refresh
     let newToken;
     try {
       if (!_refreshPromise) {
