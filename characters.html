@@ -552,9 +552,7 @@
       right: 0;
       width: 380px;
       height: 520px;
-      background: rgba(30, 30, 35, 0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(30, 30, 35, 0.98);
       border-radius: 20px;
       border: 1px solid rgba(212, 175, 55, 0.3);
       box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6);
@@ -905,9 +903,7 @@
       position: absolute;
       top: 70px;
       right: 0;
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      background: rgba(38, 38, 43, 0.95);
       border: 1px solid rgba(212, 175, 55, 0.35);
       border-radius: 16px;
       padding: 1rem;
@@ -1303,14 +1299,12 @@
     }
 
     .character-card {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      background: rgba(38, 38, 43, 0.85);
       border: 1px solid rgba(212, 175, 55, 0.2);
       border-radius: 16px;
       padding: 1.5rem;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
       overflow: hidden;
     }
@@ -1504,9 +1498,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 2000;
       display: none;
       align-items: center;
@@ -1517,9 +1509,7 @@
     .modal-overlay.active { display: flex; }
 
     .modal {
-      background: rgba(30, 30, 35, 0.97);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(30, 30, 35, 0.98);
       border: 1px solid rgba(212, 175, 55, 0.35);
       border-radius: 20px;
       width: 95%;
@@ -2780,7 +2770,7 @@
 
     // Magic Particles
     const magicContainer = document.querySelector(".magic-particles");
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 20; i++) {
       const p = document.createElement("span");
       p.style.width = p.style.height = (Math.random() * 3 + 2) + 'px';
       p.style.left = (Math.random() * 100) + '%';
