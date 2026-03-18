@@ -54,6 +54,13 @@ const API_CONFIG = {
     IMPORT_SHEET: '/characters/import-sheet',
     SHEET: '/characters/{id}/sheet'
   },
+  DOCUMENT_QA: {
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.DOCUMENT_QA_PORT}`,
+    ASK: '/api/document-qa/ask',
+    CONVERSATIONS: '/api/document-qa/conversations',
+    CONVERSATION: '/api/document-qa/conversations/{id}',
+    MESSAGES: '/api/document-qa/conversations/{id}/messages'
+  },
   TIMEOUT: 10000 // 10 seconds
 };
 
@@ -771,6 +778,111 @@ async function requestPasswordReset(email) {
 
   } catch (error) {
     console.error('Password reset request error:', error);
+    throw error;
+  }
+}
+
+// ====== DOCUMENT Q&A - ASK ======
+async function askDocumentQuestion(userId, question, conversationId, documentIds) {
+  const url = API_CONFIG.DOCUMENT_QA.BASE_URL + API_CONFIG.DOCUMENT_QA.ASK;
+
+  const body = {
+    userId: parseInt(userId, 10),
+    question: question
+  };
+  if (conversationId) body.conversationId = conversationId;
+  if (documentIds && documentIds.length > 0) body.documentIds = documentIds;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    });
+
+    console.log('Document Q&A answer received:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Document Q&A ask error:', error);
+    throw error;
+  }
+}
+
+// ====== DOCUMENT Q&A - LIST CONVERSATIONS ======
+async function getDocQAConversations(userId) {
+  const url = API_CONFIG.DOCUMENT_QA.BASE_URL + API_CONFIG.DOCUMENT_QA.CONVERSATIONS
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Document Q&A conversations fetched:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get document Q&A conversations error:', error);
+    throw error;
+  }
+}
+
+// ====== DOCUMENT Q&A - GET CONVERSATION ======
+async function getDocQAConversation(id, userId) {
+  const url = API_CONFIG.DOCUMENT_QA.BASE_URL
+    + API_CONFIG.DOCUMENT_QA.CONVERSATION.replace('{id}', id)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Document Q&A conversation fetched:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get document Q&A conversation error:', error);
+    throw error;
+  }
+}
+
+// ====== DOCUMENT Q&A - GET MESSAGES ======
+async function getDocQAMessages(conversationId, userId) {
+  const url = API_CONFIG.DOCUMENT_QA.BASE_URL
+    + API_CONFIG.DOCUMENT_QA.MESSAGES.replace('{id}', conversationId)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    console.log('Document Q&A messages fetched:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Get document Q&A messages error:', error);
+    throw error;
+  }
+}
+
+// ====== DOCUMENT Q&A - DELETE CONVERSATION ======
+async function deleteDocQAConversation(id, userId) {
+  const url = API_CONFIG.DOCUMENT_QA.BASE_URL
+    + API_CONFIG.DOCUMENT_QA.CONVERSATION.replace('{id}', id)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'DELETE'
+    });
+
+    console.log('Document Q&A conversation deleted:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('Delete document Q&A conversation error:', error);
     throw error;
   }
 }
