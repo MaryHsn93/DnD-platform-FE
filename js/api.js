@@ -61,6 +61,15 @@ const API_CONFIG = {
     CONVERSATION: '/api/document-qa/conversations/{id}',
     MESSAGES: '/api/document-qa/conversations/{id}/messages'
   },
+  CAMPAIGN: {
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.CAMPAIGN_PORT}`,
+    CAMPAIGNS: '/campaigns',
+    CAMPAIGN: '/campaigns/{id}',
+    MEMBERS: '/campaigns/{campaignId}/members',
+    MEMBER: '/campaigns/{campaignId}/members/{userId}',
+    NOTES: '/campaigns/{campaignId}/notes',
+    NOTE: '/campaigns/{campaignId}/notes/{noteId}'
+  },
   TIMEOUT: 10000 // 10 seconds
 };
 
@@ -883,6 +892,220 @@ async function deleteDocQAConversation(id, userId) {
 
   } catch (error) {
     console.error('Delete document Q&A conversation error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CAMPAIGNS (PAGINATED) ======
+async function getCampaigns(userId, page = 0, size = 20) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL + API_CONFIG.CAMPAIGN.CAMPAIGNS
+    + '?userId=' + userId + '&page=' + page + '&size=' + size;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'GET' });
+    console.log('Campaigns fetched successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Get campaigns error:', error);
+    throw error;
+  }
+}
+
+// ====== CREATE CAMPAIGN ======
+async function createCampaign(campaignData) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL + API_CONFIG.CAMPAIGN.CAMPAIGNS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(campaignData)
+    });
+    console.log('Campaign created successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Create campaign error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CAMPAIGN DETAILS ======
+async function getCampaignDetail(id) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.CAMPAIGN.replace('{id}', id);
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'GET' });
+    console.log('Campaign detail fetched successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Get campaign detail error:', error);
+    throw error;
+  }
+}
+
+// ====== UPDATE CAMPAIGN ======
+async function updateCampaign(id, campaignData) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.CAMPAIGN.replace('{id}', id);
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'PUT',
+      body: JSON.stringify(campaignData)
+    });
+    console.log('Campaign updated successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Update campaign error:', error);
+    throw error;
+  }
+}
+
+// ====== DELETE CAMPAIGN ======
+async function deleteCampaign(id, userId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.CAMPAIGN.replace('{id}', id)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'DELETE' });
+    console.log('Campaign deleted successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Delete campaign error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CAMPAIGN MEMBERS ======
+async function getCampaignMembers(campaignId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.MEMBERS.replace('{campaignId}', campaignId);
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'GET' });
+    console.log('Campaign members fetched successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Get campaign members error:', error);
+    throw error;
+  }
+}
+
+// ====== ADD CAMPAIGN MEMBER ======
+async function addCampaignMember(campaignId, memberData) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.MEMBERS.replace('{campaignId}', campaignId);
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(memberData)
+    });
+    console.log('Campaign member added successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Add campaign member error:', error);
+    throw error;
+  }
+}
+
+// ====== REMOVE CAMPAIGN MEMBER ======
+async function removeCampaignMember(campaignId, userId, requesterId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.MEMBER.replace('{campaignId}', campaignId).replace('{userId}', userId)
+    + '?requesterId=' + requesterId;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'DELETE' });
+    console.log('Campaign member removed successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Remove campaign member error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CAMPAIGN NOTES ======
+async function getCampaignNotes(campaignId, userId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.NOTES.replace('{campaignId}', campaignId)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'GET' });
+    console.log('Campaign notes fetched successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Get campaign notes error:', error);
+    throw error;
+  }
+}
+
+// ====== CREATE CAMPAIGN NOTE ======
+async function createCampaignNote(campaignId, noteData) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.NOTES.replace('{campaignId}', campaignId);
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(noteData)
+    });
+    console.log('Campaign note created successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Create campaign note error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CAMPAIGN NOTE ======
+async function getCampaignNote(campaignId, noteId, userId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.NOTE.replace('{campaignId}', campaignId).replace('{noteId}', noteId)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'GET' });
+    console.log('Campaign note fetched successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Get campaign note error:', error);
+    throw error;
+  }
+}
+
+// ====== UPDATE CAMPAIGN NOTE ======
+async function updateCampaignNote(campaignId, noteId, noteData) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.NOTE.replace('{campaignId}', campaignId).replace('{noteId}', noteId);
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'PUT',
+      body: JSON.stringify(noteData)
+    });
+    console.log('Campaign note updated successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Update campaign note error:', error);
+    throw error;
+  }
+}
+
+// ====== DELETE CAMPAIGN NOTE ======
+async function deleteCampaignNote(campaignId, noteId, userId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.NOTE.replace('{campaignId}', campaignId).replace('{noteId}', noteId)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'DELETE' });
+    console.log('Campaign note deleted successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Delete campaign note error:', error);
     throw error;
   }
 }

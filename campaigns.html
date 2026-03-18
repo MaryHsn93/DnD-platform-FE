@@ -298,18 +298,18 @@
       margin-left: var(--sidebar-width);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
       min-height: 100dvh;
       padding: 2rem;
       position: relative;
     }
 
-    .page-section {
+    /* ====== PAGE HEADER ====== */
+    .page-header {
       text-align: center;
       z-index: 1;
       animation: fadeIn 1s ease;
+      margin-bottom: 2rem;
     }
 
     @keyframes fadeIn {
@@ -322,7 +322,7 @@
       font-size: 3rem;
       color: var(--gold);
       text-shadow: 0 0 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.3);
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       animation: textGlow 3s ease-in-out infinite;
     }
 
@@ -332,18 +332,826 @@
     }
 
     .page-subtitle {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--text-muted);
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
-    .page-tagline {
-      font-family: 'Cinzel', serif;
-      font-size: 1rem;
-      color: var(--text-muted);
-      opacity: 0.7;
-      font-style: italic;
+    /* ====== TOOLBAR ====== */
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      z-index: 1;
     }
+
+    .btn-create {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-create:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 25px rgba(212, 175, 55, 0.3);
+    }
+
+    /* ====== CAMPAIGNS GRID ====== */
+    .campaigns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      z-index: 1;
+    }
+
+    .campaign-card {
+      background: rgba(38, 38, 43, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .campaign-card:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 175, 55, 0.15);
+    }
+
+    .campaign-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+
+    .campaign-card:hover::before { left: 100%; }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .campaign-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .campaign-avatar svg {
+      width: 28px;
+      height: 28px;
+      color: var(--gold);
+    }
+
+    .card-info { flex: 1; overflow: hidden; }
+
+    .card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-dm {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .card-status {
+      margin-left: auto;
+      text-align: center;
+      border-radius: 10px;
+      padding: 0.3rem 0.7rem;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-status.active {
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: #4ade80;
+    }
+
+    .card-status.completed {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: var(--gold);
+    }
+
+    .card-status.paused {
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      color: #fbbf24;
+    }
+
+    .card-status.archived {
+      background: rgba(181, 181, 181, 0.15);
+      border: 1px solid rgba(181, 181, 181, 0.3);
+      color: var(--text-muted);
+    }
+
+    .card-description {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .card-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    .card-stat svg {
+      width: 16px;
+      height: 16px;
+      color: var(--gold);
+      opacity: 0.7;
+    }
+
+    .card-stat span {
+      color: var(--text-muted);
+    }
+
+    /* ====== LOADING / EMPTY / ERROR STATES ====== */
+    .loading-state, .empty-state, .error-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      width: 100%;
+      z-index: 1;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state svg { color: var(--gold); opacity: 0.5; margin-bottom: 1rem; }
+    .empty-state h3 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 0.5rem; }
+    .empty-state p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .error-state h3 { color: #ef4444; margin-bottom: 0.5rem; }
+    .error-state p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+    .action-btn {
+      padding: 0.6rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      color: var(--gold);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    /* ====== PAGINATION ====== */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-bottom: 2rem;
+      z-index: 1;
+    }
+
+    .page-btn {
+      padding: 0.5rem 0.9rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+
+    .page-btn.active {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold);
+      border-color: var(--gold);
+      font-weight: 600;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* ====== MODALS ====== */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: rgba(30, 30, 35, 0.98);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 20px;
+      width: 95%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(212, 175, 55, 0.15);
+      animation: modalSlideUp 0.4s ease;
+    }
+
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal.detail-modal { max-width: 800px; }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .modal-header h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1.4rem;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(139, 30, 30, 0.4);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ====== FORMS ====== */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group label .required { color: #ef4444; }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.7rem 0.9rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 10px;
+      color: var(--text-light);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      min-height: 1.2em;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .btn-submit {
+      padding: 0.8rem 2rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 25px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-cancel {
+      padding: 0.8rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+    }
+
+    /* ====== DETAIL VIEW ====== */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .detail-avatar svg {
+      width: 36px;
+      height: 36px;
+      color: var(--gold);
+    }
+
+    .detail-identity h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .detail-identity p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-block {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .detail-block.full-width { grid-column: 1 / -1; }
+
+    .detail-block h4 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0;
+      font-size: 0.85rem;
+    }
+
+    .stat-row .stat-name { color: var(--text-muted); }
+    .stat-row .stat-value { color: var(--text-light); font-weight: 600; }
+
+    /* ====== MEMBERS LIST ====== */
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+    }
+
+    .member-item:last-child { border-bottom: none; }
+
+    .member-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .member-info { flex: 1; }
+
+    .member-name {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .member-role {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .member-role.dm { color: var(--gold); }
+
+    .member-remove {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ef4444;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .member-remove:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .btn-add-small {
+      padding: 0.4rem 0.8rem;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      color: var(--gold);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-add-small:hover {
+      background: rgba(212, 175, 55, 0.2);
+    }
+
+    /* ====== NOTES LIST ====== */
+    .note-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 10px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .note-item:hover {
+      border-color: rgba(212, 175, 55, 0.3);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .note-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .note-title {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .note-visibility {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .note-visibility.public {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+    }
+
+    .note-visibility.private {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+    }
+
+    .note-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .note-content-preview {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .note-btn {
+      padding: 0.3rem 0.6rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .note-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+    }
+
+    .note-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* ====== DETAIL ACTIONS ====== */
+    .detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .detail-actions .btn-edit {
+      flex: 1;
+      min-width: 0;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--gold);
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .detail-actions .btn-edit:hover {
+      background: rgba(212, 175, 55, 0.2);
+    }
+
+    .detail-actions .btn-delete {
+      padding: 0.7rem 1rem;
+      border: 1px solid #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .detail-actions .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    /* ====== CONFIRM DIALOG ====== */
+    .confirm-dialog {
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .confirm-dialog h3 {
+      font-family: 'Cinzel', serif;
+      color: #ef4444;
+      margin-bottom: 0.75rem;
+    }
+
+    .confirm-dialog p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .confirm-dialog .confirm-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .confirm-dialog .btn-confirm-delete {
+      padding: 0.6rem 1.5rem;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .confirm-dialog .btn-confirm-delete:hover {
+      background: #dc2626;
+    }
+
+    .confirm-dialog .btn-confirm-delete:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ====== TOAST ====== */
+    .toast {
+      position: fixed;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(30, 30, 35, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      z-index: 3000;
+      transition: transform 0.4s ease;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: #4ade80; }
+    .toast.error { border-color: #ef4444; }
 
     /* ====== MAGIC PARTICLES ====== */
     .magic-particles {
@@ -467,11 +1275,14 @@
 
     @media (max-width: 768px) {
       .page-title { font-size: 2.5rem; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
       .page-title { font-size: 2rem; }
       .page-subtitle { font-size: 1rem; }
+      .campaigns-grid { grid-template-columns: 1fr; }
     }
 
     /* ====== CHAT WIDGET ====== */
@@ -573,651 +1384,7 @@
       pointer-events: all;
     }
 
-    .chat-header {
-      padding: 1rem 1.25rem;
-      background: rgba(139, 30, 30, 0.3);
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .chat-header-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold), #b8962e);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .chat-header-icon svg {
-      width: 22px;
-      height: 22px;
-      color: var(--bg-dark);
-    }
-
-    .chat-header-info h4 {
-      font-family: 'Cinzel', serif;
-      color: var(--gold);
-      font-size: 1rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .chat-header-info span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .online-count {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.8rem;
-      color: #4ade80;
-    }
-
-    .online-dot {
-      width: 8px;
-      height: 8px;
-      background: #4ade80;
-      border-radius: 50%;
-      animation: statusPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes statusPulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .chat-tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .chat-tab {
-      flex: 1;
-      padding: 0.75rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-bottom: 2px solid transparent;
-      position: relative;
-    }
-
-    .chat-tab:hover {
-      color: var(--text-light);
-      background: rgba(212, 175, 55, 0.05);
-    }
-
-    .chat-tab.active {
-      color: var(--gold);
-      border-bottom-color: var(--gold);
-    }
-
-    .online-users {
-      padding: 0.75rem;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-      background: rgba(0, 0, 0, 0.15);
-    }
-
-    .online-users::-webkit-scrollbar { height: 4px; }
-    .online-users::-webkit-scrollbar-thumb {
-      background: rgba(212, 175, 55, 0.3);
-      border-radius: 2px;
-    }
-
-    .online-user {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-      cursor: pointer;
-      padding: 0.5rem;
-      border-radius: 8px;
-      transition: background 0.3s ease;
-      min-width: 60px;
-    }
-
-    .online-user:hover { background: rgba(212, 175, 55, 0.1); }
-
-    .online-user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 2px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      color: var(--gold);
-      font-size: 0.9rem;
-      position: relative;
-    }
-
-    .online-user-avatar::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 10px;
-      height: 10px;
-      background: #4ade80;
-      border-radius: 50%;
-      border: 2px solid var(--bg-dark);
-    }
-
-    .online-user-name {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 55px;
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .chat-messages::-webkit-scrollbar { width: 6px; }
-    .chat-messages::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 3px;
-    }
-    .chat-messages::-webkit-scrollbar-thumb {
-      background: rgba(212, 175, 55, 0.3);
-      border-radius: 3px;
-    }
-
-    .message {
-      max-width: 85%;
-      animation: messageSlide 0.3s ease;
-    }
-
-    @keyframes messageSlide {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.received { align-self: flex-start; }
-    .message.sent { align-self: flex-end; }
-
-    .message-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .message.sent .message-header { flex-direction: row-reverse; }
-
-    .message-avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 1px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Cinzel', serif;
-      font-size: 0.65rem;
-      color: var(--gold);
-    }
-
-    .message-sender {
-      font-size: 0.75rem;
-      color: var(--gold);
-      font-weight: 600;
-    }
-
-    .message-time {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      margin-left: auto;
-    }
-
-    .message.sent .message-time {
-      margin-left: 0;
-      margin-right: auto;
-    }
-
-    .message-content {
-      padding: 0.75rem 1rem;
-      border-radius: 16px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-    }
-
-    .message.received .message-content {
-      background: rgba(212, 175, 55, 0.1);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-top-left-radius: 4px;
-    }
-
-    .message.sent .message-content {
-      background: rgba(139, 30, 30, 0.4);
-      border: 1px solid rgba(139, 30, 30, 0.3);
-      border-top-right-radius: 4px;
-    }
-
-    .chat-input-area {
-      padding: 1rem;
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
-      display: flex;
-      gap: 0.75rem;
-    }
-
-    .chat-input {
-      flex: 1;
-      padding: 0.85rem 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 12px;
-      color: var(--text-light);
-      font-size: 16px;
-      outline: none;
-      transition: all 0.3s ease;
-    }
-
-    .chat-input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-    }
-
-    .chat-input::placeholder { color: var(--text-muted); }
-
-    .chat-send-btn {
-      width: 45px;
-      height: 45px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
-
-    .chat-send-btn:hover {
-      background: linear-gradient(135deg, #a82525, var(--primary));
-      border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-    }
-
-    .chat-send-btn svg {
-      width: 20px;
-      height: 20px;
-      color: var(--gold);
-    }
-
-    /* ====== DICE ROLLER WIDGET ====== */
-    .dice-roller-widget {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      z-index: 900;
-    }
-
-    .dice-toggle-btn {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 2px solid var(--gold);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3);
-      transition: all 0.3s ease;
-    }
-
-    .dice-toggle-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .dice-toggle-btn svg {
-      width: 32px;
-      height: 32px;
-      color: var(--gold);
-    }
-
-    .dice-roller-panel {
-      position: absolute;
-      top: 70px;
-      right: 0;
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(212, 175, 55, 0.35);
-      border-radius: 16px;
-      padding: 1rem;
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 0 40px rgba(212, 175, 55, 0.1);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px) scale(0.95);
-      transition: all 0.3s ease;
-    }
-
-    .dice-roller-panel.active {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0) scale(1);
-    }
-
-    .dice-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .dice-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0.5rem;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .dice-btn:hover {
-      background: rgba(212, 175, 55, 0.1);
-      transform: translateY(-2px);
-    }
-
-    .dice-btn:hover .dice-shape {
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-    }
-
-    .dice-btn.selected {
-      background: rgba(212, 175, 55, 0.2);
-    }
-
-    .dice-btn.selected .dice-shape {
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
-      border-color: #fff;
-    }
-
-    .dice-btn.selected .dice-label {
-      color: var(--gold);
-    }
-
-    .dice-count {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: var(--gold);
-      color: var(--bg-dark);
-      font-size: 0.65rem;
-      font-weight: 700;
-      min-width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .dice-btn.selected .dice-count {
-      display: flex;
-    }
-
-    .dice-shape {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--primary);
-      border: 2px solid var(--gold);
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .dice-value {
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--gold);
-      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-      z-index: 1;
-    }
-
-    .dice-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .dice-d4 {
-      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-      border: none;
-      background: var(--primary);
-      box-shadow: 0 0 0 2px var(--gold);
-    }
-
-    .dice-d6 {
-      border-radius: 6px;
-    }
-
-    .dice-d8 {
-      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-      border: none;
-      background: var(--primary);
-      box-shadow: 0 0 0 2px var(--gold);
-    }
-
-    .dice-d10 {
-      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-      border: none;
-      background: var(--primary);
-      box-shadow: 0 0 0 2px var(--gold);
-    }
-
-    .dice-d12 {
-      clip-path: polygon(50% 0%, 85% 25%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 15% 25%);
-      border: none;
-      background: var(--primary);
-      box-shadow: 0 0 0 2px var(--gold);
-    }
-
-    .dice-d20 {
-      clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
-      border: none;
-      background: var(--primary);
-      box-shadow: 0 0 0 2px var(--gold);
-    }
-
-    .dice-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .roll-all-btn {
-      flex: 1;
-      padding: 0.6rem;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      color: var(--gold);
-      font-family: 'Cinzel', serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .roll-all-btn:hover {
-      background: linear-gradient(135deg, #a82525, var(--primary));
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-      transform: translateY(-1px);
-    }
-
-    .roll-all-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .clear-btn {
-      padding: 0.6rem 0.8rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 8px;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .clear-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-light);
-    }
-
-    .dice-result {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.25rem;
-      padding: 0.5rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      min-height: 50px;
-    }
-
-    .result-details {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.4;
-    }
-
-    .result-total {
-      display: flex;
-      align-items: baseline;
-      gap: 0.4rem;
-    }
-
-    .result-value {
-      font-family: 'Cinzel', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--gold);
-      text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
-    }
-
-    .result-dice {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .result-value.critical {
-      color: #4ade80;
-      text-shadow: 0 0 20px rgba(74, 222, 128, 0.8);
-      animation: criticalPulse 0.5s ease infinite;
-    }
-
-    .result-value.fumble {
-      color: #ef4444;
-      text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
-    }
-
-    @keyframes criticalPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    @keyframes diceShake {
-      0%, 100% { transform: rotate(0deg); }
-      20% { transform: rotate(-15deg) scale(1.1); }
-      40% { transform: rotate(15deg) scale(1.1); }
-      60% { transform: rotate(-10deg); }
-      80% { transform: rotate(10deg); }
-    }
-
-    @keyframes resultReveal {
-      0% { transform: scale(2); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .dice-btn.rolling .dice-shape {
-      animation: diceShake 0.5s ease;
-    }
-
-    .result-value.reveal {
-      animation: resultReveal 0.3s ease;
-    }
-
     @media (max-width: 768px) {
-      .dice-roller-widget {
-        top: 1rem;
-        right: 1rem;
-      }
-
-      .dice-toggle-btn {
-        width: 50px;
-        height: 50px;
-      }
-
-      .dice-toggle-btn svg {
-        width: 26px;
-        height: 26px;
-      }
-
-      .dice-roller-panel {
-        top: 60px;
-        padding: 0.75rem;
-      }
-
-      .dice-shape {
-        width: 35px;
-        height: 35px;
-      }
-
-      .dice-value {
-        font-size: 0.8rem;
-      }
-
-      .result-value {
-        font-size: 1.25rem;
-      }
-
       .chat-window { width: 320px; height: 480px; right: -0.5rem; }
     }
 
@@ -1227,11 +1394,57 @@
       .chat-toggle-btn { width: 55px; height: 55px; }
     }
 
+    /* ====== DICE ROLLER WIDGET ====== */
+    .dice-roller-widget { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 900; }
+    .dice-toggle-btn { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #5a1414); border: 2px solid var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); transition: all 0.3s ease; }
+    .dice-toggle-btn:hover { transform: scale(1.1); }
+    .dice-toggle-btn svg { width: 32px; height: 32px; color: var(--gold); }
+    .dice-roller-panel { position: absolute; top: 70px; right: 0; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 16px; padding: 1rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 40px rgba(212, 175, 55, 0.1); opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95); transition: all 0.3s ease; }
+    .dice-roller-panel.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .dice-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
+    .dice-btn { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; background: transparent; border: none; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease; position: relative; }
+    .dice-btn:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-2px); }
+    .dice-btn:hover .dice-shape { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+    .dice-btn.selected { background: rgba(212, 175, 55, 0.2); }
+    .dice-btn.selected .dice-shape { box-shadow: 0 0 15px rgba(212, 175, 55, 0.6); border-color: #fff; }
+    .dice-btn.selected .dice-label { color: var(--gold); }
+    .dice-count { position: absolute; top: -4px; right: -4px; background: var(--gold); color: var(--bg-dark); font-size: 0.65rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+    .dice-btn.selected .dice-count { display: flex; }
+    .dice-shape { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--primary); border: 2px solid var(--gold); transition: all 0.3s ease; position: relative; }
+    .dice-value { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.9rem; color: var(--gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); z-index: 1; }
+    .dice-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .dice-d4 { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d6 { border-radius: 6px; }
+    .dice-d8 { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d10 { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d12 { clip-path: polygon(50% 0%, 85% 25%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 15% 25%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-d20 { clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); border: none; background: var(--primary); box-shadow: 0 0 0 2px var(--gold); }
+    .dice-actions { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .roll-all-btn { flex: 1; padding: 0.6rem; background: linear-gradient(135deg, var(--primary), #5a1414); border: 1px solid var(--gold); border-radius: 8px; color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; }
+    .roll-all-btn:hover { background: linear-gradient(135deg, #a82525, var(--primary)); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); transform: translateY(-1px); }
+    .roll-all-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .clear-btn { padding: 0.6rem 0.8rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: all 0.3s ease; }
+    .clear-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-light); }
+    .dice-result { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.2); min-height: 50px; }
+    .result-details { font-size: 0.7rem; color: var(--text-muted); text-align: center; line-height: 1.4; }
+    .result-total { display: flex; align-items: baseline; gap: 0.4rem; }
+    .result-value { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+    .result-dice { font-size: 0.8rem; color: var(--text-muted); }
+    .result-value.critical { color: #4ade80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.8); animation: criticalPulse 0.5s ease infinite; }
+    .result-value.fumble { color: #ef4444; text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
+    @keyframes criticalPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    @keyframes diceShake { 0%, 100% { transform: rotate(0deg); } 20% { transform: rotate(-15deg) scale(1.1); } 40% { transform: rotate(15deg) scale(1.1); } 60% { transform: rotate(-10deg); } 80% { transform: rotate(10deg); } }
+    @keyframes resultReveal { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .dice-btn.rolling .dice-shape { animation: diceShake 0.5s ease; }
+    .result-value.reveal { animation: resultReveal 0.3s ease; }
+    @media (max-width: 768px) { .dice-roller-widget { top: 1rem; right: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } }
+
   </style>
 </head>
 <body>
   <div class="magic-particles"></div>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="toast" id="toast"></div>
 
   <button class="mobile-menu-btn" id="mobileMenuBtn">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1271,6 +1484,7 @@
           <a href="campaigns.html" class="nav-item active">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
             <span class="nav-text">Campaigns</span>
+            <span class="nav-badge" id="campaignCountBadge">0</span>
           </a>
           <a href="documents.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
@@ -1292,12 +1506,155 @@
     </aside>
 
     <main class="main-content">
-      <section class="page-section">
+      <div class="page-header">
         <h1 class="page-title">Campaigns</h1>
         <p class="page-subtitle">Join epic quests and forge your legend</p>
-        <p class="page-tagline">"The adventure awaits..."</p>
-      </section>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn-create" onclick="openCreateModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Campaign
+        </button>
+      </div>
+
+      <div id="campaignsContent"></div>
+      <div class="pagination" id="paginationContainer" style="display:none"></div>
     </main>
+  </div>
+
+  <!-- Create/Edit Campaign Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="createModalTitle">Create Campaign</h2>
+        <button class="modal-close" onclick="closeCreateModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="createCampaignForm" onsubmit="submitCampaign(event)">
+        <div class="form-error" id="createError"></div>
+        <div class="form-group">
+          <label>Name <span class="required">*</span></label>
+          <input type="text" id="campName" maxlength="100" required placeholder="e.g. Curse of Strahd">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="campDescription" placeholder="A gothic horror adventure in the land of Barovia..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Max Players</label>
+            <input type="number" id="campMaxPlayers" min="1" max="20" value="6" placeholder="6">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="campStatus">
+              <option value="ACTIVE">Active</option>
+              <option value="PAUSED">Paused</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="campImageUrl" maxlength="255" placeholder="https://example.com/banner.jpg">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeCreateModal()">Cancel</button>
+          <button type="submit" class="btn-submit" id="submitCampBtn">Create Campaign</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Campaign Detail Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal detail-modal">
+      <div class="modal-header">
+        <h2>Campaign Details</h2>
+        <button class="modal-close" onclick="closeDetailModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <!-- Add Member Modal -->
+  <div class="modal-overlay" id="addMemberModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add Member</h2>
+        <button class="modal-close" onclick="closeAddMemberModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form onsubmit="submitAddMember(event)">
+        <div class="form-error" id="addMemberError"></div>
+        <div class="form-group">
+          <label>User ID <span class="required">*</span></label>
+          <input type="number" id="memberUserId" required placeholder="Enter the player's user ID">
+        </div>
+        <div class="form-group">
+          <label>Character ID (optional)</label>
+          <input type="number" id="memberCharId" placeholder="Link a character to this membership">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeAddMemberModal()">Cancel</button>
+          <button type="submit" class="btn-submit" id="submitMemberBtn">Add Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create/Edit Note Modal -->
+  <div class="modal-overlay" id="noteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="noteModalTitle">Create Note</h2>
+        <button class="modal-close" onclick="closeNoteModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form onsubmit="submitNote(event)">
+        <div class="form-error" id="noteError"></div>
+        <div class="form-group">
+          <label>Title <span class="required">*</span></label>
+          <input type="text" id="noteTitle" maxlength="100" required placeholder="e.g. Session 1 Recap">
+        </div>
+        <div class="form-group">
+          <label>Content</label>
+          <textarea id="noteContent" placeholder="The party arrived at the village of Barovia..." style="min-height:120px"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Visibility</label>
+          <select id="noteVisibility">
+            <option value="PUBLIC">Public</option>
+            <option value="PRIVATE">Private</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeNoteModal()">Cancel</button>
+          <button type="submit" class="btn-submit" id="submitNoteBtn">Create Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal" style="max-width:400px">
+      <div class="confirm-dialog">
+        <h3>Delete Campaign</h3>
+        <p>Are you sure you want to delete <strong id="deleteItemName"></strong>? This action cannot be undone.</p>
+        <div class="confirm-actions">
+          <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+          <button class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Dice Roller Widget -->
@@ -1357,37 +1714,7 @@
 
   <!-- Chat Widget -->
   <div class="chat-widget">
-    <div class="chat-window" id="chatWindow">
-      <div class="chat-header">
-        <div class="chat-header-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div class="chat-header-info">
-          <h4>Party Chat</h4>
-          <span>Talk with fellow adventurers</span>
-        </div>
-        <div class="online-count">
-          <span class="online-dot"></span>
-          <span id="onlineCountText">0 online</span>
-        </div>
-      </div>
-
-      <div class="chat-tabs">
-        <div class="chat-tab active" data-tab="tavern">Tavern</div>
-        <div class="chat-tab" data-tab="groups">Groups</div>
-        <div class="chat-tab" data-tab="private">Private</div>
-      </div>
-
-      <div class="online-users" id="onlineUsers"></div><div class="chat-messages" id="chatMessages"></div>
-
-      <div class="chat-input-area">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="TavernChat.handleKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
-        <button class="chat-send-btn" onclick="TavernChat.sendMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
-        </button>
-      </div>
-    </div>
-
+    <div class="chat-window" id="chatWindow"></div>
     <button class="chat-toggle-btn" id="chatToggleBtn" onclick="TavernChat.toggleChat()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="chat-notification" id="chatNotification">0</span>
@@ -1399,224 +1726,741 @@
   <script src="js/utils.js"></script>
   <script src="js/chat.js"></script>
   <script>
-    // Auth Guard
+    // ====== AUTH GUARD ======
     const token = localStorage.getItem('authToken');
     if (!token) { window.location.href = 'index.html'; }
 
-    // User Info
+    // ====== USER INFO ======
     const username = localStorage.getItem('username') || 'Adventurer';
+    const currentUserId = parseInt(localStorage.getItem('userId'), 10);
     document.getElementById('userName').textContent = username;
     document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
 
-    // Mobile Sidebar
+    // ====== MOBILE SIDEBAR ======
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
-    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
       sidebar.classList.toggle('active');
       sidebarOverlay.classList.toggle('active');
     });
-    sidebarOverlay.addEventListener('click', () => {
+    sidebarOverlay.addEventListener('click', function() {
       sidebar.classList.remove('active');
       sidebarOverlay.classList.remove('active');
     });
 
-    // Logout
+    // ====== LOGOUT ======
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
 
-    // Chat
+    // ====== CHAT ======
     TavernChat.init();
 
-    // Dice Roller Toggle
+    // ====== STATE ======
+    let currentPage = 0;
+    let totalPages = 0;
+    let totalCampaigns = 0;
+    const PAGE_SIZE = 12;
+    let cachedCampaigns = [];
+    let editingCampaignId = null;
+    let deleteCampaignId = null;
+    let deleteItemType = null; // 'campaign', 'note'
+    let deleteNoteId = null;
+    let currentDetailCampaign = null;
+    let editingNoteId = null;
+
+    // ====== HELPERS ======
+    function escapeHtml(text) {
+      var div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      var d = new Date(dateStr);
+      return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function statusClass(status) {
+      if (!status) return '';
+      switch (status.toUpperCase()) {
+        case 'ACTIVE': return 'active';
+        case 'COMPLETED': return 'completed';
+        case 'PAUSED': return 'paused';
+        case 'ARCHIVED': return 'archived';
+        default: return '';
+      }
+    }
+
+    function showToast(message, type) {
+      var toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + (type || '');
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    }
+
+    // ====== LOAD CAMPAIGNS ======
+    async function loadCampaigns(page) {
+      var container = document.getElementById('campaignsContent');
+      container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Gathering your quests...</p></div>';
+      document.getElementById('paginationContainer').style.display = 'none';
+
+      try {
+        var data = await getCampaigns(currentUserId, page, PAGE_SIZE);
+        currentPage = data.page;
+        totalPages = data.totalPages;
+        totalCampaigns = data.totalElements;
+        document.getElementById('campaignCountBadge').textContent = totalCampaigns;
+        cachedCampaigns = data.content || [];
+
+        if (!data.content || data.content.length === 0) {
+          container.innerHTML = '<div class="empty-state">' +
+            '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+            '<h3>No Campaigns Yet</h3>' +
+            '<p>Create your first campaign and begin your epic adventure!</p>' +
+            '</div>';
+          return;
+        }
+
+        var html = '<div class="campaigns-grid">';
+        data.content.forEach(function(c) {
+          html += '<div class="campaign-card" onclick="openDetailModal(' + c.id + ')">' +
+            '<div class="card-top">' +
+              '<div class="campaign-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>' +
+              '<div class="card-info">' +
+                '<div class="card-name">' + escapeHtml(c.name) + '</div>' +
+              '</div>' +
+              '<div class="card-status ' + statusClass(c.status) + '">' + escapeHtml(c.status || 'ACTIVE') + '</div>' +
+            '</div>' +
+            '<div class="card-footer">' +
+              '<div class="card-stat">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
+                '<span>' + (c.playerCount || 0) + ' players</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+        renderPagination();
+      } catch (error) {
+        console.error('Failed to load campaigns:', error);
+        container.innerHTML = '<div class="error-state">' +
+          '<h3>Failed to Load Campaigns</h3>' +
+          '<p>' + getErrorMessage(error) + '</p>' +
+          '<button class="action-btn" onclick="loadCampaigns(' + page + ')">Try Again</button>' +
+          '</div>';
+      }
+    }
+
+    // ====== PAGINATION ======
+    function renderPagination() {
+      var container = document.getElementById('paginationContainer');
+      if (totalPages <= 1) { container.style.display = 'none'; return; }
+      container.style.display = 'flex';
+
+      var html = '<button class="page-btn" onclick="loadCampaigns(' + (currentPage - 1) + ')" ' +
+        (currentPage === 0 ? 'disabled' : '') + '>&laquo;</button>';
+      for (var i = 0; i < totalPages; i++) {
+        if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 0 && i !== totalPages - 1) {
+          if (i === 1 && currentPage > 3) { html += '<span class="page-btn" style="border:none;cursor:default">...</span>'; }
+          else if (i === totalPages - 2 && currentPage < totalPages - 4) { html += '<span class="page-btn" style="border:none;cursor:default">...</span>'; }
+          continue;
+        }
+        html += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" onclick="loadCampaigns(' + i + ')">' + (i + 1) + '</button>';
+      }
+      html += '<button class="page-btn" onclick="loadCampaigns(' + (currentPage + 1) + ')" ' +
+        (currentPage >= totalPages - 1 ? 'disabled' : '') + '>&raquo;</button>';
+      container.innerHTML = html;
+    }
+
+    // ====== CREATE/EDIT CAMPAIGN MODAL ======
+    function openCreateModal() {
+      editingCampaignId = null;
+      document.getElementById('createModalTitle').textContent = 'Create Campaign';
+      document.getElementById('submitCampBtn').textContent = 'Create Campaign';
+      document.getElementById('createCampaignForm').reset();
+      document.getElementById('createError').textContent = '';
+      document.getElementById('campStatus').parentElement.style.display = 'none';
+      document.getElementById('createModal').classList.add('active');
+    }
+
+    function openEditModal(campaign) {
+      editingCampaignId = campaign.id;
+      document.getElementById('createModalTitle').textContent = 'Edit Campaign';
+      document.getElementById('submitCampBtn').textContent = 'Save Changes';
+      document.getElementById('createError').textContent = '';
+      document.getElementById('campName').value = campaign.name || '';
+      document.getElementById('campDescription').value = campaign.description || '';
+      document.getElementById('campMaxPlayers').value = campaign.maxPlayers || 6;
+      document.getElementById('campStatus').value = campaign.status || 'ACTIVE';
+      document.getElementById('campImageUrl').value = campaign.imageUrl || '';
+      document.getElementById('campStatus').parentElement.style.display = '';
+      document.getElementById('createModal').classList.add('active');
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+      document.getElementById('createCampaignForm').reset();
+      editingCampaignId = null;
+    }
+
+    async function submitCampaign(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitCampBtn');
+      var errorEl = document.getElementById('createError');
+      errorEl.textContent = '';
+
+      var name = document.getElementById('campName').value.trim();
+      if (!name) {
+        errorEl.textContent = 'Campaign name is required.';
+        return;
+      }
+
+      var payload = {
+        userId: currentUserId,
+        name: name,
+        description: document.getElementById('campDescription').value.trim() || undefined,
+        maxPlayers: parseInt(document.getElementById('campMaxPlayers').value) || 6,
+        imageUrl: document.getElementById('campImageUrl').value.trim() || undefined
+      };
+
+      btn.disabled = true;
+
+      if (editingCampaignId) {
+        payload.status = document.getElementById('campStatus').value;
+        btn.textContent = 'Saving...';
+        try {
+          await updateCampaign(editingCampaignId, payload);
+          closeCreateModal();
+          closeDetailModal();
+          showToast('Campaign updated successfully!', 'success');
+          loadCampaigns(currentPage);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+          showToast(getErrorMessage(error), 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Save Changes';
+        }
+      } else {
+        btn.textContent = 'Creating...';
+        try {
+          await createCampaign(payload);
+          closeCreateModal();
+          showToast('Campaign created successfully!', 'success');
+          loadCampaigns(0);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+          showToast(getErrorMessage(error), 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Create Campaign';
+        }
+      }
+    }
+
+    // ====== DETAIL MODAL ======
+    function openDetailModal(campaignId) {
+      document.getElementById('detailModal').classList.add('active');
+      document.getElementById('detailContent').innerHTML =
+        '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Loading campaign...</p></div>';
+      loadCampaignDetail(campaignId);
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('active');
+      currentDetailCampaign = null;
+    }
+
+    async function loadCampaignDetail(campaignId) {
+      try {
+        var campaign = await getCampaignDetail(campaignId);
+        currentDetailCampaign = campaign;
+
+        var members = [];
+        var notes = [];
+        try { members = await getCampaignMembers(campaignId); } catch(e) { console.error('Members load error:', e); }
+        try { notes = await getCampaignNotes(campaignId, currentUserId); } catch(e) { console.error('Notes load error:', e); }
+
+        renderCampaignDetail(campaign, members, notes);
+      } catch (error) {
+        document.getElementById('detailContent').innerHTML =
+          '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
+      }
+    }
+
+    function renderCampaignDetail(campaign, members, notes) {
+      var isDM = campaign.dungeonMasterId === currentUserId;
+      var html = '';
+
+      // Header
+      html += '<div class="detail-header">' +
+        '<div class="detail-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>' +
+        '<div class="detail-identity">' +
+          '<h2>' + escapeHtml(campaign.name) + '</h2>' +
+          '<p><span class="card-status ' + statusClass(campaign.status) + '" style="display:inline-block">' + escapeHtml(campaign.status || 'ACTIVE') + '</span></p>' +
+        '</div>' +
+      '</div>';
+
+      // Info grid
+      html += '<div class="detail-grid">';
+
+      // Description
+      html += '<div class="detail-block full-width">' +
+        '<h4>Description</h4>' +
+        '<p style="font-size:0.85rem;color:var(--text-muted);line-height:1.5">' +
+          (campaign.description ? escapeHtml(campaign.description) : '<em>No description provided</em>') +
+        '</p>' +
+      '</div>';
+
+      // Info
+      html += '<div class="detail-block">' +
+        '<h4>Info</h4>' +
+        '<div class="stat-row"><span class="stat-name">DM ID</span><span class="stat-value">' + (campaign.dungeonMasterId || '-') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Max Players</span><span class="stat-value">' + (campaign.maxPlayers || '-') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Created</span><span class="stat-value">' + formatDate(campaign.createdAt) + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Updated</span><span class="stat-value">' + formatDate(campaign.updatedAt) + '</span></div>' +
+      '</div>';
+
+      // Members
+      html += '<div class="detail-block">' +
+        '<h4>Members (' + members.length + ')' +
+          (isDM ? ' <button class="btn-add-small" onclick="openAddMemberModal()">+ Add</button>' : '') +
+        '</h4>';
+      if (members.length === 0) {
+        html += '<p style="font-size:0.8rem;color:var(--text-muted)">No members yet</p>';
+      } else {
+        members.forEach(function(m) {
+          var isDMRole = m.role === 'DM' || m.role === 'DUNGEON_MASTER';
+          html += '<div class="member-item">' +
+            '<div class="member-avatar">' + (m.userId || '?') + '</div>' +
+            '<div class="member-info">' +
+              '<div class="member-name">User #' + m.userId + (m.characterId ? ' (Char #' + m.characterId + ')' : '') + '</div>' +
+              '<div class="member-role' + (isDMRole ? ' dm' : '') + '">' + escapeHtml(m.role || 'PLAYER') + '</div>' +
+            '</div>';
+          if (isDM && !isDMRole) {
+            html += '<button class="member-remove" onclick="removeMember(' + m.userId + ')" title="Remove">&times;</button>';
+          }
+          html += '</div>';
+        });
+      }
+      html += '</div>';
+
+      // Notes
+      html += '<div class="detail-block full-width">' +
+        '<h4>Notes' +
+          ' <button class="btn-add-small" onclick="openNoteModal()">+ New Note</button>' +
+        '</h4>';
+      if (!notes || notes.length === 0) {
+        html += '<p style="font-size:0.8rem;color:var(--text-muted)">No notes yet. Add session recaps, lore, or private notes!</p>';
+      } else {
+        notes.forEach(function(n) {
+          var isAuthor = n.authorId === currentUserId;
+          html += '<div class="note-item">' +
+            '<div class="note-header">' +
+              '<span class="note-title">' + escapeHtml(n.title) + '</span>' +
+              '<span class="note-visibility ' + (n.visibility || 'PUBLIC').toLowerCase() + '">' + escapeHtml(n.visibility || 'PUBLIC') + '</span>' +
+            '</div>' +
+            '<div class="note-meta">By User #' + n.authorId + ' &middot; ' + formatDate(n.createdAt) + '</div>' +
+            (n.content ? '<div class="note-content-preview">' + escapeHtml(n.content) + '</div>' : '') +
+            '<div class="note-actions">';
+          if (isAuthor) {
+            html += '<button class="note-btn" onclick="editNote(' + n.id + ')">Edit</button>';
+          }
+          if (isAuthor || isDM) {
+            html += '<button class="note-btn delete" onclick="deleteNote(' + n.id + ', \'' + escapeHtml(n.title).replace(/'/g, "\\'") + '\')">Delete</button>';
+          }
+          html += '</div></div>';
+        });
+      }
+      html += '</div>';
+
+      html += '</div>'; // close detail-grid
+
+      // Actions
+      if (isDM) {
+        html += '<div class="detail-actions">' +
+          '<button class="btn-edit" onclick="editCampaign()">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+            'Edit Campaign' +
+          '</button>' +
+          '<button class="btn-delete" onclick="openDeleteCampaignModal()">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+            'Delete' +
+          '</button>' +
+        '</div>';
+      }
+
+      document.getElementById('detailContent').innerHTML = html;
+    }
+
+    function editCampaign() {
+      if (!currentDetailCampaign) return;
+      closeDetailModal();
+      openEditModal(currentDetailCampaign);
+    }
+
+    // ====== DELETE CAMPAIGN ======
+    function openDeleteCampaignModal() {
+      if (!currentDetailCampaign) return;
+      deleteCampaignId = currentDetailCampaign.id;
+      deleteItemType = 'campaign';
+      document.getElementById('deleteItemName').textContent = currentDetailCampaign.name;
+      document.getElementById('deleteModal').querySelector('h3').textContent = 'Delete Campaign';
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+      deleteCampaignId = null;
+      deleteNoteId = null;
+      deleteItemType = null;
+    }
+
+    async function confirmDelete() {
+      var btn = document.getElementById('confirmDeleteBtn');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+
+      try {
+        if (deleteItemType === 'campaign') {
+          await deleteCampaign(deleteCampaignId, currentUserId);
+          closeDeleteModal();
+          closeDetailModal();
+          showToast('Campaign deleted successfully!', 'success');
+          loadCampaigns(currentPage);
+        } else if (deleteItemType === 'note') {
+          await deleteCampaignNote(currentDetailCampaign.id, deleteNoteId, currentUserId);
+          closeDeleteModal();
+          showToast('Note deleted successfully!', 'success');
+          loadCampaignDetail(currentDetailCampaign.id);
+        }
+      } catch (error) {
+        closeDeleteModal();
+        showToast('Failed to delete: ' + getErrorMessage(error), 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Delete';
+      }
+    }
+
+    // ====== ADD MEMBER ======
+    function openAddMemberModal() {
+      document.getElementById('addMemberError').textContent = '';
+      document.getElementById('memberUserId').value = '';
+      document.getElementById('memberCharId').value = '';
+      document.getElementById('addMemberModal').classList.add('active');
+    }
+
+    function closeAddMemberModal() {
+      document.getElementById('addMemberModal').classList.remove('active');
+    }
+
+    async function submitAddMember(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitMemberBtn');
+      var errorEl = document.getElementById('addMemberError');
+      errorEl.textContent = '';
+
+      var userId = parseInt(document.getElementById('memberUserId').value);
+      if (!userId) {
+        errorEl.textContent = 'User ID is required.';
+        return;
+      }
+
+      var payload = {
+        requesterId: currentUserId,
+        userId: userId
+      };
+
+      var charId = parseInt(document.getElementById('memberCharId').value);
+      if (charId) payload.characterId = charId;
+
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+
+      try {
+        await addCampaignMember(currentDetailCampaign.id, payload);
+        closeAddMemberModal();
+        showToast('Member added successfully!', 'success');
+        loadCampaignDetail(currentDetailCampaign.id);
+      } catch (error) {
+        errorEl.textContent = getErrorMessage(error);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Add Member';
+      }
+    }
+
+    // ====== REMOVE MEMBER ======
+    async function removeMember(userId) {
+      if (!currentDetailCampaign) return;
+      try {
+        await removeCampaignMember(currentDetailCampaign.id, userId, currentUserId);
+        showToast('Member removed!', 'success');
+        loadCampaignDetail(currentDetailCampaign.id);
+      } catch (error) {
+        showToast('Failed to remove member: ' + getErrorMessage(error), 'error');
+      }
+    }
+
+    // ====== NOTES ======
+    function openNoteModal(note) {
+      editingNoteId = null;
+      document.getElementById('noteError').textContent = '';
+      document.getElementById('noteTitle').value = '';
+      document.getElementById('noteContent').value = '';
+      document.getElementById('noteVisibility').value = 'PUBLIC';
+      document.getElementById('noteModalTitle').textContent = 'Create Note';
+      document.getElementById('submitNoteBtn').textContent = 'Create Note';
+
+      if (note) {
+        editingNoteId = note.id;
+        document.getElementById('noteModalTitle').textContent = 'Edit Note';
+        document.getElementById('submitNoteBtn').textContent = 'Save Note';
+        document.getElementById('noteTitle').value = note.title || '';
+        document.getElementById('noteContent').value = note.content || '';
+        document.getElementById('noteVisibility').value = note.visibility || 'PUBLIC';
+      }
+
+      document.getElementById('noteModal').classList.add('active');
+    }
+
+    function closeNoteModal() {
+      document.getElementById('noteModal').classList.remove('active');
+      editingNoteId = null;
+    }
+
+    async function editNote(noteId) {
+      try {
+        var note = await getCampaignNote(currentDetailCampaign.id, noteId, currentUserId);
+        openNoteModal(note);
+      } catch (error) {
+        showToast('Failed to load note: ' + getErrorMessage(error), 'error');
+      }
+    }
+
+    function deleteNote(noteId, noteTitle) {
+      deleteNoteId = noteId;
+      deleteItemType = 'note';
+      document.getElementById('deleteItemName').textContent = noteTitle;
+      document.getElementById('deleteModal').querySelector('h3').textContent = 'Delete Note';
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    async function submitNote(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitNoteBtn');
+      var errorEl = document.getElementById('noteError');
+      errorEl.textContent = '';
+
+      var title = document.getElementById('noteTitle').value.trim();
+      if (!title) {
+        errorEl.textContent = 'Note title is required.';
+        return;
+      }
+
+      var payload = {
+        userId: currentUserId,
+        title: title,
+        content: document.getElementById('noteContent').value.trim() || undefined,
+        visibility: document.getElementById('noteVisibility').value
+      };
+
+      btn.disabled = true;
+
+      if (editingNoteId) {
+        btn.textContent = 'Saving...';
+        try {
+          await updateCampaignNote(currentDetailCampaign.id, editingNoteId, payload);
+          closeNoteModal();
+          showToast('Note updated!', 'success');
+          loadCampaignDetail(currentDetailCampaign.id);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Save Note';
+        }
+      } else {
+        btn.textContent = 'Creating...';
+        try {
+          await createCampaignNote(currentDetailCampaign.id, payload);
+          closeNoteModal();
+          showToast('Note created!', 'success');
+          loadCampaignDetail(currentDetailCampaign.id);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Create Note';
+        }
+      }
+    }
+
+    // ====== MODAL CLOSE HANDLERS ======
+    document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          overlay.classList.remove('active');
+        }
+      });
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(function(m) {
+          m.classList.remove('active');
+        });
+      }
+    });
+
+    // ====== DICE ROLLER ======
     function toggleDiceRoller() {
-      const panel = document.getElementById('diceRollerPanel');
-      const btn = document.getElementById('diceToggleBtn');
+      var panel = document.getElementById('diceRollerPanel');
+      var btn = document.getElementById('diceToggleBtn');
       panel.classList.toggle('active');
       btn.classList.toggle('active');
     }
 
-    // Dice Roller
-    const resultValue = document.getElementById('resultValue');
-    const resultDice = document.getElementById('resultDice');
-    const resultDetails = document.getElementById('resultDetails');
-    const rollAllBtn = document.getElementById('rollAllBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const diceButtons = document.querySelectorAll('.dice-btn');
-    let isRolling = false;
+    var resultValue = document.getElementById('resultValue');
+    var resultDice = document.getElementById('resultDice');
+    var resultDetails = document.getElementById('resultDetails');
+    var rollAllBtn = document.getElementById('rollAllBtn');
+    var clearBtn = document.getElementById('clearBtn');
+    var diceButtons = document.querySelectorAll('.dice-btn');
+    var isRolling = false;
 
-    const diceCount = {};
-    diceButtons.forEach(btn => {
-      diceCount[btn.dataset.dice] = 0;
-    });
+    var diceCount = {};
+    diceButtons.forEach(function(btn) { diceCount[btn.dataset.dice] = 0; });
 
     function getTotalDiceCount() {
-      return Object.values(diceCount).reduce((sum, count) => sum + count, 0);
+      return Object.values(diceCount).reduce(function(sum, count) { return sum + count; }, 0);
     }
 
-    function updateUI() {
-      const total = getTotalDiceCount();
+    function updateDiceUI() {
+      var total = getTotalDiceCount();
       rollAllBtn.disabled = total === 0;
-      rollAllBtn.textContent = total > 0 ? `Lancia (${total})` : 'Lancia';
-
-      diceButtons.forEach(btn => {
-        const dice = btn.dataset.dice;
-        const count = diceCount[dice];
-        const countEl = btn.querySelector('.dice-count');
-
-        if (count > 0) {
-          btn.classList.add('selected');
-          countEl.textContent = count;
-        } else {
-          btn.classList.remove('selected');
-        }
+      rollAllBtn.textContent = total > 0 ? 'Lancia (' + total + ')' : 'Lancia';
+      diceButtons.forEach(function(btn) {
+        var dice = btn.dataset.dice;
+        var count = diceCount[dice];
+        var countEl = btn.querySelector('.dice-count');
+        if (count > 0) { btn.classList.add('selected'); countEl.textContent = count; }
+        else { btn.classList.remove('selected'); }
       });
     }
 
-    function addDice(btn) {
-      if (isRolling) return;
-      const dice = btn.dataset.dice;
-      diceCount[dice]++;
-      updateUI();
-    }
-
-    function removeDice(btn) {
-      if (isRolling) return;
-      const dice = btn.dataset.dice;
-      if (diceCount[dice] > 0) {
-        diceCount[dice]--;
-        updateUI();
-      }
-    }
+    function addDice(btn) { if (isRolling) return; diceCount[btn.dataset.dice]++; updateDiceUI(); }
+    function removeDice(btn) { if (isRolling) return; var d = btn.dataset.dice; if (diceCount[d] > 0) { diceCount[d]--; updateDiceUI(); } }
 
     function clearSelection() {
       if (isRolling) return;
-      Object.keys(diceCount).forEach(dice => diceCount[dice] = 0);
-      updateUI();
+      Object.keys(diceCount).forEach(function(d) { diceCount[d] = 0; });
+      updateDiceUI();
       resultValue.textContent = '--';
       resultValue.className = 'result-value';
       resultDice.textContent = '';
       resultDetails.textContent = '';
-      diceButtons.forEach(btn => {
-        const max = parseInt(btn.dataset.max);
-        btn.querySelector('.dice-value').textContent = max;
-      });
+      diceButtons.forEach(function(btn) { btn.querySelector('.dice-value').textContent = parseInt(btn.dataset.max); });
     }
 
     function rollSelectedDice() {
       if (isRolling || getTotalDiceCount() === 0) return;
-
       isRolling = true;
       rollAllBtn.disabled = true;
 
-      const activeDice = [];
-      diceButtons.forEach(btn => {
-        const dice = btn.dataset.dice;
-        const count = diceCount[dice];
-        if (count > 0) {
-          activeDice.push({ btn, dice, max: parseInt(btn.dataset.max), count });
-        }
+      var activeDice = [];
+      diceButtons.forEach(function(btn) {
+        var dice = btn.dataset.dice;
+        if (diceCount[dice] > 0) activeDice.push({ btn: btn, dice: dice, max: parseInt(btn.dataset.max), count: diceCount[dice] });
       });
 
-      activeDice.forEach(d => d.btn.classList.add('rolling'));
+      activeDice.forEach(function(d) { d.btn.classList.add('rolling'); });
 
-      let flickerCount = 0;
-      const flickerInterval = setInterval(() => {
-        activeDice.forEach(d => {
-          const randomVal = Math.floor(Math.random() * d.max) + 1;
-          d.btn.querySelector('.dice-value').textContent = randomVal;
-        });
+      var flickerCount = 0;
+      var flickerInterval = setInterval(function() {
+        activeDice.forEach(function(d) { d.btn.querySelector('.dice-value').textContent = Math.floor(Math.random() * d.max) + 1; });
         resultValue.textContent = '...';
         resultValue.className = 'result-value';
         flickerCount++;
 
         if (flickerCount >= 15) {
           clearInterval(flickerInterval);
+          var allResults = [];
+          var total = 0;
+          var hasD20Crit = false;
+          var hasD20Fumble = false;
 
-          const allResults = [];
-          let total = 0;
-          let hasD20Crit = false;
-          let hasD20Fumble = false;
-
-          activeDice.forEach(d => {
-            const rolls = [];
-            for (let i = 0; i < d.count; i++) {
-              const result = Math.floor(Math.random() * d.max) + 1;
+          activeDice.forEach(function(d) {
+            var rolls = [];
+            for (var i = 0; i < d.count; i++) {
+              var result = Math.floor(Math.random() * d.max) + 1;
               rolls.push(result);
               total += result;
-
               if (d.dice === 'd20' && result === 20) hasD20Crit = true;
               if (d.dice === 'd20' && result === 1) hasD20Fumble = true;
             }
             d.btn.querySelector('.dice-value').textContent = rolls[rolls.length - 1];
-            allResults.push({ dice: d.dice.toUpperCase(), count: d.count, rolls });
+            allResults.push({ dice: d.dice.toUpperCase(), count: d.count, rolls: rolls });
           });
 
           resultValue.textContent = total;
           resultValue.classList.add('reveal');
 
-          const totalDice = getTotalDiceCount();
-          if (totalDice === 1) {
-            resultDice.textContent = allResults[0].dice;
-            resultDetails.textContent = '';
-          } else {
+          var totalDice = getTotalDiceCount();
+          if (totalDice === 1) { resultDice.textContent = allResults[0].dice; resultDetails.textContent = ''; }
+          else {
             resultDice.textContent = 'Totale';
-            const detailsText = allResults.map(r => {
-              const prefix = r.count > 1 ? `${r.count}${r.dice}` : r.dice;
-              return `${prefix}: ${r.rolls.join('+')}`;
+            resultDetails.textContent = allResults.map(function(r) {
+              var prefix = r.count > 1 ? r.count + r.dice : r.dice;
+              return prefix + ': ' + r.rolls.join('+');
             }).join(' | ');
-            resultDetails.textContent = detailsText;
           }
 
-          if (hasD20Crit) {
-            resultValue.classList.add('critical');
-          } else if (hasD20Fumble) {
-            resultValue.classList.add('fumble');
-          }
+          if (hasD20Crit) resultValue.classList.add('critical');
+          else if (hasD20Fumble) resultValue.classList.add('fumble');
 
-          setTimeout(() => {
-            activeDice.forEach(d => d.btn.classList.remove('rolling'));
+          setTimeout(function() {
+            activeDice.forEach(function(d) { d.btn.classList.remove('rolling'); });
             isRolling = false;
-            updateUI();
+            updateDiceUI();
           }, 500);
         }
       }, 50);
     }
 
-    diceButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        addDice(btn);
-      });
-      btn.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        removeDice(btn);
-      });
+    diceButtons.forEach(function(btn) {
+      btn.addEventListener('click', function(e) { e.preventDefault(); addDice(btn); });
+      btn.addEventListener('contextmenu', function(e) { e.preventDefault(); removeDice(btn); });
     });
 
     rollAllBtn.addEventListener('click', rollSelectedDice);
     clearBtn.addEventListener('click', clearSelection);
 
-    let lastTap = 0;
-    diceButtons.forEach(btn => {
-      btn.addEventListener('touchend', (e) => {
-        const now = Date.now();
-        if (now - lastTap < 300) {
-          e.preventDefault();
-          removeDice(btn);
-        }
+    var lastTap = 0;
+    diceButtons.forEach(function(btn) {
+      btn.addEventListener('touchend', function(e) {
+        var now = Date.now();
+        if (now - lastTap < 300) { e.preventDefault(); removeDice(btn); }
         lastTap = now;
       }, { passive: false });
     });
 
-    // Magic Particles
-    const magicContainer = document.querySelector(".magic-particles");
-    for (let i = 0; i < 60; i++) {
-      const p = document.createElement("span");
-      p.style.width = p.style.height = `${Math.random() * 3 + 2}px`;
-      p.style.left = `${Math.random() * 100}%`;
-      p.style.animationDuration = `${Math.random() * 10 + 8}s`;
-      p.style.animationDelay = `${Math.random() * 10}s`;
+    // ====== MAGIC PARTICLES ======
+    var magicContainer = document.querySelector('.magic-particles');
+    for (var i = 0; i < 60; i++) {
+      var p = document.createElement('span');
+      p.style.width = p.style.height = (Math.random() * 3 + 2) + 'px';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
       magicContainer.appendChild(p);
     }
+
+    // ====== INIT ======
+    loadCampaigns(0);
   </script>
 </body>
 </html>
