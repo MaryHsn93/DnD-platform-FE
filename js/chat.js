@@ -54,6 +54,7 @@ const TavernChat = (function () {
     _username = localStorage.getItem('username') || 'Adventurer';
     _userId = localStorage.getItem('userId');
 
+    _setupCloseButton();
     _setupTabListeners();
     _setupScrollListener();
     _injectDynamicUI();
@@ -95,7 +96,9 @@ const TavernChat = (function () {
 
     _chatOpen = !_chatOpen;
     chatWindow.classList.toggle('active', _chatOpen);
-    chatToggleBtn.classList.toggle('active', _chatOpen);
+
+    // Hide toggle button when chat is open, show when closed
+    chatToggleBtn.style.display = _chatOpen ? 'none' : '';
 
     if (_chatOpen) {
       _unreadCount = 0;
@@ -205,6 +208,23 @@ const TavernChat = (function () {
         _showNewView(tab);
       }
     }
+  }
+
+  // ====== CLOSE BUTTON (replaces online-count) ======
+
+  function _setupCloseButton() {
+    var onlineCount = document.querySelector('.online-count');
+    if (!onlineCount) return;
+
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'chat-close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.title = 'Close chat';
+    closeBtn.addEventListener('click', function () {
+      toggleChat();
+    });
+
+    onlineCount.replaceWith(closeBtn);
   }
 
   // ====== DYNAMIC UI INJECTION ======
