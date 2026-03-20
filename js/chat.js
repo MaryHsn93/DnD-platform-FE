@@ -465,34 +465,21 @@ const TavernChat = (function () {
 
   // ====== SEARCH & GROUP CREATION ======
 
-  async function _searchUsers(query) {
+  function _searchUsers(query) {
     var resultsContainer = document.getElementById('chatSearchResults');
     if (!resultsContainer) return;
 
-    if (!query || query.length < 1) {
-      // Show online users as suggestions
-      _renderUserResults(_onlineUsers.filter(function (u) {
-        return u.id && u.id.toString() !== _userId;
-      }));
-      return;
+    var users = _onlineUsers.filter(function (u) {
+      return u.id && u.id.toString() !== _userId;
+    });
+
+    if (query && query.length >= 1) {
+      users = users.filter(function (u) {
+        return u.username && u.username.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+      });
     }
 
-    // Try backend search
-    try {
-      var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.USERS_SEARCH + '?q=' + encodeURIComponent(query);
-      var result = await authenticatedRequest(url, { method: 'GET' });
-      var users = Array.isArray(result.data) ? result.data : (result.data && result.data.content ? result.data.content : []);
-      _renderUserResults(users.filter(function (u) {
-        return (u.id || u.userId) && (u.id || u.userId).toString() !== _userId;
-      }));
-    } catch (e) {
-      // Fallback: filter online users
-      var filtered = _onlineUsers.filter(function (u) {
-        return u.username && u.username.toLowerCase().indexOf(query.toLowerCase()) !== -1 &&
-               u.id && u.id.toString() !== _userId;
-      });
-      _renderUserResults(filtered);
-    }
+    _renderUserResults(users);
   }
 
   function _renderUserResults(users) {
@@ -600,31 +587,21 @@ const TavernChat = (function () {
 
   // ====== PRIVATE (DM) ======
 
-  async function _searchUsersForDM(query) {
+  function _searchUsersForDM(query) {
     var resultsContainer = document.getElementById('chatSearchResults');
     if (!resultsContainer) return;
 
-    if (!query || query.length < 1) {
-      _renderDMUserResults(_onlineUsers.filter(function (u) {
-        return u.id && u.id.toString() !== _userId;
-      }));
-      return;
+    var users = _onlineUsers.filter(function (u) {
+      return u.id && u.id.toString() !== _userId;
+    });
+
+    if (query && query.length >= 1) {
+      users = users.filter(function (u) {
+        return u.username && u.username.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+      });
     }
 
-    try {
-      var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.USERS_SEARCH + '?q=' + encodeURIComponent(query);
-      var result = await authenticatedRequest(url, { method: 'GET' });
-      var users = Array.isArray(result.data) ? result.data : (result.data && result.data.content ? result.data.content : []);
-      _renderDMUserResults(users.filter(function (u) {
-        return (u.id || u.userId) && (u.id || u.userId).toString() !== _userId;
-      }));
-    } catch (e) {
-      var filtered = _onlineUsers.filter(function (u) {
-        return u.username && u.username.toLowerCase().indexOf(query.toLowerCase()) !== -1 &&
-               u.id && u.id.toString() !== _userId;
-      });
-      _renderDMUserResults(filtered);
-    }
+    _renderDMUserResults(users);
   }
 
   function _renderDMUserResults(users) {
@@ -674,13 +651,13 @@ const TavernChat = (function () {
   }
 
   async function _createPrivateConversation(userId, username) {
-    var created = await _createConversation('PRIVATE', null, [userId]);
+    var created = await _createConversation('DIRECT', null, [userId]);
     if (created) {
       var conv = {
         id: created.id,
-        type: 'PRIVATE',
+        type: 'DIRECT',
         name: created.name || username,
-        participants: created.participants || [{ userId: userId, username: username }],
+        participants: created.participants || [{ userId: userId }],
         lastMessage: null,
         lastMessageTime: null,
         unreadCount: 0
@@ -926,7 +903,8 @@ const TavernChat = (function () {
   // ====== REST API ======
 
   async function _fetchConversations() {
-    var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.CONVERSATIONS;
+    var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.CONVERSATIONS +
+      '?userId=' + _userId;
     try {
       var result = await authenticatedRequest(url, { method: 'GET' });
       return result.data;
@@ -939,13 +917,13 @@ const TavernChat = (function () {
   async function _fetchMessages(convId, page) {
     var url = API_CONFIG.CHAT.BASE_URL +
       API_CONFIG.CHAT.MESSAGES.replace('{conversationId}', convId) +
-      '?page=' + page + '&pageSize=' + PAGE_SIZE;
+      '?page=' + page + '&pageSize=' + PAGE_SIZE + '&userId=' + _userId;
     try {
       var result = await authenticatedRequest(url, { method: 'GET' });
       var data = result.data;
-      // Handle paginated response
-      if (Array.isArray(data)) return data;
+      // Handle paginated response (PagedMessageViewModel)
       if (data && Array.isArray(data.content)) return data.content;
+      if (Array.isArray(data)) return data;
       return [];
     } catch (e) {
       console.error('[TavernChat] Failed to fetch messages:', e);
@@ -955,11 +933,12 @@ const TavernChat = (function () {
 
   async function _sendMessageREST(convId, content) {
     var url = API_CONFIG.CHAT.BASE_URL +
-      API_CONFIG.CHAT.MESSAGES.replace('{conversationId}', convId);
+      API_CONFIG.CHAT.MESSAGES.replace('{conversationId}', convId) +
+      '?userId=' + _userId;
     try {
       await authenticatedRequest(url, {
         method: 'POST',
-        body: JSON.stringify({ content: content })
+        body: JSON.stringify({ content: content, messageType: 'TEXT' })
       });
     } catch (e) {
       console.error('[TavernChat] Failed to send message via REST:', e);
@@ -968,7 +947,8 @@ const TavernChat = (function () {
 
   async function _markAsRead(convId) {
     var url = API_CONFIG.CHAT.BASE_URL +
-      API_CONFIG.CHAT.CONVERSATIONS_READ.replace('{id}', convId);
+      API_CONFIG.CHAT.CONVERSATIONS_READ.replace('{id}', convId) +
+      '?userId=' + _userId;
     try {
       await authenticatedRequest(url, { method: 'PUT' });
     } catch (e) {
@@ -978,7 +958,8 @@ const TavernChat = (function () {
   }
 
   async function _createConversation(type, name, participantIds) {
-    var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.CONVERSATIONS;
+    var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.CONVERSATIONS +
+      '?userId=' + _userId;
     try {
       var result = await authenticatedRequest(url, {
         method: 'POST',
@@ -996,19 +977,25 @@ const TavernChat = (function () {
   }
 
   async function _fetchSingleConversation(convId) {
-    // Re-fetch all conversations to find the new one
-    var convs = await _fetchConversations();
-    var found = convs.find(function (c) { return c.id === convId; });
-    if (!found) return;
+    var url = API_CONFIG.CHAT.BASE_URL +
+      API_CONFIG.CHAT.CONVERSATION.replace('{id}', convId) +
+      '?userId=' + _userId;
+    try {
+      var result = await authenticatedRequest(url, { method: 'GET' });
+      var found = result.data;
+      if (!found) return;
 
-    if (found.type === 'PRIVATE') {
-      if (!_privateConversations.find(function (c) { return c.id === found.id; })) {
-        _privateConversations.unshift(_normalizeConversation(found));
+      if (found.type === 'DIRECT') {
+        if (!_privateConversations.find(function (c) { return c.id === found.id; })) {
+          _privateConversations.unshift(_normalizeConversation(found));
+        }
+      } else if (found.type === 'GROUP' && found.name !== 'Tavern') {
+        if (!_groupConversations.find(function (c) { return c.id === found.id; })) {
+          _groupConversations.unshift(_normalizeConversation(found));
+        }
       }
-    } else if (found.type === 'GROUP' && found.name !== 'Tavern') {
-      if (!_groupConversations.find(function (c) { return c.id === found.id; })) {
-        _groupConversations.unshift(_normalizeConversation(found));
-      }
+    } catch (e) {
+      console.error('[TavernChat] Failed to fetch conversation:', e);
     }
   }
 
@@ -1047,7 +1034,7 @@ const TavernChat = (function () {
     _privateConversations = [];
 
     convs.forEach(function (c) {
-      if (c.type === 'PRIVATE') {
+      if (c.type === 'DIRECT') {
         _privateConversations.push(_normalizeConversation(c));
       } else if (c.type === 'GROUP' && c.name !== 'Tavern') {
         _groupConversations.push(_normalizeConversation(c));
@@ -1072,10 +1059,13 @@ const TavernChat = (function () {
       id: conv.id,
       type: conv.type,
       name: conv.name,
+      createdBy: conv.createdBy || null,
+      createdAt: conv.createdAt || null,
+      updatedAt: conv.updatedAt || null,
       participants: conv.participants || [],
-      lastMessage: conv.lastMessage || (conv.lastMessageContent || null),
-      lastMessageTime: conv.lastMessageTime || (conv.lastMessageCreatedAt || conv.updatedAt || null),
-      unreadCount: conv.unreadCount || 0
+      lastMessage: null,
+      lastMessageTime: conv.updatedAt || null,
+      unreadCount: 0
     };
   }
 
@@ -1098,14 +1088,14 @@ const TavernChat = (function () {
 
     if (convId === _tavernConvId) {
       _tavernMessages = _tavernMessages.filter(function (m) {
-        if (m._optimistic && m.senderUsername === confirmedMsg.senderUsername && m.content === confirmedMsg.content) {
+        if (m._optimistic && m.senderId && m.senderId.toString() === (confirmedMsg.senderId || '').toString() && m.content === confirmedMsg.content) {
           return false;
         }
         return true;
       });
     } else if (_messagesByConv[convId]) {
       _messagesByConv[convId] = _messagesByConv[convId].filter(function (m) {
-        if (m._optimistic && m.senderUsername === confirmedMsg.senderUsername && m.content === confirmedMsg.content) {
+        if (m._optimistic && m.senderId && m.senderId.toString() === (confirmedMsg.senderId || '').toString() && m.content === confirmedMsg.content) {
           return false;
         }
         return true;
@@ -1175,9 +1165,8 @@ const TavernChat = (function () {
   }
 
   function _createMessageElement(msg) {
-    var isSent = msg.senderUsername === _username ||
-                 (msg.senderId && msg.senderId.toString() === _userId);
-    var sender = msg.senderUsername || 'Unknown';
+    var isSent = msg.senderId && msg.senderId.toString() === _userId;
+    var sender = msg.senderUsername || _resolveUsername(msg.senderId) || 'Unknown';
     var content = _escapeHtml(msg.content || '');
     var time = _formatTime(msg.createdAt);
 
@@ -1448,18 +1437,30 @@ const TavernChat = (function () {
 
   function _getConvDisplayName(conv) {
     if (!conv) return 'Chat';
-    if (conv.type === 'PRIVATE') {
-      // Show the other participant's username
+    if (conv.type === 'DIRECT') {
+      // Show the other participant's name
       if (conv.participants && conv.participants.length > 0) {
         var other = conv.participants.find(function (p) {
           var pid = (p.userId || p.id || '').toString();
           return pid !== _userId;
         });
-        if (other) return other.username || 'Unknown';
+        if (other) {
+          // Try username (from local enrichment), then fall back to userId
+          return other.username || ('User #' + (other.userId || other.id));
+        }
       }
-      return conv.name || 'Private';
+      return conv.name || 'Direct Message';
     }
     return conv.name || 'Group';
+  }
+
+  function _resolveUsername(userId) {
+    if (!userId) return null;
+    var uid = userId.toString();
+    if (uid === _userId) return _username;
+    var online = _onlineUsers.find(function (u) { return u.id && u.id.toString() === uid; });
+    if (online && online.username) return online.username;
+    return null;
   }
 
   // ====== EXPOSE PUBLIC API ======

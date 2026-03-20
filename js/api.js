@@ -44,9 +44,9 @@ const API_CONFIG = {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.CHAT_PORT}`,
     WS: '/api/chat/ws',
     CONVERSATIONS: '/api/chat/conversations',
+    CONVERSATION: '/api/chat/conversations/{id}',
     CONVERSATIONS_READ: '/api/chat/conversations/{id}/read',
-    MESSAGES: '/api/chat/conversations/{conversationId}/messages',
-    USERS_SEARCH: '/api/chat/users/search'
+    MESSAGES: '/api/chat/conversations/{conversationId}/messages'
   },
   CHARACTER: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.CHARACTER_PORT}`,

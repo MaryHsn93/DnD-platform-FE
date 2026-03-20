@@ -252,16 +252,6 @@
 
     .nav-text { font-size: 0.95rem; }
 
-    .nav-badge {
-      margin-left: auto;
-      background: var(--primary);
-      color: var(--gold);
-      font-size: 0.75rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
     .sidebar-footer {
       padding-top: 1rem;
       border-top: 1px solid rgba(212, 175, 55, 0.2);
@@ -1384,6 +1374,301 @@
       pointer-events: all;
     }
 
+    .chat-header {
+      padding: 1rem 1.25rem;
+      background: rgba(139, 30, 30, 0.3);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .chat-header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #b8962e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-header-icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--bg-dark);
+    }
+
+    .chat-header-info h4 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .chat-header-info span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .online-count {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: #4ade80;
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .chat-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .chat-tab {
+      flex: 1;
+      padding: 0.75rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 2px solid transparent;
+      position: relative;
+    }
+
+    .chat-tab:hover {
+      color: var(--text-light);
+      background: rgba(212, 175, 55, 0.05);
+    }
+
+    .chat-tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    .online-users {
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .online-users::-webkit-scrollbar { height: 4px; }
+    .online-users::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.3);
+      border-radius: 2px;
+    }
+
+    .online-user {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+      min-width: 60px;
+    }
+
+    .online-user:hover { background: rgba(212, 175, 55, 0.1); }
+
+    .online-user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 0.9rem;
+      position: relative;
+    }
+
+    .online-user-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      background: #4ade80;
+      border-radius: 50%;
+      border: 2px solid var(--bg-dark);
+    }
+
+    .online-user-name {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 55px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.3);
+      border-radius: 3px;
+    }
+
+    .message {
+      max-width: 85%;
+      animation: messageSlide 0.3s ease;
+    }
+
+    @keyframes messageSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.received { align-self: flex-start; }
+    .message.sent { align-self: flex-end; }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .message.sent .message-header { flex-direction: row-reverse; }
+
+    .message-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      color: var(--gold);
+    }
+
+    .message-sender {
+      font-size: 0.75rem;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .message-time {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .message.sent .message-time {
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    .message-content {
+      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .message.received .message-content {
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-top-left-radius: 4px;
+    }
+
+    .message.sent .message-content {
+      background: rgba(139, 30, 30, 0.4);
+      border: 1px solid rgba(139, 30, 30, 0.3);
+      border-top-right-radius: 4px;
+    }
+
+    .chat-input-area {
+      padding: 1rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.85rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      color: var(--text-light);
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .chat-input::placeholder { color: var(--text-muted); }
+
+    .chat-send-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: linear-gradient(135deg, #a82525, var(--primary));
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .chat-send-btn svg {
+      width: 20px;
+      height: 20px;
+      color: var(--gold);
+    }
+
     @media (max-width: 768px) {
       .chat-window { width: 320px; height: 480px; right: -0.5rem; }
     }
@@ -1479,12 +1764,10 @@
           <a href="characters.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
             <span class="nav-text">My Characters</span>
-            <span class="nav-badge" id="charCountBadge">0</span>
           </a>
           <a href="campaigns.html" class="nav-item active">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
             <span class="nav-text">Campaigns</span>
-            <span class="nav-badge" id="campaignCountBadge">0</span>
           </a>
           <a href="documents.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
@@ -1714,7 +1997,38 @@
 
   <!-- Chat Widget -->
   <div class="chat-widget">
-    <div class="chat-window" id="chatWindow"></div>
+    <div class="chat-window" id="chatWindow">
+      <div class="chat-header">
+        <div class="chat-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="chat-header-info">
+          <h4>Party Chat</h4>
+          <span>Talk with fellow adventurers</span>
+        </div>
+        <div class="online-count">
+          <span class="online-dot"></span>
+          <span id="onlineCountText">0 online</span>
+        </div>
+      </div>
+
+      <div class="chat-tabs">
+        <div class="chat-tab active" data-tab="tavern">Tavern</div>
+        <div class="chat-tab" data-tab="groups">Groups</div>
+        <div class="chat-tab" data-tab="private">Private</div>
+      </div>
+
+      <div class="online-users" id="onlineUsers"></div>
+
+      <div class="chat-messages" id="chatMessages"></div>
+
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="TavernChat.handleKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
+        <button class="chat-send-btn" onclick="TavernChat.sendMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+        </button>
+      </div>
+    </div>
     <button class="chat-toggle-btn" id="chatToggleBtn" onclick="TavernChat.toggleChat()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="chat-notification" id="chatNotification">0</span>
@@ -1810,7 +2124,6 @@
         currentPage = data.page;
         totalPages = data.totalPages;
         totalCampaigns = data.totalElements;
-        document.getElementById('campaignCountBadge').textContent = totalCampaigns;
         cachedCampaigns = data.content || [];
 
         if (!data.content || data.content.length === 0) {

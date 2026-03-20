@@ -29,7 +29,7 @@
     .nav-item::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:var(--gold);transform:scaleY(0);transition:transform 0.3s ease}
     .nav-item:hover{background:rgba(212,175,55,0.1)}.nav-item:hover::before,.nav-item.active::before{transform:scaleY(1)}.nav-item.active{background:rgba(212,175,55,0.15)}
     .nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:var(--gold)}.nav-text{font-size:0.95rem}
-    .nav-badge{margin-left:auto;background:var(--primary);color:var(--gold);font-size:0.75rem;padding:0.2rem 0.5rem;border-radius:10px;font-weight:600}
+    
     .sidebar-footer{padding-top:1rem;border-top:1px solid rgba(212,175,55,0.2);position:relative;z-index:1;margin-top:auto}
     .logout-btn{width:100%;padding:0.85rem 1rem;background:rgba(139,30,30,0.4);border:1px solid rgba(212,175,55,0.3);border-radius:10px;color:var(--text-light);cursor:pointer;transition:all 0.3s ease;font-size:0.95rem;display:flex;align-items:center;justify-content:center;gap:0.5rem}
     .logout-btn:hover{background:rgba(139,30,30,0.6);border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,0.3)}
@@ -80,7 +80,7 @@
       <div class="sidebar-header"><a href="dashboard.html" class="sidebar-logo">The Tavern</a><p class="sidebar-subtitle">D&amp;D Platform</p></div>
       <div class="sidebar-user"><div class="user-avatar" id="userAvatar">A</div><div class="user-info"><div class="user-name" id="userName">Adventurer</div><div class="user-role">Hero</div></div></div>
       <nav class="nav-menu"><div class="nav-section"><div class="nav-section-title">Adventure</div>
-        <a href="characters.html" class="nav-item"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-text">My Characters</span><span class="nav-badge" id="charCountBadge">0</span></a>
+        <a href="characters.html" class="nav-item"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-text">My Characters</span></a>
         <a href="campaigns.html" class="nav-item"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><span class="nav-text">Campaigns</span></a>
         <a href="documents.html" class="nav-item"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="nav-text">Documents</span></a>
         <a href="compendium.html" class="nav-item active"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div><span class="nav-text">Compendium</span></a>
