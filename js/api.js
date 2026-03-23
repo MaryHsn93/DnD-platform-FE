@@ -42,11 +42,12 @@ const API_CONFIG = {
   },
   CHAT: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.CHAT_PORT}`,
-    WS: '/api/chat/ws',
+    WS: '/ws/chat',
     CONVERSATIONS: '/api/chat/conversations',
     CONVERSATION: '/api/chat/conversations/{id}',
     CONVERSATIONS_READ: '/api/chat/conversations/{id}/read',
-    MESSAGES: '/api/chat/conversations/{conversationId}/messages'
+    MESSAGES: '/api/chat/conversations/{conversationId}/messages',
+    ONLINE_USERS: '/api/chat/online-users'
   },
   CHARACTER: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.CHARACTER_PORT}`,

@@ -18,6 +18,7 @@ const TavernChat = (function () {
   let _tavernMessages = [];              // messages for Tavern
   let _messageIds = new Set();
   let _onlineUsers = [];
+  let _knownUsers = {};                  // userId -> {id, username} cache from participants
   let _unreadCount = 0;
   let _chatOpen = false;
   let _backendAvailable = false;
@@ -41,11 +42,13 @@ const TavernChat = (function () {
   // Private (DM) state
   let _privateConversations = [];        // [{id, type, name, participants, lastMessage, lastMessageTime, unreadCount}]
   let _searchDebounce = null;
+  let _onlineUsersTimer = null;
 
   const MAX_RECONNECT_DELAY = 30000;
   const HEARTBEAT_INTERVAL = 30000;
   const POLLING_INTERVAL = 10000;
   const WS_CONNECT_TIMEOUT = 5000;
+  const ONLINE_USERS_INTERVAL = 30000;
   const PAGE_SIZE = 30;
 
   // ====== PUBLIC API ======
@@ -73,6 +76,9 @@ const TavernChat = (function () {
 
     // Resolve conversations and load initial messages
     _resolveConversations();
+
+    // Start polling online users
+    _startOnlineUsersPolling();
   }
 
   function destroy() {
@@ -86,6 +92,7 @@ const TavernChat = (function () {
     clearInterval(_pollingTimer);
     clearTimeout(_wsConnectTimeout);
     clearTimeout(_searchDebounce);
+    _stopOnlineUsersPolling();
     window.removeEventListener('beforeunload', destroy);
   }
 
@@ -213,8 +220,8 @@ const TavernChat = (function () {
   // ====== CLOSE BUTTON (replaces online-count) ======
 
   function _setupCloseButton() {
-    var onlineCount = document.querySelector('.online-count');
-    if (!onlineCount) return;
+    var header = document.querySelector('.chat-header');
+    if (!header) return;
 
     var closeBtn = document.createElement('button');
     closeBtn.className = 'chat-close-btn';
@@ -224,7 +231,7 @@ const TavernChat = (function () {
       toggleChat();
     });
 
-    onlineCount.replaceWith(closeBtn);
+    header.appendChild(closeBtn);
   }
 
   // ====== DYNAMIC UI INJECTION ======
@@ -338,10 +345,8 @@ const TavernChat = (function () {
       });
     }
 
-    // Show online users as initial suggestions
-    _renderUserResults(_onlineUsers.filter(function (u) {
-      return u.id && u.id.toString() !== _userId;
-    }));
+    // Show known users as initial suggestions
+    _renderUserResults(_getSearchableUsers());
   }
 
   function _showNewPrivateView() {
@@ -377,10 +382,8 @@ const TavernChat = (function () {
       });
     }
 
-    // Show online users as initial suggestions
-    _renderDMUserResults(_onlineUsers.filter(function (u) {
-      return u.id && u.id.toString() !== _userId;
-    }));
+    // Show known users as initial suggestions
+    _renderDMUserResults(_getSearchableUsers());
   }
 
   function _renderConversationList(tab) {
@@ -489,9 +492,7 @@ const TavernChat = (function () {
     var resultsContainer = document.getElementById('chatSearchResults');
     if (!resultsContainer) return;
 
-    var users = _onlineUsers.filter(function (u) {
-      return u.id && u.id.toString() !== _userId;
-    });
+    var users = _getSearchableUsers();
 
     if (query && query.length >= 1) {
       users = users.filter(function (u) {
@@ -548,9 +549,7 @@ const TavernChat = (function () {
     if (q) {
       _searchUsers(q);
     } else {
-      _renderUserResults(_onlineUsers.filter(function (u) {
-        return u.id && u.id.toString() !== _userId;
-      }));
+      _renderUserResults(_getSearchableUsers());
     }
   }
 
@@ -611,9 +610,7 @@ const TavernChat = (function () {
     var resultsContainer = document.getElementById('chatSearchResults');
     if (!resultsContainer) return;
 
-    var users = _onlineUsers.filter(function (u) {
-      return u.id && u.id.toString() !== _userId;
-    });
+    var users = _getSearchableUsers();
 
     if (query && query.length >= 1) {
       users = users.filter(function (u) {
@@ -757,22 +754,24 @@ const TavernChat = (function () {
       case 'NEW_MESSAGE':
         _onNewMessage(data);
         break;
-      case 'USER_ONLINE':
-        _onUserOnline(data);
+      case 'CONNECTED':
+        console.log('[TavernChat] WebSocket confirmed:', data.content);
         break;
-      case 'USER_OFFLINE':
-        _onUserOffline(data);
+      case 'ERROR':
+        console.error('[TavernChat] Server error:', data.content || data);
         break;
       case 'PONG':
-        // heartbeat response, nothing to do
         break;
       default:
-        console.log('[TavernChat] Unknown WS message type:', data.type);
+        console.log('[TavernChat] Unknown WS message type:', data.type, data);
     }
   }
 
   function _onNewMessage(data) {
+    // Normalize: WS sends flat {type, conversationId, messageId, senderId, content, messageType, timestamp}
     var msg = data.message || data;
+    if (msg.messageId && !msg.id) msg.id = msg.messageId;
+    if (msg.timestamp && !msg.createdAt) msg.createdAt = msg.timestamp;
 
     // Deduplication
     if (msg.id && _messageIds.has(msg.id)) {
@@ -822,17 +821,70 @@ const TavernChat = (function () {
     }
   }
 
-  function _onUserOnline(data) {
-    var user = { id: data.userId, username: data.username };
-    if (!_onlineUsers.find(function (u) { return u.id === user.id; })) {
-      _onlineUsers.push(user);
-      _renderOnlineUsers();
+  async function _fetchUsername(userId) {
+    if (!userId) return null;
+    var url = 'http://' + ENV.API_HOST + ':' + ENV.REGISTER_PORT + '/users/' + userId;
+    try {
+      var result = await authenticatedRequest(url, { method: 'GET' });
+      if (result.data && result.data.username) {
+        return result.data.username;
+      }
+      return null;
+    } catch (e) {
+      console.warn('[TavernChat] Failed to fetch username for userId:', userId, e);
+      return null;
     }
   }
 
-  function _onUserOffline(data) {
-    _onlineUsers = _onlineUsers.filter(function (u) { return u.id !== data.userId; });
-    _renderOnlineUsers();
+  async function _buildKnownUsersFromConversations(convs) {
+    if (!Array.isArray(convs)) return;
+
+    // Collect all unique participant userIds (excluding self)
+    var userIds = {};
+    convs.forEach(function (c) {
+      if (!c.participants) return;
+      c.participants.forEach(function (p) {
+        var uid = (p.userId || p.id || '').toString();
+        if (uid && uid !== _userId && !_knownUsers[uid]) {
+          userIds[uid] = true;
+        }
+      });
+    });
+
+    // Fetch usernames for unknown users
+    var ids = Object.keys(userIds);
+    var fetchPromises = ids.map(function (uid) {
+      return _fetchUsername(uid).then(function (uname) {
+        if (uname) {
+          _knownUsers[uid] = { id: parseInt(uid, 10), username: uname };
+        }
+      });
+    });
+
+    await Promise.all(fetchPromises);
+    console.log('[TavernChat] Known users loaded:', Object.keys(_knownUsers).length, _knownUsers);
+  }
+
+  function _getSearchableUsers() {
+    // Merge online users and known users, deduplicated
+    var usersMap = {};
+
+    // Add known users from conversations
+    Object.keys(_knownUsers).forEach(function (uid) {
+      if (uid !== _userId) {
+        usersMap[uid] = _knownUsers[uid];
+      }
+    });
+
+    // Add online users (may have more up-to-date data)
+    _onlineUsers.forEach(function (u) {
+      var uid = (u.id || '').toString();
+      if (uid && uid !== _userId) {
+        usersMap[uid] = u;
+      }
+    });
+
+    return Object.values(usersMap);
   }
 
   function _scheduleReconnect() {
@@ -917,6 +969,63 @@ const TavernChat = (function () {
           }
         });
       }
+    }
+  }
+
+  // ====== ONLINE USERS ======
+
+  function _startOnlineUsersPolling() {
+    _stopOnlineUsersPolling();
+    _fetchOnlineUsers(); // immediate first fetch
+    _onlineUsersTimer = setInterval(function () {
+      _fetchOnlineUsers();
+    }, ONLINE_USERS_INTERVAL);
+  }
+
+  function _stopOnlineUsersPolling() {
+    if (_onlineUsersTimer) {
+      clearInterval(_onlineUsersTimer);
+      _onlineUsersTimer = null;
+    }
+  }
+
+  async function _fetchOnlineUsers() {
+    var url = API_CONFIG.CHAT.BASE_URL + API_CONFIG.CHAT.ONLINE_USERS;
+    try {
+      var result = await authenticatedRequest(url, { method: 'GET' });
+      var userIds = result.data;
+      if (!Array.isArray(userIds)) return;
+
+      var users = [];
+      var unknownIds = [];
+
+      userIds.forEach(function (uid) {
+        var uidStr = uid.toString();
+        if (uidStr === _userId) {
+          users.push({ id: parseInt(uidStr, 10), username: _username });
+        } else if (_knownUsers[uidStr]) {
+          users.push(_knownUsers[uidStr]);
+        } else {
+          unknownIds.push(uid);
+        }
+      });
+
+      // Fetch usernames for unknown IDs
+      if (unknownIds.length > 0) {
+        var fetchPromises = unknownIds.map(function (uid) {
+          return _fetchUsername(uid).then(function (uname) {
+            var user = { id: parseInt(uid.toString(), 10), username: uname || ('User #' + uid) };
+            _knownUsers[uid.toString()] = user;
+            users.push(user);
+          });
+        });
+        await Promise.all(fetchPromises);
+      }
+
+      _onlineUsers = users;
+      _renderOnlineUsers();
+    } catch (e) {
+      console.error('[TavernChat] Failed to fetch online users:', e);
     }
   }
 
@@ -1060,6 +1169,9 @@ const TavernChat = (function () {
         _groupConversations.push(_normalizeConversation(c));
       }
     });
+
+    // Build known users cache from all conversation participants
+    _buildKnownUsersFromConversations(convs);
 
     // Load initial messages for current tab
     if (_currentTab === 'tavern' && _tavernConvId) {
@@ -1478,6 +1590,7 @@ const TavernChat = (function () {
     if (!userId) return null;
     var uid = userId.toString();
     if (uid === _userId) return _username;
+    if (_knownUsers[uid] && _knownUsers[uid].username) return _knownUsers[uid].username;
     var online = _onlineUsers.find(function (u) { return u.id && u.id.toString() === uid; });
     if (online && online.username) return online.username;
     return null;
