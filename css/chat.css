@@ -1,31 +1,68 @@
 /* ====== CHAT EXTENSION STYLES ======
-   Additional styles for DM/Groups tabs.
+   Unified conversation list styles.
    Base chat styles remain inline in each HTML page.
 */
 
-/* Terzo tab: .chat-tabs con 3 figli usa flex 1/3 */
-.chat-tabs .chat-tab { flex: 1; }
-
-/* Sub-header bar per DM/Groups: back button + nome conv + pulsante "+" */
+/* Sub-header bar: back button + title + "+" button */
 .chat-sub-header { display:none; align-items:center; padding:0.5rem 0.75rem; background:rgba(0,0,0,0.3); border-bottom:1px solid rgba(212,175,55,0.15); gap:0.5rem; }
 .chat-sub-header.active { display:flex; }
 .chat-back-btn { background:none; border:none; color:var(--gold); cursor:pointer; padding:0.25rem; font-size:1.1rem; }
 .chat-sub-title { flex:1; font-family:'Cinzel',serif; color:var(--gold); font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.chat-new-btn { background:none; border:1px solid rgba(212,175,55,0.3); color:var(--gold); border-radius:50%; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; transition:all 0.3s ease; }
+.chat-new-btn { background:none; border:1px solid rgba(212,175,55,0.3); color:var(--gold); border-radius:50%; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; transition:all 0.3s ease; position:relative; }
 .chat-new-btn:hover { background:rgba(212,175,55,0.15); border-color:var(--gold); }
 
-/* Lista conversazioni (dentro #chatMessages quando in modalità lista) */
-.conv-list-item { display:flex; align-items:center; padding:0.75rem; gap:0.75rem; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s; }
+/* Conversation list */
+.conv-list-item { display:flex; align-items:center; padding:0.75rem; gap:0.75rem; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s; position:relative; }
 .conv-list-item:hover { background:rgba(212,175,55,0.08); }
-.conv-list-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--primary),#5a1414); display:flex; align-items:center; justify-content:center; color:var(--gold); font-family:'Cinzel',serif; font-size:0.85rem; flex-shrink:0; }
+.conv-list-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--primary),#5a1414); display:flex; align-items:center; justify-content:center; color:var(--gold); font-family:'Cinzel',serif; font-size:0.85rem; flex-shrink:0; position:relative; }
 .conv-list-details { flex:1; min-width:0; }
 .conv-list-name { color:var(--text-light); font-size:0.85rem; font-weight:600; }
 .conv-list-preview { color:var(--text-muted); font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.conv-list-meta { text-align:right; flex-shrink:0; }
+.conv-list-meta { text-align:right; flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:0.15rem; }
 .conv-list-time { color:var(--text-muted); font-size:0.7rem; }
-.conv-list-unread { background:var(--gold); color:var(--primary); border-radius:50%; width:18px; height:18px; font-size:0.65rem; display:flex; align-items:center; justify-content:center; margin-top:0.25rem; margin-left:auto; font-weight:700; }
+.conv-list-unread { background:var(--gold); color:var(--primary); border-radius:50%; width:18px; height:18px; font-size:0.65rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
 
-/* Vista "Nuova Chat / Nuovo Gruppo" */
+/* Conversation type indicator on avatar */
+.conv-list-type-icon { position:absolute; bottom:-2px; right:-2px; width:16px; height:16px; background:var(--bg-dark); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.1); }
+.conv-list-type-icon svg { width:10px; height:10px; color:var(--text-muted); }
+
+/* Context menu button on each conversation */
+.conv-context-btn { display:none; background:none; border:none; color:var(--text-muted); cursor:pointer; padding:0.15rem 0.3rem; font-size:0.75rem; line-height:1; border-radius:4px; transition:all 0.2s; letter-spacing:1px; margin-top:0.15rem; }
+.conv-list-item:hover .conv-context-btn { display:block; }
+.conv-context-btn:hover { color:var(--gold); background:rgba(212,175,55,0.15); }
+
+/* Context menu dropdown */
+.conv-context-menu { position:absolute; right:0.5rem; top:50%; transform:translateY(-50%); background:rgba(30,30,35,0.98); border:1px solid rgba(212,175,55,0.3); border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.5); z-index:10; min-width:140px; overflow:hidden; }
+.conv-context-menu-item { padding:0.55rem 0.85rem; color:var(--text-light); font-size:0.8rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; transition:background 0.2s; }
+.conv-context-menu-item:hover { background:rgba(212,175,55,0.1); }
+.conv-context-menu-item svg { width:14px; height:14px; flex-shrink:0; }
+.conv-context-menu-item.danger { color:#ef4444; }
+.conv-context-menu-item.danger:hover { background:rgba(239,68,68,0.1); }
+
+/* "+" new conversation dropdown */
+.chat-new-dropdown { position:absolute; top:100%; right:0; margin-top:0.25rem; background:rgba(30,30,35,0.98); border:1px solid rgba(212,175,55,0.3); border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.5); z-index:10; min-width:160px; overflow:hidden; }
+.chat-new-dropdown-item { padding:0.65rem 1rem; color:var(--text-light); font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; transition:background 0.2s; }
+.chat-new-dropdown-item:hover { background:rgba(212,175,55,0.1); }
+.chat-new-dropdown-item svg { width:16px; height:16px; color:var(--gold); flex-shrink:0; }
+
+/* Archived section toggle */
+.conv-archive-toggle { display:flex; align-items:center; gap:0.5rem; padding:0.65rem 0.75rem; color:var(--text-muted); font-size:0.8rem; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s; }
+.conv-archive-toggle:hover { background:rgba(212,175,55,0.05); }
+.conv-archive-toggle svg { width:16px; height:16px; flex-shrink:0; }
+.conv-archive-count { margin-left:auto; background:rgba(255,255,255,0.1); border-radius:10px; padding:0.1rem 0.4rem; font-size:0.7rem; }
+
+/* Delete confirmation overlay */
+.chat-confirm-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:20; padding:1rem; }
+.chat-confirm-dialog { background:rgba(30,30,35,0.98); border:1px solid rgba(212,175,55,0.3); border-radius:12px; padding:1.25rem; max-width:280px; text-align:center; }
+.chat-confirm-dialog p { color:var(--text-light); font-size:0.85rem; margin-bottom:1rem; }
+.chat-confirm-actions { display:flex; gap:0.5rem; justify-content:center; }
+.chat-confirm-actions button { padding:0.4rem 1rem; border-radius:8px; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+.chat-confirm-cancel { background:transparent; border:1px solid rgba(212,175,55,0.3); color:var(--text-muted); }
+.chat-confirm-cancel:hover { color:var(--text-light); border-color:rgba(212,175,55,0.5); }
+.chat-confirm-delete { background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.3); }
+.chat-confirm-delete:hover { background:rgba(239,68,68,0.3); }
+
+/* New chat/group view */
 .chat-new-view { padding:0.75rem; }
 .chat-search-input { width:100%; padding:0.5rem 0.75rem; background:rgba(255,255,255,0.08); border:1px solid rgba(212,175,55,0.2); border-radius:8px; color:var(--text-light); font-size:0.85rem; box-sizing:border-box; }
 .chat-search-input::placeholder { color:var(--text-muted); }
@@ -33,11 +70,7 @@
 .chat-user-result { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0.5rem; cursor:pointer; border-radius:8px; transition:background 0.2s; }
 .chat-user-result:hover { background:rgba(212,175,55,0.08); }
 
-/* Form creazione gruppo */
-.chat-group-section { margin-top:0.75rem; }
-.chat-group-toggle { color:var(--gold); font-size:0.8rem; cursor:pointer; text-decoration:underline; margin-bottom:0.5rem; display:inline-block; }
-.chat-group-form { display:none; margin-top:0.5rem; }
-.chat-group-form.active { display:block; }
+/* Group creation form */
 .chat-group-name-input { width:100%; padding:0.5rem 0.75rem; background:rgba(255,255,255,0.08); border:1px solid rgba(212,175,55,0.2); border-radius:8px; color:var(--text-light); font-size:0.85rem; margin-bottom:0.5rem; box-sizing:border-box; }
 .chat-group-name-input:focus { outline:none; border-color:rgba(212,175,55,0.5); }
 .member-chips { display:flex; flex-wrap:wrap; gap:0.35rem; margin:0.5rem 0; }
@@ -50,15 +83,12 @@
 /* Empty state */
 .chat-empty-state { text-align:center; padding:2rem 1rem; color:var(--text-muted); font-size:0.85rem; }
 
-/* Close button (replaces online-count in header) */
+/* Close button */
 .chat-close-btn { margin-left:0.5rem; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.4rem; line-height:1; padding:0.25rem 0.5rem; transition:color 0.3s ease; }
 .chat-close-btn:hover { color:var(--gold); }
 
-/* When chat is open, align window to bottom (toggle button is hidden) */
+/* When chat is open, align window to bottom */
 .chat-widget .chat-window.active { bottom:0; }
-
-/* Hide online-users when not on tavern tab */
-.chat-window.hide-online #onlineUsers { display:none; }
 
 /* Hide input area when browsing lists */
 .chat-window.hide-input .chat-input-area { display:none; }

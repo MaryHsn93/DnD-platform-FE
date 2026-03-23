@@ -1,6 +1,6 @@
-// ====== TAVERN CHAT MODULE ======
-// WebSocket + REST integration with chat-service (port 8086)
-// Tabs: Tavern (global GROUP), Groups (custom groups), Private (1-to-1 DMs)
+// ====== CHAT MODULE ======
+// WebSocket + REST integration with chat-service
+// Unified conversation list: DMs + Groups
 const TavernChat = (function () {
   'use strict';
 
@@ -13,36 +13,29 @@ const TavernChat = (function () {
   let _wsConnectedOnce = false;
   let _wsConnectTimeout = null;
 
-  let _currentTab = 'tavern';           // 'tavern' | 'groups' | 'private'
-  let _tavernConvId = null;              // ID of the Tavern GROUP conversation
-  let _tavernMessages = [];              // messages for Tavern
+  let _conversations = [];              // Unified: [{id, type, name, participants, lastMessage, lastMessageTime, unreadCount}]
+  let _messagesByConv = {};             // convId -> [msgs]
+  let _pagesByConv = {};                // convId -> pageNum
+  let _hasMoreByConv = {};              // convId -> bool
   let _messageIds = new Set();
   let _onlineUsers = [];
-  let _knownUsers = {};                  // userId -> {id, username} cache from participants
+  let _knownUsers = {};                 // userId -> {id, username}
   let _unreadCount = 0;
   let _chatOpen = false;
   let _backendAvailable = false;
   let _username = '';
   let _userId = null;
 
-  // Tavern pagination
-  let _tavernPage = 0;
-  let _tavernHasMore = true;
+  let _activeConvId = null;             // Currently open conversation
+  let _viewMode = 'list';              // 'list' | 'messages' | 'new_dm' | 'new_group'
   let _loadingMore = false;
-
-  // Groups state
-  let _groupConversations = [];          // [{id, type, name, participants, lastMessage, lastMessageTime, unreadCount}]
-  let _messagesByConv = {};              // convId -> [msgs]
-  let _pagesByConv = {};                 // convId -> pageNum
-  let _hasMoreByConv = {};               // convId -> bool
-  let _activeConv = { groups: null, private: null };    // currently open convId per tab
-  let _viewMode = { groups: 'list', private: 'list' };  // 'list' | 'messages' | 'new'
   let _selectedGroupMembers = [];
-
-  // Private (DM) state
-  let _privateConversations = [];        // [{id, type, name, participants, lastMessage, lastMessageTime, unreadCount}]
   let _searchDebounce = null;
   let _onlineUsersTimer = null;
+
+  // Archive (client-side, persisted to localStorage)
+  let _archivedConvIds = new Set();
+  let _showArchived = false;
 
   const MAX_RECONNECT_DELAY = 30000;
   const HEARTBEAT_INTERVAL = 30000;
@@ -56,34 +49,27 @@ const TavernChat = (function () {
   function init() {
     _username = localStorage.getItem('username') || 'Adventurer';
     _userId = localStorage.getItem('userId');
+    _loadArchivedIds();
 
     _setupCloseButton();
-    _setupTabListeners();
     _setupScrollListener();
     _injectDynamicUI();
     _connectWebSocket();
 
-    // Fallback: if WS not connected within timeout, start polling
     _wsConnectTimeout = setTimeout(function () {
       if (!_ws || _ws.readyState !== WebSocket.OPEN) {
-        console.log('[TavernChat] WebSocket not connected after timeout, starting polling fallback');
         _startPolling();
       }
     }, WS_CONNECT_TIMEOUT);
 
-    // Cleanup on page unload
     window.addEventListener('beforeunload', destroy);
-
-    // Resolve conversations and load initial messages
     _resolveConversations();
-
-    // Start polling online users
     _startOnlineUsersPolling();
   }
 
   function destroy() {
     if (_ws) {
-      _ws.onclose = null; // prevent reconnect
+      _ws.onclose = null;
       _ws.close();
       _ws = null;
     }
@@ -93,6 +79,7 @@ const TavernChat = (function () {
     clearTimeout(_wsConnectTimeout);
     clearTimeout(_searchDebounce);
     _stopOnlineUsersPolling();
+    _dismissDropdowns();
     window.removeEventListener('beforeunload', destroy);
   }
 
@@ -103,8 +90,6 @@ const TavernChat = (function () {
 
     _chatOpen = !_chatOpen;
     chatWindow.classList.toggle('active', _chatOpen);
-
-    // Hide toggle button when chat is open, show when closed
     chatToggleBtn.style.display = _chatOpen ? 'none' : '';
 
     if (_chatOpen) {
@@ -125,7 +110,6 @@ const TavernChat = (function () {
 
     var convId = _getActiveConvId();
     if (!convId) {
-      console.warn('[TavernChat] No conversation for tab:', _currentTab);
       _showChatError('Cannot send messages — the chat server is unreachable. Retrying...');
       if (!_backendAvailable) _resolveConversations();
       return;
@@ -133,7 +117,6 @@ const TavernChat = (function () {
 
     input.value = '';
 
-    // Optimistic UI: show message immediately
     var optimisticMsg = {
       id: 'optimistic-' + Date.now(),
       senderUsername: _username,
@@ -146,7 +129,6 @@ const TavernChat = (function () {
     _renderSingleMessage(optimisticMsg);
     _scrollToBottom();
 
-    // Send via WebSocket if connected, otherwise REST
     if (_ws && _ws.readyState === WebSocket.OPEN) {
       _ws.send(JSON.stringify({
         type: 'SEND_MESSAGE',
@@ -162,62 +144,7 @@ const TavernChat = (function () {
     if (e.key === 'Enter') sendMessage();
   }
 
-  function switchTab(tab) {
-    _currentTab = tab;
-
-    // Update tab UI
-    document.querySelectorAll('.chat-tab').forEach(function (t) {
-      t.classList.toggle('active', t.dataset.tab === tab);
-    });
-
-    var chatWindow = document.getElementById('chatWindow');
-    var subHeader = document.querySelector('.chat-sub-header');
-
-    if (tab === 'tavern') {
-      // Tavern: simple message view, online users visible, no sub-header
-      if (subHeader) subHeader.classList.remove('active');
-      if (chatWindow) {
-        chatWindow.classList.remove('hide-online');
-        chatWindow.classList.remove('hide-input');
-      }
-
-      _renderTavernMessages();
-
-      if (!_backendAvailable && !_tavernConvId) {
-        _renderConnectionError();
-        return;
-      }
-
-      _scrollToBottom();
-
-      if (_tavernConvId && _chatOpen) _markAsRead(_tavernConvId);
-
-      // Load messages if none yet
-      if (_tavernMessages.length === 0 && _tavernConvId) {
-        _fetchMessages(_tavernConvId, 0).then(function (msgs) {
-          if (msgs && msgs.length > 0) {
-            msgs.forEach(function (m) { _addMessage(_tavernConvId, m); });
-            _renderTavernMessages();
-            _scrollToBottom();
-          }
-        });
-      }
-    } else {
-      // Groups: hide online users, show sub-header context
-      if (chatWindow) chatWindow.classList.add('hide-online');
-
-      var mode = _viewMode[tab];
-      if (mode === 'list') {
-        _showListView(tab);
-      } else if (mode === 'messages') {
-        _openConversation(_activeConv[tab], tab, true);
-      } else if (mode === 'new') {
-        _showNewView(tab);
-      }
-    }
-  }
-
-  // ====== CLOSE BUTTON (replaces online-count) ======
+  // ====== CLOSE BUTTON ======
 
   function _setupCloseButton() {
     var header = document.querySelector('.chat-header');
@@ -230,75 +157,69 @@ const TavernChat = (function () {
     closeBtn.addEventListener('click', function () {
       toggleChat();
     });
-
     header.appendChild(closeBtn);
   }
 
   // ====== DYNAMIC UI INJECTION ======
 
   function _injectDynamicUI() {
-    var tabsBar = document.querySelector('.chat-tabs');
-    if (!tabsBar) return;
+    var header = document.querySelector('.chat-header');
+    if (!header) return;
 
-    // Create sub-header bar (inserted after .chat-tabs)
+    // Create sub-header bar (inserted after .chat-header)
     var subHeader = document.createElement('div');
-    subHeader.className = 'chat-sub-header';
+    subHeader.className = 'chat-sub-header active';
     subHeader.innerHTML =
-      '<button class="chat-back-btn" title="Back">' +
+      '<button class="chat-back-btn" title="Back" style="display:none">' +
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>' +
       '</button>' +
-      '<span class="chat-sub-title"></span>' +
-      '<button class="chat-new-btn" title="New">+</button>';
+      '<span class="chat-sub-title">Conversations</span>' +
+      '<button class="chat-new-btn" title="New" style="position:relative">+</button>';
 
-    tabsBar.insertAdjacentElement('afterend', subHeader);
+    header.insertAdjacentElement('afterend', subHeader);
 
-    // Event listeners
+    // Back button → go to list
     subHeader.querySelector('.chat-back-btn').addEventListener('click', function () {
-      _showListView(_currentTab);
+      _showListView();
     });
-    subHeader.querySelector('.chat-new-btn').addEventListener('click', function () {
-      _showNewView(_currentTab);
+
+    // "+" button → show dropdown
+    subHeader.querySelector('.chat-new-btn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      _showNewConversationDropdown(this);
     });
+
+    // Dismiss dropdowns on outside click
+    document.addEventListener('click', _dismissDropdowns);
   }
 
   // ====== VIEW MANAGEMENT ======
 
   function _getActiveConvId() {
-    if (_currentTab === 'tavern') return _tavernConvId;
-    return _activeConv[_currentTab] || null;
+    return _activeConvId;
   }
 
-  function _showListView(tab) {
-    if (!tab) tab = _currentTab;
-    _viewMode[tab] = 'list';
-    _activeConv[tab] = null;
+  function _showListView() {
+    _viewMode = 'list';
+    _activeConvId = null;
 
     var subHeader = document.querySelector('.chat-sub-header');
     var chatWindow = document.getElementById('chatWindow');
 
-    var title = tab === 'private' ? 'Private' : 'Groups';
-
     if (subHeader) {
       subHeader.classList.add('active');
-      subHeader.querySelector('.chat-sub-title').textContent = title;
+      subHeader.querySelector('.chat-sub-title').textContent = 'Conversations';
       subHeader.querySelector('.chat-back-btn').style.display = 'none';
       subHeader.querySelector('.chat-new-btn').style.display = 'flex';
     }
 
     if (chatWindow) chatWindow.classList.add('hide-input');
 
-    _renderConversationList(tab);
+    _renderConversationList();
   }
 
-  function _showNewView(tab) {
-    if (!tab) tab = _currentTab;
-
-    if (tab === 'private') {
-      _showNewPrivateView();
-      return;
-    }
-
-    _viewMode[tab] = 'new';
+  function _showNewGroupView() {
+    _viewMode = 'new_group';
     _selectedGroupMembers = [];
 
     var subHeader = document.querySelector('.chat-sub-header');
@@ -316,7 +237,6 @@ const TavernChat = (function () {
     var container = document.getElementById('chatMessages');
     if (!container) return;
 
-    // Groups: search + group creation form
     container.innerHTML =
       '<div class="chat-new-view">' +
         '<input type="text" class="chat-group-name-input" placeholder="Group name..." id="chatGroupName">' +
@@ -345,12 +265,11 @@ const TavernChat = (function () {
       });
     }
 
-    // Show known users as initial suggestions
     _renderUserResults(_getSearchableUsers());
   }
 
-  function _showNewPrivateView() {
-    _viewMode['private'] = 'new';
+  function _showNewDMView() {
+    _viewMode = 'new_dm';
 
     var subHeader = document.querySelector('.chat-sub-header');
     var chatWindow = document.getElementById('chatWindow');
@@ -382,71 +301,126 @@ const TavernChat = (function () {
       });
     }
 
-    // Show known users as initial suggestions
     _renderDMUserResults(_getSearchableUsers());
   }
 
-  function _renderConversationList(tab) {
+  function _renderConversationList() {
     var container = document.getElementById('chatMessages');
     if (!container) return;
 
-    var list = tab === 'private' ? _privateConversations : _groupConversations;
+    // Separate active and archived
+    var active = [];
+    var archived = [];
+    _conversations.forEach(function (conv) {
+      if (_archivedConvIds.has(conv.id)) {
+        archived.push(conv);
+      } else {
+        active.push(conv);
+      }
+    });
 
     // Sort by lastMessageTime descending
-    list.sort(function (a, b) {
+    var sortFn = function (a, b) {
       var ta = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
       var tb = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
       return tb - ta;
-    });
+    };
+    active.sort(sortFn);
+    archived.sort(sortFn);
 
-    if (list.length === 0) {
-      var msg = tab === 'private' ? 'No private messages yet' : 'No groups yet';
-      var hint = 'Tap + to start a conversation';
+    if (active.length === 0 && archived.length === 0) {
       container.innerHTML =
         '<div class="chat-empty-state">' +
-          '<p style="font-family:Cinzel,serif;color:var(--gold);margin-bottom:0.5rem;">' + msg + '</p>' +
-          '<p>' + hint + '</p>' +
+          '<p style="font-family:Cinzel,serif;color:var(--gold);margin-bottom:0.5rem;">No conversations yet</p>' +
+          '<p>Tap + to start a conversation</p>' +
         '</div>';
       return;
     }
 
     container.innerHTML = '';
-    list.forEach(function (conv) {
-      var displayName = _getConvDisplayName(conv);
-      var initial = displayName.charAt(0).toUpperCase();
-      var preview = conv.lastMessage ? _escapeHtml(conv.lastMessage) : '';
-      var time = conv.lastMessageTime ? _formatSmartTime(conv.lastMessageTime) : '';
-      var unread = conv.unreadCount || 0;
 
-      var item = document.createElement('div');
-      item.className = 'conv-list-item';
-      item.innerHTML =
-        '<div class="conv-list-avatar">' + initial + '</div>' +
-        '<div class="conv-list-details">' +
-          '<div class="conv-list-name">' + _escapeHtml(displayName) + '</div>' +
-          '<div class="conv-list-preview">' + preview + '</div>' +
-        '</div>' +
-        '<div class="conv-list-meta">' +
-          '<div class="conv-list-time">' + time + '</div>' +
-          (unread > 0 ? '<div class="conv-list-unread">' + (unread > 9 ? '9+' : unread) + '</div>' : '') +
-        '</div>';
-
-      item.addEventListener('click', function () {
-        _openConversation(conv.id, tab);
-      });
-      container.appendChild(item);
+    // Render active conversations
+    active.forEach(function (conv) {
+      container.appendChild(_createConvListItem(conv));
     });
+
+    // Render archived toggle if any
+    if (archived.length > 0) {
+      var toggle = document.createElement('div');
+      toggle.className = 'conv-archive-toggle';
+      toggle.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>' +
+        '<span>Archived</span>' +
+        '<span class="conv-archive-count">' + archived.length + '</span>' +
+        '<svg style="margin-left:0.25rem;width:12px;height:12px;transform:rotate(' + (_showArchived ? '180' : '0') + 'deg);transition:transform 0.2s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+
+      toggle.addEventListener('click', function () {
+        _showArchived = !_showArchived;
+        _renderConversationList();
+      });
+      container.appendChild(toggle);
+
+      if (_showArchived) {
+        archived.forEach(function (conv) {
+          var item = _createConvListItem(conv);
+          item.style.opacity = '0.7';
+          container.appendChild(item);
+        });
+      }
+    }
   }
 
-  function _openConversation(convId, tab, skipSetMode) {
-    if (!tab) tab = _currentTab;
-    if (!skipSetMode) _viewMode[tab] = 'messages';
-    _activeConv[tab] = convId;
+  function _createConvListItem(conv) {
+    var displayName = _getConvDisplayName(conv);
+    var initial = displayName.charAt(0).toUpperCase();
+    var preview = conv.lastMessage ? _escapeHtml(conv.lastMessage) : '';
+    var time = conv.lastMessageTime ? _formatSmartTime(conv.lastMessageTime) : '';
+    var unread = conv.unreadCount || 0;
+    var isGroup = conv.type === 'GROUP';
+    var isArchived = _archivedConvIds.has(conv.id);
+
+    var item = document.createElement('div');
+    item.className = 'conv-list-item';
+    item.style.position = 'relative';
+    item.innerHTML =
+      '<div class="conv-list-avatar" style="position:relative">' + initial +
+        '<span class="conv-list-type-icon">' +
+          (isGroup
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') +
+        '</span>' +
+      '</div>' +
+      '<div class="conv-list-details">' +
+        '<div class="conv-list-name">' + _escapeHtml(displayName) + '</div>' +
+        '<div class="conv-list-preview">' + preview + '</div>' +
+      '</div>' +
+      '<div class="conv-list-meta">' +
+        '<div class="conv-list-time">' + time + '</div>' +
+        (unread > 0 ? '<div class="conv-list-unread">' + (unread > 9 ? '9+' : unread) + '</div>' : '') +
+        '<button class="conv-context-btn" title="More">&middot;&middot;&middot;</button>' +
+      '</div>';
+
+    // Open conversation on click
+    item.addEventListener('click', function () {
+      _openConversation(conv.id);
+    });
+
+    // Context menu on "..." click
+    item.querySelector('.conv-context-btn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      _showContextMenu(conv.id, isArchived, item);
+    });
+
+    return item;
+  }
+
+  function _openConversation(convId) {
+    _viewMode = 'messages';
+    _activeConvId = convId;
 
     var chatWindow = document.getElementById('chatWindow');
     var subHeader = document.querySelector('.chat-sub-header');
 
-    // Find conv to get display name
     var conv = _findConversation(convId);
     var displayName = conv ? _getConvDisplayName(conv) : 'Chat';
 
@@ -459,13 +433,11 @@ const TavernChat = (function () {
 
     if (chatWindow) chatWindow.classList.remove('hide-input');
 
-    // Render messages
     var msgs = _messagesByConv[convId];
     if (msgs && msgs.length > 0) {
       _renderConvMessages(convId);
       _scrollToBottom();
     } else {
-      // Fetch messages
       var container = document.getElementById('chatMessages');
       if (container) container.innerHTML = '';
       _fetchMessages(convId, 0).then(function (fetched) {
@@ -481,25 +453,178 @@ const TavernChat = (function () {
     }
 
     if (_chatOpen) _markAsRead(convId);
-
-    // Reset unread in the list
     if (conv) conv.unreadCount = 0;
+  }
+
+  // ====== NEW CONVERSATION DROPDOWN ======
+
+  function _showNewConversationDropdown(anchor) {
+    _dismissDropdowns();
+
+    var dropdown = document.createElement('div');
+    dropdown.className = 'chat-new-dropdown';
+    dropdown.innerHTML =
+      '<div class="chat-new-dropdown-item" data-action="dm">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
+        'New Message' +
+      '</div>' +
+      '<div class="chat-new-dropdown-item" data-action="group">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
+        'New Group' +
+      '</div>';
+
+    dropdown.querySelector('[data-action="dm"]').addEventListener('click', function (e) {
+      e.stopPropagation();
+      _dismissDropdowns();
+      _showNewDMView();
+    });
+    dropdown.querySelector('[data-action="group"]').addEventListener('click', function (e) {
+      e.stopPropagation();
+      _dismissDropdowns();
+      _showNewGroupView();
+    });
+
+    anchor.appendChild(dropdown);
+  }
+
+  // ====== CONTEXT MENU (delete/archive) ======
+
+  function _showContextMenu(convId, isArchived, anchorItem) {
+    _dismissDropdowns();
+
+    var menu = document.createElement('div');
+    menu.className = 'conv-context-menu';
+    menu.innerHTML =
+      '<div class="conv-context-menu-item" data-action="archive">' +
+        (isArchived
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>Unarchive'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>Archive') +
+      '</div>' +
+      '<div class="conv-context-menu-item danger" data-action="delete">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+        'Delete' +
+      '</div>';
+
+    menu.querySelector('[data-action="archive"]').addEventListener('click', function (e) {
+      e.stopPropagation();
+      _dismissDropdowns();
+      if (isArchived) {
+        _unarchiveConversation(convId);
+      } else {
+        _archiveConversation(convId);
+      }
+    });
+
+    menu.querySelector('[data-action="delete"]').addEventListener('click', function (e) {
+      e.stopPropagation();
+      _dismissDropdowns();
+      _showConfirmDelete(convId);
+    });
+
+    anchorItem.appendChild(menu);
+  }
+
+  function _showConfirmDelete(convId) {
+    var chatWindow = document.getElementById('chatWindow');
+    if (!chatWindow) return;
+
+    var overlay = document.createElement('div');
+    overlay.className = 'chat-confirm-overlay';
+    overlay.innerHTML =
+      '<div class="chat-confirm-dialog">' +
+        '<p>Delete this conversation? This cannot be undone.</p>' +
+        '<div class="chat-confirm-actions">' +
+          '<button class="chat-confirm-cancel">Cancel</button>' +
+          '<button class="chat-confirm-delete">Delete</button>' +
+        '</div>' +
+      '</div>';
+
+    overlay.querySelector('.chat-confirm-cancel').addEventListener('click', function () {
+      overlay.remove();
+    });
+    overlay.querySelector('.chat-confirm-delete').addEventListener('click', function () {
+      overlay.remove();
+      _deleteConversation(convId);
+    });
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    chatWindow.appendChild(overlay);
+  }
+
+  function _dismissDropdowns() {
+    document.querySelectorAll('.chat-new-dropdown, .conv-context-menu').forEach(function (el) {
+      el.remove();
+    });
+  }
+
+  // ====== DELETE / ARCHIVE ======
+
+  async function _deleteConversation(convId) {
+    var url = API_CONFIG.CHAT.BASE_URL +
+      API_CONFIG.CHAT.CONVERSATION.replace('{id}', convId) +
+      '?userId=' + _userId;
+    try {
+      await authenticatedRequest(url, { method: 'DELETE' });
+    } catch (e) {
+      console.error('[Chat] Failed to delete conversation:', e);
+    }
+    // Remove from local state regardless (optimistic)
+    _conversations = _conversations.filter(function (c) { return c.id !== convId; });
+    delete _messagesByConv[convId];
+    delete _pagesByConv[convId];
+    delete _hasMoreByConv[convId];
+    _archivedConvIds.delete(convId);
+    _saveArchivedIds();
+
+    if (_activeConvId === convId) {
+      _showListView();
+    } else if (_viewMode === 'list') {
+      _renderConversationList();
+    }
+  }
+
+  function _archiveConversation(convId) {
+    _archivedConvIds.add(convId);
+    _saveArchivedIds();
+    if (_activeConvId === convId) {
+      _showListView();
+    } else if (_viewMode === 'list') {
+      _renderConversationList();
+    }
+  }
+
+  function _unarchiveConversation(convId) {
+    _archivedConvIds.delete(convId);
+    _saveArchivedIds();
+    if (_viewMode === 'list') {
+      _renderConversationList();
+    }
+  }
+
+  function _loadArchivedIds() {
+    try {
+      var stored = JSON.parse(localStorage.getItem('chat_archived_convs') || '[]');
+      _archivedConvIds = new Set(stored);
+    } catch (e) {
+      _archivedConvIds = new Set();
+    }
+  }
+
+  function _saveArchivedIds() {
+    localStorage.setItem('chat_archived_convs', JSON.stringify([..._archivedConvIds]));
   }
 
   // ====== SEARCH & GROUP CREATION ======
 
   function _searchUsers(query) {
-    var resultsContainer = document.getElementById('chatSearchResults');
-    if (!resultsContainer) return;
-
     var users = _getSearchableUsers();
-
     if (query && query.length >= 1) {
       users = users.filter(function (u) {
         return u.username && u.username.toLowerCase().indexOf(query.toLowerCase()) !== -1;
       });
     }
-
     _renderUserResults(users);
   }
 
@@ -543,7 +668,6 @@ const TavernChat = (function () {
     _renderMemberChips();
     _updateCreateGroupBtn();
 
-    // Re-render search results to update "Added" status
     var searchInput = document.getElementById('chatUserSearch');
     var q = searchInput ? searchInput.value.trim() : '';
     if (q) {
@@ -578,7 +702,6 @@ const TavernChat = (function () {
     var name = nameInput ? nameInput.value.trim() : '';
     btn.disabled = !name || _selectedGroupMembers.length === 0;
 
-    // Also listen for name input changes
     if (nameInput && !nameInput._listening) {
       nameInput._listening = true;
       nameInput.addEventListener('input', function () {
@@ -599,25 +722,20 @@ const TavernChat = (function () {
         lastMessageTime: null,
         unreadCount: 0
       };
-      _groupConversations.unshift(conv);
-      _openConversation(created.id, 'groups');
+      _conversations.unshift(conv);
+      _openConversation(created.id);
     }
   }
 
   // ====== PRIVATE (DM) ======
 
   function _searchUsersForDM(query) {
-    var resultsContainer = document.getElementById('chatSearchResults');
-    if (!resultsContainer) return;
-
     var users = _getSearchableUsers();
-
     if (query && query.length >= 1) {
       users = users.filter(function (u) {
         return u.username && u.username.toLowerCase().indexOf(query.toLowerCase()) !== -1;
       });
     }
-
     _renderDMUserResults(users);
   }
 
@@ -650,8 +768,8 @@ const TavernChat = (function () {
   }
 
   function _findExistingDM(userId) {
-    return _privateConversations.find(function (c) {
-      return c.participants && c.participants.some(function (p) {
+    return _conversations.find(function (c) {
+      return c.type === 'DIRECT' && c.participants && c.participants.some(function (p) {
         var pid = p.userId || p.id;
         return pid && pid.toString() === userId.toString();
       });
@@ -661,7 +779,7 @@ const TavernChat = (function () {
   async function _openOrCreateDM(userId, username) {
     var existing = _findExistingDM(userId);
     if (existing) {
-      _openConversation(existing.id, 'private');
+      _openConversation(existing.id);
       return;
     }
     await _createPrivateConversation(userId, username);
@@ -670,17 +788,24 @@ const TavernChat = (function () {
   async function _createPrivateConversation(userId, username) {
     var created = await _createConversation('DIRECT', null, [userId]);
     if (created) {
+      var participants = created.participants || [{ userId: userId }];
+      participants.forEach(function (p) {
+        var pid = (p.userId || p.id || '').toString();
+        if (pid === userId.toString() && !p.username) {
+          p.username = username;
+        }
+      });
       var conv = {
         id: created.id,
         type: 'DIRECT',
         name: created.name || username,
-        participants: created.participants || [{ userId: userId }],
+        participants: participants,
         lastMessage: null,
         lastMessageTime: null,
         unreadCount: 0
       };
-      _privateConversations.unshift(conv);
-      _openConversation(created.id, 'private');
+      _conversations.unshift(conv);
+      _openConversation(created.id);
     }
   }
 
@@ -698,7 +823,7 @@ const TavernChat = (function () {
       try {
         token = await refreshAccessToken();
       } catch (e) {
-        console.error('[TavernChat] Token refresh failed:', e);
+        console.error('[Chat] Token refresh failed:', e);
         _updateConnectionIndicator('disconnected');
         _scheduleReconnect();
         return;
@@ -711,14 +836,14 @@ const TavernChat = (function () {
     try {
       _ws = new WebSocket(wsUrl);
     } catch (e) {
-      console.error('[TavernChat] WebSocket creation failed:', e);
+      console.error('[Chat] WebSocket creation failed:', e);
       _updateConnectionIndicator('disconnected');
       _scheduleReconnect();
       return;
     }
 
     _ws.onopen = function () {
-      console.log('[TavernChat] WebSocket connected');
+      console.log('[Chat] WebSocket connected');
       _reconnectAttempts = 0;
       _wsConnectedOnce = true;
       _updateConnectionIndicator('connected');
@@ -732,12 +857,12 @@ const TavernChat = (function () {
         var data = JSON.parse(event.data);
         _handleWsMessage(data);
       } catch (e) {
-        console.warn('[TavernChat] Failed to parse WS message:', e);
+        console.warn('[Chat] Failed to parse WS message:', e);
       }
     };
 
     _ws.onclose = function (event) {
-      console.log('[TavernChat] WebSocket closed:', event.code, event.reason);
+      console.log('[Chat] WebSocket closed:', event.code, event.reason);
       _updateConnectionIndicator('disconnected');
       _stopHeartbeat();
       _scheduleReconnect();
@@ -745,7 +870,7 @@ const TavernChat = (function () {
     };
 
     _ws.onerror = function (event) {
-      console.error('[TavernChat] WebSocket error:', event);
+      console.error('[Chat] WebSocket error:', event);
     };
   }
 
@@ -755,71 +880,58 @@ const TavernChat = (function () {
         _onNewMessage(data);
         break;
       case 'CONNECTED':
-        console.log('[TavernChat] WebSocket confirmed:', data.content);
+        console.log('[Chat] WebSocket confirmed:', data.content);
         break;
       case 'ERROR':
-        console.error('[TavernChat] Server error:', data.content || data);
+        console.error('[Chat] Server error:', data.content || data);
         break;
       case 'PONG':
         break;
       default:
-        console.log('[TavernChat] Unknown WS message type:', data.type, data);
+        console.log('[Chat] Unknown WS message type:', data.type, data);
     }
   }
 
   function _onNewMessage(data) {
-    // Normalize: WS sends flat {type, conversationId, messageId, senderId, content, messageType, timestamp}
     var msg = data.message || data;
     if (msg.messageId && !msg.id) msg.id = msg.messageId;
     if (msg.timestamp && !msg.createdAt) msg.createdAt = msg.timestamp;
 
-    // Deduplication
     if (msg.id && _messageIds.has(msg.id)) {
       _removeOptimisticMessage(msg);
       return;
     }
 
     var convId = msg.conversationId;
+    _addMessage(convId, msg);
 
-    if (convId === _tavernConvId) {
-      // Tavern message
-      _addMessage(convId, msg);
-      if (_currentTab === 'tavern') {
-        _renderSingleMessage(msg);
-        _scrollToBottom();
-      }
+    var conv = _findConversation(convId);
+    if (!conv) {
+      // Unknown conversation — fetch and add
+      _fetchSingleConversation(convId);
     } else {
-      // Group message
-      _addMessage(convId, msg);
-
-      var tab = _getTabForConversation(convId);
-      if (!tab) {
-        // Unknown conversation — fetch and add
-        _fetchSingleConversation(convId);
-        return;
-      }
-
-      // Update conversation preview
       _updateConversationPreview(convId, msg);
-
-      // If this conversation is currently open, render the message
-      if (_currentTab === tab && _activeConv[tab] === convId && _viewMode[tab] === 'messages') {
-        _renderSingleMessage(msg);
-        _scrollToBottom();
-      }
-
-      // If viewing the list for this tab, re-render the list
-      if (_currentTab === tab && _viewMode[tab] === 'list') {
-        _renderConversationList(tab);
-      }
     }
 
-    // Notification if chat is closed or different tab/conv
+    // If this conversation is currently open, render the message
+    if (_activeConvId === convId && _viewMode === 'messages') {
+      _renderSingleMessage(msg);
+      _scrollToBottom();
+    }
+
+    // If viewing the list, re-render
+    if (_viewMode === 'list') {
+      _renderConversationList();
+    }
+
+    // Notification if chat is closed
     if (!_chatOpen) {
       _unreadCount++;
       _updateNotificationBadge();
     }
   }
+
+  // ====== USERNAME RESOLUTION ======
 
   async function _fetchUsername(userId) {
     if (!userId) return null;
@@ -831,7 +943,7 @@ const TavernChat = (function () {
       }
       return null;
     } catch (e) {
-      console.warn('[TavernChat] Failed to fetch username for userId:', userId, e);
+      console.warn('[Chat] Failed to fetch username for userId:', userId, e);
       return null;
     }
   }
@@ -839,7 +951,6 @@ const TavernChat = (function () {
   async function _buildKnownUsersFromConversations(convs) {
     if (!Array.isArray(convs)) return;
 
-    // Collect all unique participant userIds (excluding self)
     var userIds = {};
     convs.forEach(function (c) {
       if (!c.participants) return;
@@ -851,7 +962,6 @@ const TavernChat = (function () {
       });
     });
 
-    // Fetch usernames for unknown users
     var ids = Object.keys(userIds);
     var fetchPromises = ids.map(function (uid) {
       return _fetchUsername(uid).then(function (uname) {
@@ -862,36 +972,87 @@ const TavernChat = (function () {
     });
 
     await Promise.all(fetchPromises);
-    console.log('[TavernChat] Known users loaded:', Object.keys(_knownUsers).length, _knownUsers);
+
+    _enrichParticipants(_conversations);
+  }
+
+  function _enrichParticipants(convList) {
+    if (!Array.isArray(convList)) return;
+    convList.forEach(function (conv) {
+      if (!conv.participants) return;
+      conv.participants.forEach(function (p) {
+        if (p.username) return;
+        var uid = (p.userId || p.id || '').toString();
+        if (uid && _knownUsers[uid] && _knownUsers[uid].username) {
+          p.username = _knownUsers[uid].username;
+        }
+      });
+    });
+  }
+
+  async function _resolveUnknownConversationNames() {
+    var toResolve = _conversations.filter(function (conv) {
+      return conv.type === 'DIRECT' && _getConvDisplayName(conv) === 'Direct Message';
+    });
+    if (toResolve.length === 0) return;
+
+    await Promise.all(toResolve.map(async function (conv) {
+      var url = API_CONFIG.CHAT.BASE_URL +
+        API_CONFIG.CHAT.CONVERSATION.replace('{id}', conv.id) +
+        '?userId=' + _userId;
+      try {
+        var result = await authenticatedRequest(url, { method: 'GET' });
+        var full = result.data;
+        if (full && full.participants && full.participants.length > 0) {
+          conv.participants = full.participants;
+          var unknownIds = [];
+          conv.participants.forEach(function (p) {
+            var uid = (p.userId || p.id || '').toString();
+            if (uid && uid !== _userId && !p.username) {
+              if (_knownUsers[uid]) {
+                p.username = _knownUsers[uid].username;
+              } else {
+                unknownIds.push({ uid: uid, participant: p });
+              }
+            }
+          });
+          await Promise.all(unknownIds.map(function (item) {
+            return _fetchUsername(item.uid).then(function (uname) {
+              if (uname) {
+                _knownUsers[item.uid] = { id: parseInt(item.uid, 10), username: uname };
+                item.participant.username = uname;
+              }
+            });
+          }));
+        }
+      } catch (e) {
+        console.warn('[Chat] Failed to resolve conv name:', conv.id, e);
+      }
+    }));
   }
 
   function _getSearchableUsers() {
-    // Merge online users and known users, deduplicated
     var usersMap = {};
-
-    // Add known users from conversations
     Object.keys(_knownUsers).forEach(function (uid) {
       if (uid !== _userId) {
         usersMap[uid] = _knownUsers[uid];
       }
     });
-
-    // Add online users (may have more up-to-date data)
     _onlineUsers.forEach(function (u) {
       var uid = (u.id || '').toString();
       if (uid && uid !== _userId) {
         usersMap[uid] = u;
       }
     });
-
     return Object.values(usersMap);
   }
+
+  // ====== RECONNECT / HEARTBEAT ======
 
   function _scheduleReconnect() {
     clearTimeout(_reconnectTimer);
     var delay = Math.min(1000 * Math.pow(2, _reconnectAttempts), MAX_RECONNECT_DELAY);
     _reconnectAttempts++;
-    console.log('[TavernChat] Reconnecting in ' + delay + 'ms (attempt ' + _reconnectAttempts + ')');
     _updateConnectionIndicator('connecting');
     _reconnectTimer = setTimeout(function () {
       _connectWebSocket();
@@ -915,60 +1076,35 @@ const TavernChat = (function () {
 
   function _startPolling() {
     if (_pollingTimer) return;
-    console.log('[TavernChat] Starting polling fallback');
     _pollingTimer = setInterval(function () {
       _pollMessages();
     }, POLLING_INTERVAL);
-    _pollMessages(); // immediate first poll
+    _pollMessages();
   }
 
   function _stopPolling() {
     if (_pollingTimer) {
-      console.log('[TavernChat] Stopping polling fallback');
       clearInterval(_pollingTimer);
       _pollingTimer = null;
     }
   }
 
   function _pollMessages() {
-    // Poll Tavern
-    if (_tavernConvId) {
-      _fetchMessages(_tavernConvId, 0).then(function (msgs) {
+    if (_viewMode === 'messages' && _activeConvId) {
+      _fetchMessages(_activeConvId, 0).then(function (msgs) {
         if (!msgs) return;
         var newMsgs = false;
         msgs.forEach(function (m) {
           if (!_messageIds.has(m.id)) {
-            _addMessage(_tavernConvId, m);
+            _addMessage(_activeConvId, m);
             newMsgs = true;
           }
         });
-        if (newMsgs && _currentTab === 'tavern') {
-          _renderTavernMessages();
+        if (newMsgs && _activeConvId) {
+          _renderConvMessages(_activeConvId);
           _scrollToBottom();
         }
       });
-    }
-
-    // Poll active Groups or Private conversation
-    var activeTab = _currentTab;
-    if ((activeTab === 'groups' || activeTab === 'private') && _viewMode[activeTab] === 'messages') {
-      var convId = _activeConv[activeTab];
-      if (convId) {
-        _fetchMessages(convId, 0).then(function (msgs) {
-          if (!msgs) return;
-          var newMsgs = false;
-          msgs.forEach(function (m) {
-            if (!_messageIds.has(m.id)) {
-              _addMessage(convId, m);
-              newMsgs = true;
-            }
-          });
-          if (newMsgs && _activeConv[_currentTab] === convId) {
-            _renderConvMessages(convId);
-            _scrollToBottom();
-          }
-        });
-      }
     }
   }
 
@@ -976,7 +1112,7 @@ const TavernChat = (function () {
 
   function _startOnlineUsersPolling() {
     _stopOnlineUsersPolling();
-    _fetchOnlineUsers(); // immediate first fetch
+    _fetchOnlineUsers();
     _onlineUsersTimer = setInterval(function () {
       _fetchOnlineUsers();
     }, ONLINE_USERS_INTERVAL);
@@ -1010,7 +1146,6 @@ const TavernChat = (function () {
         }
       });
 
-      // Fetch usernames for unknown IDs
       if (unknownIds.length > 0) {
         var fetchPromises = unknownIds.map(function (uid) {
           return _fetchUsername(uid).then(function (uname) {
@@ -1023,9 +1158,14 @@ const TavernChat = (function () {
       }
 
       _onlineUsers = users;
-      _renderOnlineUsers();
+
+      // Update online count in header
+      var countEl = document.getElementById('onlineCountText');
+      if (countEl) {
+        countEl.textContent = _onlineUsers.length + ' online';
+      }
     } catch (e) {
-      console.error('[TavernChat] Failed to fetch online users:', e);
+      console.error('[Chat] Failed to fetch online users:', e);
     }
   }
 
@@ -1038,7 +1178,7 @@ const TavernChat = (function () {
       var result = await authenticatedRequest(url, { method: 'GET' });
       return result.data;
     } catch (e) {
-      console.error('[TavernChat] Failed to fetch conversations:', e);
+      console.error('[Chat] Failed to fetch conversations:', e);
       return [];
     }
   }
@@ -1050,12 +1190,11 @@ const TavernChat = (function () {
     try {
       var result = await authenticatedRequest(url, { method: 'GET' });
       var data = result.data;
-      // Handle paginated response (PagedMessageViewModel)
       if (data && Array.isArray(data.content)) return data.content;
       if (Array.isArray(data)) return data;
       return [];
     } catch (e) {
-      console.error('[TavernChat] Failed to fetch messages:', e);
+      console.error('[Chat] Failed to fetch messages:', e);
       return [];
     }
   }
@@ -1070,7 +1209,7 @@ const TavernChat = (function () {
         body: JSON.stringify({ content: content, messageType: 'TEXT' })
       });
     } catch (e) {
-      console.error('[TavernChat] Failed to send message via REST:', e);
+      console.error('[Chat] Failed to send message via REST:', e);
     }
   }
 
@@ -1081,8 +1220,7 @@ const TavernChat = (function () {
     try {
       await authenticatedRequest(url, { method: 'PUT' });
     } catch (e) {
-      // Non-critical, just log
-      console.warn('[TavernChat] Failed to mark as read:', e);
+      console.warn('[Chat] Failed to mark as read:', e);
     }
   }
 
@@ -1100,7 +1238,7 @@ const TavernChat = (function () {
       });
       return result.data;
     } catch (e) {
-      console.error('[TavernChat] Failed to create conversation:', e);
+      console.error('[Chat] Failed to create conversation:', e);
       return null;
     }
   }
@@ -1114,17 +1252,40 @@ const TavernChat = (function () {
       var found = result.data;
       if (!found) return;
 
-      if (found.type === 'DIRECT') {
-        if (!_privateConversations.find(function (c) { return c.id === found.id; })) {
-          _privateConversations.unshift(_normalizeConversation(found));
+      // Skip Tavern conversations
+      if (found.type === 'GROUP' && found.name === 'Tavern') return;
+
+      if (!_conversations.find(function (c) { return c.id === found.id; })) {
+        var conv = _normalizeConversation(found);
+        _enrichParticipants([conv]);
+
+        // Resolve unknown usernames for DIRECT
+        if (found.type === 'DIRECT') {
+          var unknownIds = [];
+          (conv.participants || []).forEach(function (p) {
+            var uid = (p.userId || p.id || '').toString();
+            if (uid && uid !== _userId && !p.username && !_knownUsers[uid]) {
+              unknownIds.push(uid);
+            }
+          });
+          if (unknownIds.length > 0) {
+            await Promise.all(unknownIds.map(function (uid) {
+              return _fetchUsername(uid).then(function (uname) {
+                if (uname) {
+                  _knownUsers[uid] = { id: parseInt(uid, 10), username: uname };
+                  (conv.participants || []).forEach(function (p) {
+                    if ((p.userId || p.id || '').toString() === uid) p.username = uname;
+                  });
+                }
+              });
+            }));
+          }
         }
-      } else if (found.type === 'GROUP' && found.name !== 'Tavern') {
-        if (!_groupConversations.find(function (c) { return c.id === found.id; })) {
-          _groupConversations.unshift(_normalizeConversation(found));
-        }
+
+        _conversations.unshift(conv);
       }
     } catch (e) {
-      console.error('[TavernChat] Failed to fetch conversation:', e);
+      console.error('[Chat] Failed to fetch conversation:', e);
     }
   }
 
@@ -1133,8 +1294,7 @@ const TavernChat = (function () {
   async function _resolveConversations() {
     var convs = await _fetchConversations();
 
-    // If fetch returned empty and no Tavern was previously resolved, backend is down
-    if (convs.length === 0 && !_tavernConvId) {
+    if ((!convs || convs.length === 0) && _conversations.length === 0) {
       _backendAvailable = false;
       _renderConnectionError();
       return;
@@ -1143,47 +1303,30 @@ const TavernChat = (function () {
     _backendAvailable = true;
     _clearChatError();
 
-    // Ensure convs is an array
     if (!Array.isArray(convs)) convs = [];
 
-    // Find Tavern group conversation
-    var tavern = convs.find(function (c) {
-      return c.type === 'GROUP' && c.name === 'Tavern';
-    });
-    if (tavern) {
-      _tavernConvId = tavern.id;
-    } else {
-      // Try to create Tavern
-      var created = await _createConversation('GROUP', 'Tavern', []);
-      if (created) _tavernConvId = created.id;
-    }
-
-    // Collect group and private conversations (excluding Tavern)
-    _groupConversations = [];
-    _privateConversations = [];
-
+    // Build unified conversation list (exclude Tavern)
+    _conversations = [];
     convs.forEach(function (c) {
-      if (c.type === 'DIRECT') {
-        _privateConversations.push(_normalizeConversation(c));
-      } else if (c.type === 'GROUP' && c.name !== 'Tavern') {
-        _groupConversations.push(_normalizeConversation(c));
-      }
+      if (c.type === 'GROUP' && c.name === 'Tavern') return; // skip Tavern
+      _conversations.push(_normalizeConversation(c));
     });
 
-    // Build known users cache from all conversation participants
-    _buildKnownUsersFromConversations(convs);
+    // Clean up stale archived IDs
+    var validIds = new Set(_conversations.map(function (c) { return c.id; }));
+    _archivedConvIds.forEach(function (id) {
+      if (!validIds.has(id)) _archivedConvIds.delete(id);
+    });
+    _saveArchivedIds();
 
-    // Load initial messages for current tab
-    if (_currentTab === 'tavern' && _tavernConvId) {
-      var msgs = await _fetchMessages(_tavernConvId, 0);
-      if (msgs && msgs.length > 0) {
-        msgs.forEach(function (m) { _addMessage(_tavernConvId, m); });
-        _renderTavernMessages();
-        _scrollToBottom();
-      }
-    } else if (_currentTab === 'groups' || _currentTab === 'private') {
-      _showListView(_currentTab);
-    }
+    // Build known users cache
+    await _buildKnownUsersFromConversations(convs);
+
+    // Resolve DIRECT conversations with missing names
+    await _resolveUnknownConversationNames();
+
+    // Show conversation list
+    _showListView();
   }
 
   function _normalizeConversation(conv) {
@@ -1207,25 +1350,14 @@ const TavernChat = (function () {
     if (msg.id && _messageIds.has(msg.id)) return;
     if (msg.id) _messageIds.add(msg.id);
 
-    if (convId === _tavernConvId) {
-      _tavernMessages.push(msg);
-    } else {
-      if (!_messagesByConv[convId]) _messagesByConv[convId] = [];
-      _messagesByConv[convId].push(msg);
-    }
+    if (!_messagesByConv[convId]) _messagesByConv[convId] = [];
+    _messagesByConv[convId].push(msg);
   }
 
   function _removeOptimisticMessage(confirmedMsg) {
     var convId = confirmedMsg.conversationId;
 
-    if (convId === _tavernConvId) {
-      _tavernMessages = _tavernMessages.filter(function (m) {
-        if (m._optimistic && m.senderId && m.senderId.toString() === (confirmedMsg.senderId || '').toString() && m.content === confirmedMsg.content) {
-          return false;
-        }
-        return true;
-      });
-    } else if (_messagesByConv[convId]) {
+    if (_messagesByConv[convId]) {
       _messagesByConv[convId] = _messagesByConv[convId].filter(function (m) {
         if (m._optimistic && m.senderId && m.senderId.toString() === (confirmedMsg.senderId || '').toString() && m.content === confirmedMsg.content) {
           return false;
@@ -1234,29 +1366,15 @@ const TavernChat = (function () {
       });
     }
 
-    // Add the confirmed message
     _addMessage(convId, confirmedMsg);
-    var tab = _getTabForConversation(convId);
-    if (tab === 'tavern' && _currentTab === 'tavern') {
-      _renderTavernMessages();
-      _scrollToBottom();
-    } else if (tab && _currentTab === tab && _activeConv[tab] === convId) {
+    if (_activeConvId === convId && _viewMode === 'messages') {
       _renderConvMessages(convId);
       _scrollToBottom();
     }
   }
 
-  function _getTabForConversation(convId) {
-    if (_tavernConvId === convId) return 'tavern';
-    if (_groupConversations.find(function (c) { return c.id === convId; })) return 'groups';
-    if (_privateConversations.find(function (c) { return c.id === convId; })) return 'private';
-    return null;
-  }
-
   function _findConversation(convId) {
-    return _groupConversations.find(function (c) { return c.id === convId; }) ||
-           _privateConversations.find(function (c) { return c.id === convId; }) ||
-           null;
+    return _conversations.find(function (c) { return c.id === convId; }) || null;
   }
 
   function _updateConversationPreview(convId, msg) {
@@ -1264,55 +1382,110 @@ const TavernChat = (function () {
     if (!conv) return;
     conv.lastMessage = msg.content;
     conv.lastMessageTime = msg.createdAt;
-    if (_activeConv[_currentTab] !== convId) {
+    if (_activeConvId !== convId) {
       conv.unreadCount = (conv.unreadCount || 0) + 1;
     }
   }
 
   // ====== UI RENDERING ======
 
-  function _renderTavernMessages() {
-    var container = document.getElementById('chatMessages');
-    if (!container) return;
-    container.innerHTML = '';
-    _tavernMessages.forEach(function (msg) {
-      container.appendChild(_createMessageElement(msg));
-    });
-  }
-
   function _renderConvMessages(convId) {
     var container = document.getElementById('chatMessages');
     if (!container) return;
     container.innerHTML = '';
     var msgs = _messagesByConv[convId] || [];
-    msgs.forEach(function (msg) {
-      container.appendChild(_createMessageElement(msg));
-    });
+    _renderMessageList(container, msgs);
+  }
+
+  function _renderMessageList(container, msgs) {
+    var prevMsg = null;
+    for (var i = 0; i < msgs.length; i++) {
+      var dateSep = _maybeDateSeparator(prevMsg, msgs[i]);
+      if (dateSep) container.appendChild(dateSep);
+      container.appendChild(_createMessageElement(msgs[i], prevMsg));
+      prevMsg = msgs[i];
+    }
   }
 
   function _renderSingleMessage(msg) {
     var container = document.getElementById('chatMessages');
     if (!container) return;
-    container.appendChild(_createMessageElement(msg));
+
+    var prevMsg = _getLastMessageInCurrentList();
+    var dateSep = _maybeDateSeparator(prevMsg, msg);
+    if (dateSep) container.appendChild(dateSep);
+    container.appendChild(_createMessageElement(msg, prevMsg));
   }
 
-  function _createMessageElement(msg) {
+  function _getLastMessageInCurrentList() {
+    if (!_activeConvId) return null;
+    var msgs = _messagesByConv[_activeConvId];
+    return msgs && msgs.length > 0 ? msgs[msgs.length - 1] : null;
+  }
+
+  function _isSameGroup(prev, curr) {
+    if (!prev || !curr) return false;
+    if (String(prev.senderId) !== String(curr.senderId)) return false;
+    try {
+      var t1 = new Date(prev.createdAt).getTime();
+      var t2 = new Date(curr.createdAt).getTime();
+      return Math.abs(t2 - t1) < 60000;
+    } catch (e) { return false; }
+  }
+
+  function _isSameDay(d1, d2) {
+    return d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
+  }
+
+  function _maybeDateSeparator(prevMsg, currMsg) {
+    if (!currMsg || !currMsg.createdAt) return null;
+    var currDate = new Date(currMsg.createdAt);
+    if (prevMsg && prevMsg.createdAt) {
+      var prevDate = new Date(prevMsg.createdAt);
+      if (_isSameDay(prevDate, currDate)) return null;
+    }
+    var today = new Date();
+    var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    var label;
+    if (_isSameDay(currDate, today)) {
+      label = 'Today';
+    } else if (_isSameDay(currDate, yesterday)) {
+      label = 'Yesterday';
+    } else {
+      label = currDate.getDate().toString().padStart(2, '0') + '/' +
+              (currDate.getMonth() + 1).toString().padStart(2, '0') + '/' +
+              currDate.getFullYear();
+    }
+    var sep = document.createElement('div');
+    sep.className = 'chat-date-separator';
+    sep.innerHTML = '<span>' + label + '</span>';
+    return sep;
+  }
+
+  function _createMessageElement(msg, prevMsg) {
     var isSent = msg.senderId && msg.senderId.toString() === _userId;
     var sender = msg.senderUsername || _resolveUsername(msg.senderId) || 'Unknown';
     var content = _escapeHtml(msg.content || '');
     var time = _formatTime(msg.createdAt);
+    var continuation = _isSameGroup(prevMsg, msg);
 
     var div = document.createElement('div');
-    div.className = 'message ' + (isSent ? 'sent' : 'received');
+    div.className = 'message ' + (isSent ? 'sent' : 'received') + (continuation ? ' continuation' : '');
     if (msg.id) div.dataset.msgId = msg.id;
 
+    var showSender = !isSent && !continuation;
+
     div.innerHTML =
-      '<div class="message-header">' +
-        '<div class="message-avatar">' + _escapeHtml(sender.charAt(0).toUpperCase()) + '</div>' +
-        '<span class="message-sender">' + _escapeHtml(sender) + '</span>' +
-        '<span class="message-time">' + time + '</span>' +
-      '</div>' +
-      '<div class="message-content">' + content + '</div>';
+      '<div class="message-bubble">' +
+        (showSender ? '<span class="message-sender">' + _escapeHtml(sender) + '</span>' : '') +
+        '<span class="message-text">' + content + '</span>' +
+        '<span class="message-meta">' +
+          '<span class="message-time">' + time + '</span>' +
+          (isSent ? '<span class="message-status">&#10003;&#10003;</span>' : '') +
+        '</span>' +
+      '</div>';
 
     return div;
   }
@@ -1326,7 +1499,7 @@ const TavernChat = (function () {
         '<div style="width:48px;height:48px;margin:0 auto 1rem;border-radius:50%;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;">' +
           '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
         '</div>' +
-        '<p style="font-family:Cinzel,serif;color:var(--gold);margin-bottom:0.5rem;">Tavern Unreachable</p>' +
+        '<p style="font-family:Cinzel,serif;color:var(--gold);margin-bottom:0.5rem;">Chat Unreachable</p>' +
         '<p style="color:var(--text-muted);margin-bottom:1rem;">The chat server is not responding. Check that the service is running.</p>' +
         '<button onclick="TavernChat._retry()" style="padding:0.6rem 1.5rem;background:linear-gradient(135deg,var(--primary),#5a1414);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:Cinzel,serif;font-size:0.85rem;cursor:pointer;transition:all 0.3s ease;">Retry</button>' +
       '</div>';
@@ -1352,37 +1525,6 @@ const TavernChat = (function () {
   function _clearChatError() {
     var toast = document.getElementById('chatErrorToast');
     if (toast) toast.remove();
-  }
-
-  function _renderOnlineUsers() {
-    var container = document.getElementById('onlineUsers');
-    if (!container) return;
-
-    container.innerHTML = '';
-    _onlineUsers.forEach(function (user) {
-      var name = _escapeHtml(user.username || 'Unknown');
-      var initial = name.charAt(0).toUpperCase();
-      var el = document.createElement('div');
-      el.className = 'online-user';
-      el.dataset.user = name;
-      el.innerHTML =
-        '<div class="online-user-avatar">' + initial + '</div>' +
-        '<span class="online-user-name">' + name + '</span>';
-      el.addEventListener('click', function () {
-        var input = document.getElementById('chatInput');
-        if (input) {
-          input.value = '@' + name + ' ' + input.value;
-          input.focus();
-        }
-      });
-      container.appendChild(el);
-    });
-
-    // Update online count
-    var countEl = document.getElementById('onlineCountText');
-    if (countEl) {
-      countEl.textContent = _onlineUsers.length + ' online';
-    }
   }
 
   function _updateNotificationBadge() {
@@ -1435,90 +1577,44 @@ const TavernChat = (function () {
   }
 
   async function _loadOlderMessages() {
-    if (_currentTab === 'tavern') {
-      if (!_tavernConvId || !_tavernHasMore) return;
+    var convId = _activeConvId;
+    if (!convId) return;
+    if (!_hasMoreByConv.hasOwnProperty(convId)) _hasMoreByConv[convId] = true;
+    if (!_hasMoreByConv[convId]) return;
 
-      _loadingMore = true;
-      _tavernPage++;
+    _loadingMore = true;
+    if (!_pagesByConv[convId]) _pagesByConv[convId] = 0;
+    _pagesByConv[convId]++;
 
-      var msgs = await _fetchMessages(_tavernConvId, _tavernPage);
-      _loadingMore = false;
+    var msgs = await _fetchMessages(convId, _pagesByConv[convId]);
+    _loadingMore = false;
 
-      if (!msgs || msgs.length === 0) {
-        _tavernHasMore = false;
-        return;
+    if (!msgs || msgs.length === 0) {
+      _hasMoreByConv[convId] = false;
+      return;
+    }
+    if (msgs.length < PAGE_SIZE) _hasMoreByConv[convId] = false;
+
+    var container = document.getElementById('chatMessages');
+    var prevScrollHeight = container ? container.scrollHeight : 0;
+
+    msgs.forEach(function (m) {
+      if (!_messageIds.has(m.id)) {
+        _addMessage(convId, m);
       }
-      if (msgs.length < PAGE_SIZE) _tavernHasMore = false;
+    });
 
-      var container = document.getElementById('chatMessages');
-      var prevScrollHeight = container ? container.scrollHeight : 0;
-
-      msgs.forEach(function (m) {
-        if (!_messageIds.has(m.id)) {
-          _addMessage(_tavernConvId, m);
-        }
-      });
-
-      _tavernMessages.sort(function (a, b) {
+    if (_messagesByConv[convId]) {
+      _messagesByConv[convId].sort(function (a, b) {
         return new Date(a.createdAt) - new Date(b.createdAt);
       });
-
-      _renderTavernMessages();
-
-      if (container) {
-        container.scrollTop = container.scrollHeight - prevScrollHeight;
-      }
-    } else {
-      // Groups
-      var convId = _activeConv[_currentTab];
-      if (!convId) return;
-      if (!_hasMoreByConv.hasOwnProperty(convId)) _hasMoreByConv[convId] = true;
-      if (!_hasMoreByConv[convId]) return;
-
-      _loadingMore = true;
-      if (!_pagesByConv[convId]) _pagesByConv[convId] = 0;
-      _pagesByConv[convId]++;
-
-      var msgs = await _fetchMessages(convId, _pagesByConv[convId]);
-      _loadingMore = false;
-
-      if (!msgs || msgs.length === 0) {
-        _hasMoreByConv[convId] = false;
-        return;
-      }
-      if (msgs.length < PAGE_SIZE) _hasMoreByConv[convId] = false;
-
-      var container = document.getElementById('chatMessages');
-      var prevScrollHeight = container ? container.scrollHeight : 0;
-
-      msgs.forEach(function (m) {
-        if (!_messageIds.has(m.id)) {
-          _addMessage(convId, m);
-        }
-      });
-
-      if (_messagesByConv[convId]) {
-        _messagesByConv[convId].sort(function (a, b) {
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        });
-      }
-
-      _renderConvMessages(convId);
-
-      if (container) {
-        container.scrollTop = container.scrollHeight - prevScrollHeight;
-      }
     }
-  }
 
-  // ====== TAB LISTENERS ======
+    _renderConvMessages(convId);
 
-  function _setupTabListeners() {
-    document.querySelectorAll('.chat-tab').forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        switchTab(tab.dataset.tab);
-      });
-    });
+    if (container) {
+      container.scrollTop = container.scrollHeight - prevScrollHeight;
+    }
   }
 
   // ====== UTILITIES ======
@@ -1549,7 +1645,6 @@ const TavernChat = (function () {
       var diffDays = Math.floor(diffMs / 86400000);
 
       if (diffDays === 0) {
-        // Today — show HH:MM
         return d.getHours().toString().padStart(2, '0') + ':' +
                d.getMinutes().toString().padStart(2, '0');
       } else if (diffDays === 1) {
@@ -1570,15 +1665,14 @@ const TavernChat = (function () {
   function _getConvDisplayName(conv) {
     if (!conv) return 'Chat';
     if (conv.type === 'DIRECT') {
-      // Show the other participant's name
       if (conv.participants && conv.participants.length > 0) {
         var other = conv.participants.find(function (p) {
           var pid = (p.userId || p.id || '').toString();
           return pid !== _userId;
         });
         if (other) {
-          // Try username (from local enrichment), then fall back to userId
-          return other.username || ('User #' + (other.userId || other.id));
+          var uid = (other.userId || other.id || '').toString();
+          return other.username || _resolveUsername(uid) || ('User #' + uid);
         }
       }
       return conv.name || 'Direct Message';
@@ -1603,11 +1697,7 @@ const TavernChat = (function () {
     toggleChat: toggleChat,
     sendMessage: sendMessage,
     handleKeypress: handleKeypress,
-    switchTab: switchTab,
     _retry: function () {
-      if (_currentTab === 'tavern') {
-        _renderTavernMessages();
-      }
       _resolveConversations();
       _connectWebSocket();
     }
