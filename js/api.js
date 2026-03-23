@@ -71,6 +71,12 @@ const API_CONFIG = {
     NOTES: '/campaigns/{campaignId}/notes',
     NOTE: '/campaigns/{campaignId}/notes/{noteId}'
   },
+  ASSET: {
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.ASSET_PORT}`,
+    DOCUMENTS: '/api/assets/documents',
+    DOCUMENTS_BATCH: '/api/assets/documents/batch',
+    DOCUMENT: '/api/assets/documents/{documentId}'
+  },
   TIMEOUT: 10000 // 10 seconds
 };
 
@@ -1130,6 +1136,178 @@ async function logoutUser(token, userId) {
 
   } catch (error) {
     console.error('Logout error:', error);
+    throw error;
+  }
+}
+
+// ====== ASSET SERVICE - DOCUMENTS ======
+
+async function listAssetDocuments() {
+  const url = API_CONFIG.ASSET.BASE_URL + API_CONFIG.ASSET.DOCUMENTS;
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'GET'
+    });
+
+    return result.data;
+  } catch (error) {
+    console.error('List documents error:', error);
+    throw error;
+  }
+}
+
+async function uploadAssetDocument(file, userId) {
+  const url = API_CONFIG.ASSET.BASE_URL + API_CONFIG.ASSET.DOCUMENTS;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('userId', userId);
+
+  try {
+    let token = getAuthToken();
+    if (isAccessTokenExpired()) {
+      try {
+        if (!_refreshPromise) {
+          _refreshPromise = refreshAccessToken().finally(() => { _refreshPromise = null; });
+        }
+        token = await _refreshPromise;
+      } catch (refreshError) {
+        token = await showReloginOverlay();
+      }
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      body: formData,
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      data = {};
+    }
+
+    if (!response.ok) {
+      const error = new Error(data.message || `HTTP ${response.status}`);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Upload document error:', error);
+    throw error;
+  }
+}
+
+async function uploadAssetDocumentsBatch(files, userId) {
+  const url = API_CONFIG.ASSET.BASE_URL + API_CONFIG.ASSET.DOCUMENTS_BATCH;
+
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append('files', file);
+  }
+  formData.append('userId', userId);
+
+  try {
+    let token = getAuthToken();
+    if (isAccessTokenExpired()) {
+      try {
+        if (!_refreshPromise) {
+          _refreshPromise = refreshAccessToken().finally(() => { _refreshPromise = null; });
+        }
+        token = await _refreshPromise;
+      } catch (refreshError) {
+        token = await showReloginOverlay();
+      }
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      body: formData,
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      data = {};
+    }
+
+    if (!response.ok) {
+      const error = new Error(data.message || `HTTP ${response.status}`);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Batch upload documents error:', error);
+    throw error;
+  }
+}
+
+async function downloadAssetDocument(documentId) {
+  const url = API_CONFIG.ASSET.BASE_URL + API_CONFIG.ASSET.DOCUMENT.replace('{documentId}', documentId);
+
+  try {
+    let token = getAuthToken();
+    if (isAccessTokenExpired()) {
+      try {
+        if (!_refreshPromise) {
+          _refreshPromise = refreshAccessToken().finally(() => { _refreshPromise = null; });
+        }
+        token = await _refreshPromise;
+      } catch (refreshError) {
+        token = await showReloginOverlay();
+      }
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+
+    const blob = await response.blob();
+    return blob;
+  } catch (error) {
+    console.error('Download document error:', error);
     throw error;
   }
 }

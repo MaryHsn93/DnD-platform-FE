@@ -793,130 +793,6 @@
     }
 
     /* ====== RENAME MODAL ====== */
-    .rename-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      z-index: 2000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .rename-overlay.active {
-      display: flex;
-    }
-
-    .rename-modal {
-      background: rgba(38, 38, 43, 0.98);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 16px;
-      padding: 1.5rem;
-      width: 90%;
-      max-width: 400px;
-    }
-
-    .rename-modal h3 {
-      font-family: 'Cinzel', serif;
-      color: var(--gold);
-      margin-bottom: 1rem;
-      font-size: 1.1rem;
-    }
-
-    .rename-modal input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 10px;
-      color: var(--text-light);
-      font-size: 0.95rem;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      margin-bottom: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    .rename-modal input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-    }
-
-    .rename-modal-actions {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: flex-end;
-    }
-
-    .rename-modal-actions button {
-      padding: 0.6rem 1.25rem;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .rename-cancel {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.25);
-      color: var(--text-muted);
-    }
-
-    .rename-cancel:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-light);
-    }
-
-    .rename-confirm {
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      color: var(--gold);
-      font-weight: 600;
-    }
-
-    .rename-confirm:hover {
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-    }
-
-    /* ====== STORAGE INFO ====== */
-    .storage-info {
-      margin-top: 1.5rem;
-      padding: 0.75rem 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(212, 175, 55, 0.1);
-      border-radius: 10px;
-      z-index: 1;
-    }
-
-    .storage-bar {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: 0.5rem;
-    }
-
-    .storage-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--gold), #b8962e);
-      border-radius: 3px;
-      transition: width 0.5s ease;
-    }
-
-    .storage-text {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
     /* ====== TOAST ====== */
     .toast {
       position: fixed;
@@ -1646,11 +1522,7 @@
         <p>Carica il tuo primo documento per iniziare</p>
       </div>
 
-      <!-- Storage Info -->
-      <div class="storage-info" id="storageInfo">
-        <div class="storage-bar"><div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div></div>
-        <span class="storage-text" id="storageText">0 documenti - 0 B utilizzati</span>
-      </div>
+      <!-- Storage Info (removed - documents stored on server) -->
 
     </main>
   </div>
@@ -1668,18 +1540,6 @@
         </button>
       </div>
       <div class="preview-body" id="previewBody"></div>
-    </div>
-  </div>
-
-  <!-- Rename Modal -->
-  <div class="rename-overlay" id="renameOverlay">
-    <div class="rename-modal">
-      <h3>Rinomina Documento</h3>
-      <input type="text" id="renameInput" placeholder="Nuovo nome...">
-      <div class="rename-modal-actions">
-        <button class="rename-cancel" id="renameCancelBtn">Annulla</button>
-        <button class="rename-confirm" id="renameConfirmBtn">Rinomina</button>
-      </div>
     </div>
   </div>
 
@@ -1787,69 +1647,11 @@
     }
 
     // ====== DOCUMENT LIBRARY ======
-    const DB_NAME = 'TavernDocuments';
-    const DB_VERSION = 1;
-    const STORE_NAME = 'documents';
-    const MAX_STORAGE_MB = 100;
-
-    let db = null;
     let documents = [];
     let currentView = 'grid';
     let searchQuery = '';
-    let renameDocId = null;
-
-    // IndexedDB
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, DB_VERSION);
-        req.onupgradeneeded = (e) => {
-          const db = e.target.result;
-          if (!db.objectStoreNames.contains(STORE_NAME)) {
-            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-            store.createIndex('name', 'name', { unique: false });
-            store.createIndex('createdAt', 'createdAt', { unique: false });
-          }
-        };
-        req.onsuccess = (e) => resolve(e.target.result);
-        req.onerror = (e) => reject(e.target.error);
-      });
-    }
-
-    function dbGetAll() {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.getAll();
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    function dbPut(doc) {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.put(doc);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    function dbDelete(id) {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.delete(id);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-      });
-    }
 
     // Helpers
-    function generateId() {
-      return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
-    }
-
     function formatSize(bytes) {
       if (bytes === 0) return '0 B';
       const k = 1024;
@@ -1868,17 +1670,13 @@
       return parts.length > 1 ? parts.pop().toLowerCase() : '';
     }
 
-    function getFileNameWithoutExt(name) {
+    function isImageExt(name) {
       const ext = getFileExtension(name);
-      return ext ? name.slice(0, -(ext.length + 1)) : name;
+      return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(ext);
     }
 
-    function isImage(type) {
-      return type.startsWith('image/');
-    }
-
-    function isPDF(type) {
-      return type === 'application/pdf';
+    function isPDFExt(name) {
+      return getFileExtension(name) === 'pdf';
     }
 
     function getFileIconSvg() {
@@ -1892,180 +1690,94 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Thumbnail generation
-    const THUMB_MAX = 280;
-
-    function generateImageThumbnail(arrayBuffer, mimeType) {
-      return new Promise((resolve) => {
-        const blob = new Blob([arrayBuffer], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const scale = Math.min(THUMB_MAX / img.width, THUMB_MAX / img.height, 1);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          URL.revokeObjectURL(url);
-          resolve(canvas.toDataURL('image/jpeg', 0.7));
-        };
-        img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
-        img.src = url;
-      });
-    }
-
-    async function generatePdfThumbnail(arrayBuffer) {
-      if (typeof pdfjsLib === 'undefined') {
-        console.warn('pdfjsLib not available, skipping PDF thumbnail');
-        return null;
-      }
-      try {
-        const data = new Uint8Array(arrayBuffer.slice ? arrayBuffer.slice(0) : arrayBuffer);
-        const loadingTask = pdfjsLib.getDocument({ data });
-        const pdf = await loadingTask.promise;
-        const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 1 });
-        const scale = Math.min(THUMB_MAX / viewport.width, THUMB_MAX / viewport.height, 1);
-        const scaledViewport = page.getViewport({ scale });
-        const canvas = document.createElement('canvas');
-        canvas.width = scaledViewport.width;
-        canvas.height = scaledViewport.height;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        pdf.destroy();
-        return dataUrl;
-      } catch (e) {
-        console.error('PDF thumbnail generation failed:', e);
-        return null;
-      }
-    }
-
-    // Upload files
+    // Upload files to asset service
     async function handleFiles(files) {
       const overlay = document.getElementById('uploadOverlay');
       overlay.classList.add('active');
+      const userId = getUserId();
+      if (!userId) {
+        overlay.classList.remove('active');
+        showToast('Sessione scaduta, effettua il login');
+        return;
+      }
       try {
-        for (const file of files) {
-          const reader = new FileReader();
-          await new Promise((resolve) => {
-            reader.onload = async (e) => {
-              const data = e.target.result;
-              const type = file.type || 'application/octet-stream';
-              let thumbnail = null;
-              if (isImage(type)) {
-                thumbnail = await generateImageThumbnail(data, type);
-              } else if (isPDF(type)) {
-                thumbnail = await generatePdfThumbnail(data);
-              }
-              const doc = {
-                id: generateId(),
-                name: file.name,
-                type: type,
-                size: file.size,
-                data: data,
-                thumbnail: thumbnail,
-                createdAt: Date.now()
-              };
-              await dbPut(doc);
-              documents.push(doc);
-              resolve();
-            };
-            reader.readAsArrayBuffer(file);
-          });
+        if (files.length === 1) {
+          const result = await uploadAssetDocument(files[0], userId);
+          documents.push(result);
+        } else {
+          const results = await uploadAssetDocumentsBatch(files, userId);
+          if (Array.isArray(results)) {
+            documents.push(...results);
+          }
         }
         renderDocuments();
-        updateStorageInfo();
         showToast(files.length === 1 ? 'Documento caricato!' : `${files.length} documenti caricati!`);
+      } catch (err) {
+        console.error('Upload failed:', err);
+        showToast('Errore durante il caricamento');
       } finally {
         overlay.classList.remove('active');
       }
     }
 
-    // Download
-    function downloadDoc(doc) {
-      const blob = new Blob([doc.data], { type: doc.type });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = doc.name;
-      a.click();
-      URL.revokeObjectURL(url);
+    // Download from asset service
+    async function downloadDoc(doc) {
+      try {
+        const blob = await downloadAssetDocument(doc.id);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('Download failed:', err);
+        showToast('Errore durante il download');
+      }
     }
 
-    // Delete
-    async function deleteDoc(id) {
-      await dbDelete(id);
-      documents = documents.filter(d => d.id !== id);
-      renderDocuments();
-      updateStorageInfo();
-      showToast('Documento eliminato');
-    }
-
-    // Rename
-    function openRename(id) {
-      renameDocId = id;
-      const doc = documents.find(d => d.id === id);
-      if (!doc) return;
-      const input = document.getElementById('renameInput');
-      input.value = getFileNameWithoutExt(doc.name);
-      document.getElementById('renameOverlay').classList.add('active');
-      setTimeout(() => { input.focus(); input.select(); }, 100);
-    }
-
-    async function confirmRename() {
-      if (!renameDocId) return;
-      const doc = documents.find(d => d.id === renameDocId);
-      if (!doc) return;
-      const newName = document.getElementById('renameInput').value.trim();
-      if (!newName) return;
-      const ext = getFileExtension(doc.name);
-      doc.name = ext ? newName + '.' + ext : newName;
-      await dbPut(doc);
-      renderDocuments();
-      closeRename();
-      showToast('Documento rinominato');
-    }
-
-    function closeRename() {
-      renameDocId = null;
-      document.getElementById('renameOverlay').classList.remove('active');
-    }
-
-    // Preview
-    function openPreview(doc) {
-      document.getElementById('previewTitle').textContent = doc.name;
+    // Preview — downloads file from asset service then displays it
+    async function openPreview(doc) {
+      document.getElementById('previewTitle').textContent = doc.fileName;
       const body = document.getElementById('previewBody');
-      body.innerHTML = '';
+      body.innerHTML = '<div class="no-preview"><div class="upload-spinner"></div><p>Caricamento anteprima...</p></div>';
 
       document.getElementById('previewDownloadBtn').onclick = () => downloadDoc(doc);
+      document.getElementById('previewOverlay').classList.add('active');
 
-      if (isImage(doc.type)) {
-        const blob = new Blob([doc.data], { type: doc.type });
+      try {
+        const blob = await downloadAssetDocument(doc.id);
+        body.innerHTML = '';
+        const blobType = blob.type || '';
         const url = URL.createObjectURL(blob);
-        const img = document.createElement('img');
-        img.src = url;
-        img.onload = () => URL.revokeObjectURL(url);
-        body.appendChild(img);
-      } else if (isPDF(doc.type)) {
-        const blob = new Blob([doc.data], { type: doc.type });
-        const url = URL.createObjectURL(blob);
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        body.appendChild(iframe);
-      } else {
+
+        if (blobType.startsWith('image/') || isImageExt(doc.fileName)) {
+          const img = document.createElement('img');
+          img.src = url;
+          img.onload = () => URL.revokeObjectURL(url);
+          body.appendChild(img);
+        } else if (blobType === 'application/pdf' || isPDFExt(doc.fileName)) {
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          body.appendChild(iframe);
+        } else {
+          URL.revokeObjectURL(url);
+          body.innerHTML = `
+            <div class="no-preview">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <p>Anteprima non disponibile per questo tipo di file</p>
+              <button class="download-preview-btn" onclick="downloadDoc(documents.find(d=>d.id==='${doc.id}'))">Scarica File</button>
+            </div>`;
+        }
+      } catch (err) {
+        console.error('Preview failed:', err);
         body.innerHTML = `
           <div class="no-preview">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <p>Anteprima non disponibile per questo tipo di file</p>
+            <p>Errore nel caricamento dell'anteprima</p>
             <button class="download-preview-btn" onclick="downloadDoc(documents.find(d=>d.id==='${doc.id}'))">Scarica File</button>
           </div>`;
       }
-
-      document.getElementById('previewOverlay').classList.add('active');
     }
 
     function closePreview() {
@@ -2076,17 +1788,11 @@
       body.innerHTML = '';
     }
 
-    // Action buttons HTML
+    // Action buttons HTML (download only — rename/delete not supported by asset service)
     function actionBtns(docId, btnClass) {
       return `
-        <button class="${btnClass}" onclick="event.stopPropagation();openRename('${docId}')" title="Rinomina">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
         <button class="${btnClass}" onclick="event.stopPropagation();downloadDoc(documents.find(d=>d.id==='${docId}'))" title="Scarica">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </button>
-        <button class="${btnClass} delete" onclick="event.stopPropagation();if(confirm('Eliminare questo documento?'))deleteDoc('${docId}')" title="Elimina">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         </button>`;
     }
 
@@ -2095,8 +1801,7 @@
       const container = document.getElementById('docsContainer');
       const emptyState = document.getElementById('emptyState');
       const filtered = documents
-        .filter(d => !searchQuery || d.name.toLowerCase().includes(searchQuery.toLowerCase()))
-        .sort((a, b) => b.createdAt - a.createdAt);
+        .filter(d => !searchQuery || d.fileName.toLowerCase().includes(searchQuery.toLowerCase()));
 
       if (filtered.length === 0) {
         container.innerHTML = '';
@@ -2117,48 +1822,39 @@
       if (currentView === 'grid') {
         container.className = 'docs-grid';
         container.innerHTML = filtered.map(doc => {
-          const ext = getFileExtension(doc.name);
-          let previewHtml;
-          if (doc.thumbnail) {
-            previewHtml = `<img src="${doc.thumbnail}" alt="${doc.name}">`;
-          } else if (isImage(doc.type)) {
-            const blob = new Blob([doc.data], { type: doc.type });
-            const url = URL.createObjectURL(blob);
-            previewHtml = `<img src="${url}" alt="${doc.name}">`;
-          } else {
-            previewHtml = `<div class="file-icon">${getFileIconSvg()}${ext ? `<span class="file-ext">${ext}</span>` : ''}</div>`;
-          }
+          const ext = getFileExtension(doc.fileName);
+          const previewHtml = `<div class="file-icon">${getFileIconSvg()}${ext ? `<span class="file-ext">${ext}</span>` : ''}</div>`;
+          const metaParts = [];
+          if (doc.size) metaParts.push(formatSize(doc.size));
+          if (doc.uploadedAt) metaParts.push(formatDate(doc.uploadedAt));
+          const metaHtml = metaParts.length > 0 ? metaParts.join(' &middot; ') : '';
           return `
             <div class="doc-card" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
               <div class="doc-actions">${actionBtns(doc.id, 'doc-action-btn')}</div>
               <div class="doc-preview">${previewHtml}</div>
-              <div class="doc-name" title="${doc.name}">${doc.name}</div>
-              <div class="doc-meta">${formatSize(doc.size)} &middot; ${formatDate(doc.createdAt)}</div>
+              <div class="doc-name" title="${doc.fileName}">${doc.fileName}</div>
+              ${metaHtml ? `<div class="doc-meta">${metaHtml}</div>` : ''}
             </div>`;
         }).join('');
       } else {
         container.className = 'docs-list';
         container.innerHTML = filtered.map(doc => {
-          const ext = getFileExtension(doc.name);
+          const ext = getFileExtension(doc.fileName);
+          const metaParts = [];
+          if (doc.size) metaParts.push(formatSize(doc.size));
+          if (doc.uploadedAt) metaParts.push(formatDate(doc.uploadedAt));
+          const metaHtml = metaParts.length > 0 ? metaParts.join(' &middot; ') : '';
           return `
             <div class="doc-row" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
-              <div class="doc-row-icon">${doc.thumbnail ? `<img src="${doc.thumbnail}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">` : ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg()}</div>
+              <div class="doc-row-icon">${ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg()}</div>
               <div class="doc-row-info">
-                <div class="doc-row-name" title="${doc.name}">${doc.name}</div>
-                <div class="doc-row-meta">${formatSize(doc.size)} &middot; ${formatDate(doc.createdAt)}</div>
+                <div class="doc-row-name" title="${doc.fileName}">${doc.fileName}</div>
+                ${metaHtml ? `<div class="doc-row-meta">${metaHtml}</div>` : ''}
               </div>
               <div class="doc-row-actions">${actionBtns(doc.id, 'doc-action-btn')}</div>
             </div>`;
         }).join('');
       }
-    }
-
-    function updateStorageInfo() {
-      const totalSize = documents.reduce((s, d) => s + d.size, 0);
-      const pct = Math.min((totalSize / (MAX_STORAGE_MB * 1024 * 1024)) * 100, 100);
-      document.getElementById('storageBarFill').style.width = pct + '%';
-      document.getElementById('storageText').textContent =
-        `${documents.length} document${documents.length !== 1 ? 'i' : 'o'} - ${formatSize(totalSize)} utilizzati`;
     }
 
     // Event listeners
@@ -2222,43 +1918,12 @@
       if (e.target === e.currentTarget) closePreview();
     });
 
-    // Rename
-    document.getElementById('renameConfirmBtn').addEventListener('click', confirmRename);
-    document.getElementById('renameCancelBtn').addEventListener('click', closeRename);
-    document.getElementById('renameOverlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeRename();
-    });
-    document.getElementById('renameInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') confirmRename();
-    });
-
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closePreview();
-        closeRename();
       }
     });
-
-    // Generate missing thumbnails for existing docs
-    async function migrateThumbnails() {
-      let changed = false;
-      for (const doc of documents) {
-        if (doc.thumbnail) continue;
-        let thumb = null;
-        if (isImage(doc.type)) {
-          thumb = await generateImageThumbnail(doc.data, doc.type);
-        } else if (isPDF(doc.type)) {
-          thumb = await generatePdfThumbnail(doc.data);
-        }
-        if (thumb) {
-          doc.thumbnail = thumb;
-          await dbPut(doc);
-          changed = true;
-        }
-      }
-      if (changed) renderDocuments();
-    }
 
     // ====== DOCUMENT Q&A ======
     let qaIsAsking = false;
@@ -2395,16 +2060,14 @@
       qaInput.style.height = Math.min(qaInput.scrollHeight, 120) + 'px';
     });
 
-    // Init
+    // Init — load documents from asset service
     (async function init() {
       try {
-        db = await openDB();
-        documents = await dbGetAll();
+        const list = await listAssetDocuments();
+        documents = Array.isArray(list) ? list : [];
         renderDocuments();
-        updateStorageInfo();
-        migrateThumbnails();
       } catch (err) {
-        console.error('Failed to open document database:', err);
+        console.error('Failed to load documents from asset service:', err);
         showToast('Errore nel caricamento dei documenti');
       }
     })();
