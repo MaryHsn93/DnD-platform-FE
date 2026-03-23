@@ -334,6 +334,7 @@
       z-index: 1;
       flex-wrap: wrap;
       align-items: center;
+      justify-content: center;
     }
 
     .search-box {
@@ -406,14 +407,24 @@
     /* ====== DROP ZONE ====== */
     .drop-zone {
       border: 2px dashed rgba(212, 175, 55, 0.3);
-      border-radius: 16px;
-      padding: 3rem 2rem;
+      border-radius: 12px;
+      padding: 1rem;
       text-align: center;
       transition: all 0.3s ease;
       z-index: 1;
       margin-bottom: 1.5rem;
       background: rgba(255, 255, 255, 0.02);
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 200px;
+      height: 200px;
+      aspect-ratio: 1 / 1;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .drop-zone.drag-over {
@@ -424,18 +435,23 @@
 
     .drop-zone-icon {
       color: var(--gold);
-      margin-bottom: 1rem;
+      margin-bottom: 0;
       opacity: 0.7;
     }
 
+    .drop-zone-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
     .drop-zone-text {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0;
     }
 
     .drop-zone-hint {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       opacity: 0.6;
     }
@@ -948,7 +964,7 @@
       .page-title { font-size: 1.8rem; }
       .main-content { padding: 1rem; }
       .docs-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-      .drop-zone { padding: 2rem 1rem; }
+      .drop-zone { padding: 0.75rem; width: 160px; height: 160px; }
       .doc-row-actions { display: none; }
     }
 
@@ -1457,10 +1473,6 @@
 
       <!-- Toolbar -->
       <div class="toolbar">
-        <div class="search-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" placeholder="Cerca documenti..." autocomplete="off">
-        </div>
         <button class="qa-toggle-btn" id="qaToggleBtn" title="Chiedi ai documenti">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           <span class="qa-btn-label">Chiedi ai Documenti</span>
@@ -1891,11 +1903,7 @@
     document.addEventListener('dragover', (e) => e.preventDefault());
     document.addEventListener('drop', (e) => e.preventDefault());
 
-    // Search
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      searchQuery = e.target.value.trim();
-      renderDocuments();
-    });
+    // Search removed – documents are no longer filtered by text input
 
     // View toggle
     document.getElementById('gridViewBtn').addEventListener('click', () => {
