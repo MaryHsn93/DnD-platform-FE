@@ -626,6 +626,18 @@
       justify-content: center;
       flex-shrink: 0;
       color: var(--gold);
+      overflow: hidden;
+    }
+
+    .doc-row-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .doc-row-icon canvas {
+      max-width: 100%;
+      max-height: 100%;
     }
 
     .doc-row-info {
@@ -1097,32 +1109,73 @@
     @keyframes spinRotate { to { transform: rotate(360deg); } }
 
     /* ====== Q&A COLLAPSIBLE PANEL ====== */
-    .qa-toggle-btn {
-      padding: 0.55rem 1rem;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      border-radius: 10px;
-      color: var(--gold);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
+    .qa-bar {
+      flex: 1;
+      min-width: 200px;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 14px;
+      padding: 0.35rem 0.35rem 0.35rem 1rem;
+      transition: all 0.3s ease;
     }
 
-    .qa-toggle-btn:hover {
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    .qa-bar:focus-within {
       border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+      background: rgba(255, 255, 255, 0.08);
     }
 
-    .qa-toggle-btn.active {
+    .qa-bar-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      resize: none;
+      min-height: 38px;
+      max-height: 80px;
+      line-height: 38px;
+      padding: 0;
+    }
+
+    .qa-bar-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .qa-bar-send {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .qa-bar-send:hover:not(:disabled) {
       background: linear-gradient(135deg, #a82525, var(--primary));
       border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .qa-bar-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .qa-bar-send svg {
+      width: 18px;
+      height: 18px;
+      color: var(--gold);
     }
 
     .qa-panel {
@@ -1290,71 +1343,6 @@
       max-width: 400px;
     }
 
-    /* ====== Q&A INPUT ====== */
-    .qa-input-area {
-      padding: 1rem;
-      border-top: 1px solid rgba(212, 175, 55, 0.15);
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-end;
-    }
-
-    .qa-input {
-      flex: 1;
-      padding: 0.85rem 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 12px;
-      color: var(--text-light);
-      font-size: 0.95rem;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      transition: all 0.3s ease;
-      resize: none;
-      min-height: 46px;
-      max-height: 120px;
-    }
-
-    .qa-input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
-    }
-
-    .qa-input::placeholder {
-      color: var(--text-muted);
-    }
-
-    .qa-send-btn {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), #5a1414);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .qa-send-btn:hover:not(:disabled) {
-      background: linear-gradient(135deg, #a82525, var(--primary));
-      border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-    }
-
-    .qa-send-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .qa-send-btn svg {
-      width: 20px;
-      height: 20px;
-      color: var(--gold);
-    }
-
     .qa-typing {
       display: flex;
       align-items: center;
@@ -1397,9 +1385,6 @@
         max-width: 95%;
       }
 
-      .qa-toggle-btn span.qa-btn-label {
-        display: none;
-      }
     }
   </style>
 </head>
@@ -1473,10 +1458,12 @@
 
       <!-- Toolbar -->
       <div class="toolbar">
-        <button class="qa-toggle-btn" id="qaToggleBtn" title="Chiedi ai documenti">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span class="qa-btn-label">Chiedi ai Documenti</span>
-        </button>
+        <div class="qa-bar">
+          <textarea class="qa-bar-input" id="qaBarInput" placeholder="Chiedi ai documenti..." rows="1"></textarea>
+          <button class="qa-bar-send" id="qaBarSendBtn" title="Invia">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+          </button>
+        </div>
         <div class="view-toggle">
           <button id="gridViewBtn" class="active" title="Vista griglia">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -1487,7 +1474,7 @@
         </div>
       </div>
 
-      <!-- Q&A Chat Panel (collapsible) -->
+      <!-- Q&A Chat Panel (collapsible, opens automatically on question) -->
       <div class="qa-panel" id="qaPanel">
         <div class="qa-panel-inner">
           <div class="qa-messages" id="qaMessages">
@@ -1496,12 +1483,6 @@
               <h3>Chiedi ai tuoi Documenti</h3>
               <p>Fai domande sui documenti caricati e ricevi risposte basate sul loro contenuto</p>
             </div>
-          </div>
-          <div class="qa-input-area">
-            <textarea class="qa-input" id="qaInput" placeholder="Scrivi la tua domanda..." rows="1"></textarea>
-            <button class="qa-send-btn" id="qaSendBtn" title="Invia">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
-            </button>
           </div>
         </div>
       </div>
@@ -1660,6 +1641,7 @@
 
     // ====== DOCUMENT LIBRARY ======
     let documents = [];
+    const thumbnailCache = new Map(); // doc.id -> objectURL
     let currentView = 'grid';
     let searchQuery = '';
 
@@ -1712,18 +1694,50 @@
         showToast('Sessione scaduta, effettua il login');
         return;
       }
+      // Keep a map of original File objects by index for instant thumbnails
+      const localFiles = Array.from(files);
+
       try {
-        if (files.length === 1) {
-          const result = await uploadAssetDocument(files[0], userId);
+        let newDocs = [];
+        if (localFiles.length === 1) {
+          const result = await uploadAssetDocument(localFiles[0], userId);
           documents.push(result);
+          newDocs.push(result);
         } else {
-          const results = await uploadAssetDocumentsBatch(files, userId);
+          const results = await uploadAssetDocumentsBatch(localFiles, userId);
           if (Array.isArray(results)) {
             documents.push(...results);
+            newDocs = results;
           }
         }
+
+        // Pre-cache thumbnails from local files (no re-download needed)
+        for (let i = 0; i < localFiles.length && i < newDocs.length; i++) {
+          const file = localFiles[i];
+          const doc = newDocs[i];
+          if (isImageExt(file.name)) {
+            const url = URL.createObjectURL(file);
+            thumbnailCache.set(doc.id, url);
+          } else if (isPDFExt(file.name)) {
+            try {
+              const arrayBuffer = await file.arrayBuffer();
+              const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 0.5 });
+              const canvas = document.createElement('canvas');
+              canvas.width = viewport.width;
+              canvas.height = viewport.height;
+              await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+              // Store canvas data URL in cache
+              thumbnailCache.set(doc.id, canvas.toDataURL());
+            } catch (pdfErr) {
+              console.warn('Local PDF thumbnail failed:', pdfErr);
+            }
+          }
+        }
+
         renderDocuments();
-        showToast(files.length === 1 ? 'Documento caricato!' : `${files.length} documenti caricati!`);
+        showToast(localFiles.length === 1 ? 'Documento caricato!' : `${localFiles.length} documenti caricati!`);
       } catch (err) {
         console.error('Upload failed:', err);
         showToast('Errore durante il caricamento');
@@ -1800,6 +1814,56 @@
       body.innerHTML = '';
     }
 
+    // Load thumbnail for a single document card
+    async function loadThumbnail(doc) {
+      const el = document.querySelector(`.doc-preview[data-doc-id="${doc.id}"]`);
+      if (!el) return;
+
+      // Already cached — show immediately
+      if (thumbnailCache.has(doc.id)) {
+        el.innerHTML = `<img src="${thumbnailCache.get(doc.id)}" alt="${doc.fileName}">`;
+        return;
+      }
+
+      if (!isImageExt(doc.fileName) && !isPDFExt(doc.fileName)) return;
+
+      try {
+        const blob = await downloadAssetDocument(doc.id);
+        const url = URL.createObjectURL(blob);
+
+        if (isImageExt(doc.fileName)) {
+          thumbnailCache.set(doc.id, url);
+          const target = document.querySelector(`.doc-preview[data-doc-id="${doc.id}"]`);
+          if (target) target.innerHTML = `<img src="${url}" alt="${doc.fileName}">`;
+        } else if (isPDFExt(doc.fileName)) {
+          try {
+            const arrayBuffer = await blob.arrayBuffer();
+            URL.revokeObjectURL(url);
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({ scale: 0.5 });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+            const dataUrl = canvas.toDataURL();
+            thumbnailCache.set(doc.id, dataUrl);
+            const target = document.querySelector(`.doc-preview[data-doc-id="${doc.id}"]`);
+            if (target) target.innerHTML = `<img src="${dataUrl}" alt="${doc.fileName}">`;
+          } catch (pdfErr) {
+            console.warn('PDF thumbnail failed:', pdfErr);
+          }
+        }
+      } catch (err) {
+        console.warn('Thumbnail load failed for', doc.fileName, err);
+      }
+    }
+
+    // Load all thumbnails after render
+    function loadAllThumbnails(docs) {
+      docs.forEach(doc => loadThumbnail(doc));
+    }
+
     // Action buttons HTML (download only — rename/delete not supported by asset service)
     function actionBtns(docId, btnClass) {
       return `
@@ -1835,7 +1899,13 @@
         container.className = 'docs-grid';
         container.innerHTML = filtered.map(doc => {
           const ext = getFileExtension(doc.fileName);
-          const previewHtml = `<div class="file-icon">${getFileIconSvg()}${ext ? `<span class="file-ext">${ext}</span>` : ''}</div>`;
+          const cachedUrl = thumbnailCache.get(doc.id);
+          let previewHtml;
+          if (cachedUrl) {
+            previewHtml = `<img src="${cachedUrl}" alt="${doc.fileName}">`;
+          } else {
+            previewHtml = `<div class="file-icon">${getFileIconSvg()}${ext ? `<span class="file-ext">${ext}</span>` : ''}</div>`;
+          }
           const metaParts = [];
           if (doc.size) metaParts.push(formatSize(doc.size));
           if (doc.uploadedAt) metaParts.push(formatDate(doc.uploadedAt));
@@ -1843,7 +1913,7 @@
           return `
             <div class="doc-card" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
               <div class="doc-actions">${actionBtns(doc.id, 'doc-action-btn')}</div>
-              <div class="doc-preview">${previewHtml}</div>
+              <div class="doc-preview" data-doc-id="${doc.id}">${previewHtml}</div>
               <div class="doc-name" title="${doc.fileName}">${doc.fileName}</div>
               ${metaHtml ? `<div class="doc-meta">${metaHtml}</div>` : ''}
             </div>`;
@@ -1858,7 +1928,7 @@
           const metaHtml = metaParts.length > 0 ? metaParts.join(' &middot; ') : '';
           return `
             <div class="doc-row" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
-              <div class="doc-row-icon">${ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg()}</div>
+              <div class="doc-row-icon doc-preview" data-doc-id="${doc.id}">${thumbnailCache.has(doc.id) ? `<img src="${thumbnailCache.get(doc.id)}" alt="${doc.fileName}">` : (ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg())}</div>
               <div class="doc-row-info">
                 <div class="doc-row-name" title="${doc.fileName}">${doc.fileName}</div>
                 ${metaHtml ? `<div class="doc-row-meta">${metaHtml}</div>` : ''}
@@ -1867,6 +1937,9 @@
             </div>`;
         }).join('');
       }
+
+      // Load thumbnails asynchronously
+      loadAllThumbnails(filtered);
     }
 
     // Event listeners
@@ -1939,8 +2012,8 @@
 
     const qaMessages = document.getElementById('qaMessages');
     const qaWelcome = document.getElementById('qaWelcome');
-    const qaInput = document.getElementById('qaInput');
-    const qaSendBtn = document.getElementById('qaSendBtn');
+    const qaInput = document.getElementById('qaBarInput');
+    const qaSendBtn = document.getElementById('qaBarSendBtn');
 
     function escapeHtml(str) {
       const div = document.createElement('div');
@@ -1961,6 +2034,12 @@
       qaIsAsking = true;
       qaSendBtn.disabled = true;
       qaInput.disabled = true;
+
+      // Auto-open panel
+      const qaPanel = document.getElementById('qaPanel');
+      if (!qaPanel.classList.contains('open')) {
+        qaPanel.classList.add('open');
+      }
 
       // Show user message immediately
       qaWelcome.style.display = 'none';
@@ -2042,16 +2121,6 @@
       }
     }
 
-    // Q&A Toggle
-    const qaPanel = document.getElementById('qaPanel');
-    const qaToggleBtn = document.getElementById('qaToggleBtn');
-
-    qaToggleBtn.addEventListener('click', () => {
-      const isOpen = qaPanel.classList.toggle('open');
-      qaToggleBtn.classList.toggle('active', isOpen);
-      if (isOpen) qaInput.focus();
-    });
-
     // Q&A Event Listeners
     qaSendBtn.addEventListener('click', sendQAQuestion);
 
@@ -2060,12 +2129,6 @@
         e.preventDefault();
         sendQAQuestion();
       }
-    });
-
-    // Auto-resize textarea
-    qaInput.addEventListener('input', () => {
-      qaInput.style.height = 'auto';
-      qaInput.style.height = Math.min(qaInput.scrollHeight, 120) + 'px';
     });
 
     // Init — load documents from asset service
