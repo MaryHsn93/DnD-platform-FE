@@ -655,6 +655,77 @@ function showReloginOverlay() {
   return _reloginPromise;
 }
 
+// ====== TRANSFER STATUS INDICATOR ======
+
+var TransferStatus = (function () {
+  var _container = null;
+  var _styleInjected = false;
+  var _counter = 0;
+
+  function _injectStyles() {
+    if (_styleInjected) return;
+    var style = document.createElement('style');
+    style.textContent =
+      '.transfer-status-container{position:fixed;bottom:5rem;right:1.5rem;z-index:9998;display:flex;flex-direction:column-reverse;gap:0.5rem;pointer-events:none}' +
+      '.transfer-status-item{display:flex;align-items:center;gap:0.6rem;padding:0.6rem 1rem;background:rgba(30,30,30,0.95);border:1px solid rgba(212,175,55,0.3);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(0,0,0,0.4);animation:tsSlideIn .3s ease;pointer-events:auto;max-width:280px}' +
+      '.transfer-status-item.removing{animation:tsSlideOut .3s ease forwards}' +
+      '.transfer-status-icon{flex-shrink:0;width:24px;height:24px;color:#d4af37}' +
+      '.transfer-status-icon.download svg{animation:tsBounceDown 1s ease-in-out infinite}' +
+      '.transfer-status-icon.upload svg{animation:tsBounceUp 1s ease-in-out infinite}' +
+      '.transfer-status-text{font-family:"Inter",sans-serif;font-size:0.8rem;color:#e0e0e0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}' +
+      '.transfer-status-label{font-size:0.65rem;color:#d4af37;text-transform:uppercase;letter-spacing:0.05em;font-weight:600}' +
+      '@keyframes tsSlideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}' +
+      '@keyframes tsSlideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(20px)}}' +
+      '@keyframes tsBounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}' +
+      '@keyframes tsBounceUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}';
+    document.head.appendChild(style);
+    _styleInjected = true;
+  }
+
+  function _ensureContainer() {
+    if (!_container || !_container.parentNode) {
+      _container = document.createElement('div');
+      _container.className = 'transfer-status-container';
+      document.body.appendChild(_container);
+    }
+  }
+
+  function show(type, fileName) {
+    _injectStyles();
+    _ensureContainer();
+
+    var id = 'transfer-' + (++_counter);
+    var item = document.createElement('div');
+    item.className = 'transfer-status-item';
+    item.id = id;
+
+    var iconSvg = type === 'upload'
+      ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+      : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+    var label = type === 'upload' ? 'Caricamento' : 'Download';
+    var displayName = fileName || 'File';
+    if (displayName.length > 25) displayName = displayName.substring(0, 22) + '\u2026';
+
+    item.innerHTML =
+      '<div class="transfer-status-icon ' + type + '">' + iconSvg + '</div>' +
+      '<div><div class="transfer-status-label">' + label + '</div>' +
+      '<div class="transfer-status-text">' + displayName + '</div></div>';
+
+    _container.appendChild(item);
+    return id;
+  }
+
+  function hide(id) {
+    var item = document.getElementById(id);
+    if (!item) return;
+    item.classList.add('removing');
+    setTimeout(function () { if (item.parentNode) item.parentNode.removeChild(item); }, 300);
+  }
+
+  return { show: show, hide: hide };
+})();
+
 // ====== LOADING STATE ======
 
 function setLoading(button, isLoading) {

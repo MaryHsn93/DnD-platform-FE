@@ -1817,6 +1817,8 @@
       }
       // Keep a map of original File objects by index for instant thumbnails
       const localFiles = Array.from(files);
+      const uploadLabel = localFiles.length === 1 ? localFiles[0].name : localFiles.length + ' file';
+      const statusId = TransferStatus.show('upload', uploadLabel);
 
       try {
         let newDocs = [];
@@ -1863,12 +1865,14 @@
         console.error('Upload failed:', err);
         showToast('Errore durante il caricamento');
       } finally {
+        TransferStatus.hide(statusId);
         overlay.classList.remove('active');
       }
     }
 
     // Download from asset service
     async function downloadDoc(doc) {
+      const statusId = TransferStatus.show('download', doc.fileName);
       try {
         const blob = await downloadAssetDocument(doc.id);
         const url = URL.createObjectURL(blob);
@@ -1880,6 +1884,8 @@
       } catch (err) {
         console.error('Download failed:', err);
         showToast('Errore durante il download');
+      } finally {
+        TransferStatus.hide(statusId);
       }
     }
 
