@@ -1320,11 +1320,41 @@ async function deleteAssetDocument(documentId) {
   const url = API_CONFIG.ASSET.BASE_URL + API_CONFIG.ASSET.DOCUMENT.replace('{documentId}', documentId);
 
   try {
-    const result = await authenticatedRequest(url, {
-      method: 'DELETE'
+    let token = getAuthToken();
+    if (isAccessTokenExpired()) {
+      try {
+        if (!_refreshPromise) {
+          _refreshPromise = refreshAccessToken().finally(() => { _refreshPromise = null; });
+        }
+        token = await _refreshPromise;
+      } catch (refreshError) {
+        token = await showReloginOverlay();
+      }
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      signal: controller.signal
     });
 
-    return result;
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      let data;
+      try { data = await response.json(); } catch (e) { data = {}; }
+      const error = new Error(data.message || `HTTP ${response.status}`);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+
+    return { success: true, status: response.status };
   } catch (error) {
     console.error('Delete document error:', error);
     throw error;
