@@ -804,6 +804,22 @@
       margin-bottom: 1rem;
     }
 
+    .preview-body .no-preview .download-preview-btn {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #5a1414);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .preview-body .no-preview .download-preview-btn:hover {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
     /* ====== RENAME MODAL ====== */
     /* ====== TOAST ====== */
     .toast {
@@ -1611,6 +1627,9 @@
     <div class="preview-modal">
       <div class="preview-header">
         <span class="preview-title" id="previewTitle">Document</span>
+        <button class="preview-header-btn" id="previewDownloadBtn" title="Scarica">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
         <button class="preview-header-btn preview-delete-btn" id="previewDeleteBtn" title="Elimina">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
         </button>
@@ -1848,12 +1867,29 @@
       }
     }
 
+    // Download from asset service
+    async function downloadDoc(doc) {
+      try {
+        const blob = await downloadAssetDocument(doc.id);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('Download failed:', err);
+        showToast('Errore durante il download');
+      }
+    }
+
     // Preview — downloads file from asset service then displays it
     async function openPreview(doc) {
       document.getElementById('previewTitle').textContent = doc.fileName;
       const body = document.getElementById('previewBody');
       body.innerHTML = '<div class="no-preview"><div class="upload-spinner"></div><p>Caricamento anteprima...</p></div>';
 
+      document.getElementById('previewDownloadBtn').onclick = () => downloadDoc(doc);
       document.getElementById('previewDeleteBtn').onclick = () => confirmDeleteDoc(doc.id);
       document.getElementById('previewOverlay').classList.add('active');
 
@@ -1878,6 +1914,7 @@
             <div class="no-preview">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <p>Anteprima non disponibile per questo tipo di file</p>
+              <button class="download-preview-btn" onclick="downloadDoc(documents.find(d=>d.id==='${doc.id}'))">Scarica File</button>
             </div>`;
         }
       } catch (err) {
@@ -1886,6 +1923,7 @@
           <div class="no-preview">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             <p>Errore nel caricamento dell'anteprima</p>
+            <button class="download-preview-btn" onclick="downloadDoc(documents.find(d=>d.id==='${doc.id}'))">Scarica File</button>
           </div>`;
       }
     }
@@ -1992,6 +2030,9 @@
     // Action buttons HTML
     function actionBtns(docId, btnClass) {
       return `
+        <button class="${btnClass}" onclick="event.stopPropagation();downloadDoc(documents.find(d=>d.id==='${docId}'))" title="Scarica">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
         <button class="${btnClass} delete" onclick="event.stopPropagation();confirmDeleteDoc('${docId}')" title="Elimina">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
         </button>`;
