@@ -18,7 +18,12 @@ const API_CONFIG = {
   },
   PASSWORD_RESET: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.AUTH_PORT}`,
-    ENDPOINT: '/auth/password-reset'
+    ENDPOINT: '/auth/password-resets'
+  },
+  OTP_LOGIN: {
+    BASE_URL: `http://${ENV.API_HOST}:${ENV.AUTH_PORT}`,
+    REQUEST: '/auth/otp-login-requests',
+    VALIDATE: '/auth/otp-login-tokens'
   },
   COMPENDIUM: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.COMPENDIUM_PORT}`,
@@ -794,6 +799,48 @@ async function requestPasswordReset(email) {
 
   } catch (error) {
     console.error('Password reset request error:', error);
+    throw error;
+  }
+}
+
+// ====== OTP LOGIN - REQUEST CODE ======
+async function requestOtpLogin(email) {
+  const url = API_CONFIG.OTP_LOGIN.BASE_URL + API_CONFIG.OTP_LOGIN.REQUEST;
+
+  console.log('Requesting OTP login for:', email);
+
+  try {
+    const result = await apiRequest(url, {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+
+    console.log('OTP request successful:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('OTP request error:', error);
+    throw error;
+  }
+}
+
+// ====== OTP LOGIN - VALIDATE CODE ======
+async function validateOtpLogin(email, otpCode) {
+  const url = API_CONFIG.OTP_LOGIN.BASE_URL + API_CONFIG.OTP_LOGIN.VALIDATE;
+
+  console.log('Validating OTP login for:', email);
+
+  try {
+    const result = await apiRequest(url, {
+      method: 'POST',
+      body: JSON.stringify({ email, otpCode })
+    });
+
+    console.log('OTP validation successful:', result);
+    return result.data;
+
+  } catch (error) {
+    console.error('OTP validation error:', error);
     throw error;
   }
 }

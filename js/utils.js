@@ -375,7 +375,34 @@ function showReloginOverlay() {
             <input type="password" id="relogin-password" placeholder="Password" required />
             <button type="submit">Accedi</button>
           </form>
+          <div class="relogin-toggle" id="relogin-otp-btn"><span>Accedi con OTP</span></div>
           <div class="relogin-toggle" id="relogin-forgot-btn"><span>Password dimenticata?</span></div>
+        </div>
+        <!-- OTP Login View -->
+        <div id="relogin-otp-view" style="display: none;">
+          <h3>Login con OTP</h3>
+          <p class="relogin-subtitle">Inserisci la tua email per ricevere un codice di accesso.</p>
+          <div class="relogin-error" id="relogin-otp-error"></div>
+          <div id="relogin-otp-request-phase">
+            <form id="relogin-otp-request-form">
+              <input type="email" id="relogin-otp-email" placeholder="Email" required />
+              <button type="submit">Invia Codice OTP</button>
+            </form>
+          </div>
+          <div id="relogin-otp-validate-phase" style="display: none;">
+            <p class="relogin-subtitle">Inserisci il codice a 6 cifre ricevuto via email.</p>
+            <div style="display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem;">
+              <input type="text" class="relogin-otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" style="width: 2.5rem; height: 3rem; text-align: center; font-size: 1.3rem; font-weight: 600; padding: 0.3rem;">
+              <input type="text" class="relogin-otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" style="width: 2.5rem; height: 3rem; text-align: center; font-size: 1.3rem; font-weight: 600; padding: 0.3rem;">
+              <input type="text" class="relogin-otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" style="width: 2.5rem; height: 3rem; text-align: center; font-size: 1.3rem; font-weight: 600; padding: 0.3rem;">
+              <input type="text" class="relogin-otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" style="width: 2.5rem; height: 3rem; text-align: center; font-size: 1.3rem; font-weight: 600; padding: 0.3rem;">
+              <input type="text" class="relogin-otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" style="width: 2.5rem; height: 3rem; text-align: center; font-size: 1.3rem; font-weight: 600; padding: 0.3rem;">
+              <input type="text" class="relogin-otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" style="width: 2.5rem; height: 3rem; text-align: center; font-size: 1.3rem; font-weight: 600; padding: 0.3rem;">
+            </div>
+            <button id="relogin-otp-validate-btn" type="button" style="width: 100%; padding: 0.9rem; background: linear-gradient(135deg, rgba(139,30,30,0.8), rgba(90,20,20,0.8)); backdrop-filter: blur(10px); border: 1px solid rgba(212,175,55,0.3); border-radius: 12px; font-weight: 600; color: white; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.95rem;">Accedi</button>
+            <button id="relogin-otp-resend-btn" type="button" style="width: 100%; padding: 0.6rem; margin-top: 0.5rem; background: transparent; border: 1px solid rgba(212,175,55,0.2); border-radius: 12px; color: #b5b5b5; font-size: 0.85rem; cursor: pointer; font-family: 'Inter', sans-serif;">Reinvia codice</button>
+          </div>
+          <div class="relogin-toggle" id="relogin-otp-back-btn"><span>Torna al login</span></div>
         </div>
         <!-- Forgot Password View -->
         <div id="relogin-forgot-view" style="display: none;">
@@ -433,6 +460,149 @@ function showReloginOverlay() {
         errorEl.textContent = getErrorMessage(err);
         btn.disabled = false;
         btn.textContent = 'Accedi';
+      }
+    });
+
+    // === OTP Login ===
+    const otpView = document.getElementById('relogin-otp-view');
+
+    document.getElementById('relogin-otp-btn').addEventListener('click', () => {
+      loginView.style.display = 'none';
+      otpView.style.display = 'block';
+      // Setup OTP digit inputs
+      const otpDigits = document.querySelectorAll('.relogin-otp-digit');
+      otpDigits.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/[^0-9]/g, '');
+          e.target.value = val.slice(0, 1);
+          if (val && index < otpDigits.length - 1) otpDigits[index + 1].focus();
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !e.target.value && index > 0) otpDigits[index - 1].focus();
+        });
+        input.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+          for (let i = 0; i < otpDigits.length && i < paste.length; i++) otpDigits[i].value = paste[i];
+          otpDigits[Math.min(paste.length, otpDigits.length - 1)].focus();
+        });
+      });
+    });
+
+    document.getElementById('relogin-otp-back-btn').addEventListener('click', () => {
+      otpView.style.display = 'none';
+      loginView.style.display = 'block';
+      // Reset OTP state
+      document.getElementById('relogin-otp-email').value = '';
+      document.getElementById('relogin-otp-email').disabled = false;
+      document.getElementById('relogin-otp-error').textContent = '';
+      document.getElementById('relogin-otp-request-phase').style.display = 'block';
+      document.getElementById('relogin-otp-validate-phase').style.display = 'none';
+      document.querySelectorAll('.relogin-otp-digit').forEach(d => d.value = '');
+    });
+
+    // OTP Request Form
+    const otpRequestForm = document.getElementById('relogin-otp-request-form');
+    const otpErrorEl = document.getElementById('relogin-otp-error');
+
+    otpRequestForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = otpRequestForm.querySelector('button');
+      const email = document.getElementById('relogin-otp-email').value.trim();
+
+      otpErrorEl.textContent = '';
+
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.valid) {
+        otpErrorEl.textContent = emailValidation.message;
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Invio in corso...';
+
+      try {
+        await requestOtpLogin(email);
+        document.getElementById('relogin-otp-request-phase').style.display = 'none';
+        document.getElementById('relogin-otp-validate-phase').style.display = 'block';
+        // Start resend countdown
+        const resendBtn = document.getElementById('relogin-otp-resend-btn');
+        let seconds = 60;
+        resendBtn.disabled = true;
+        resendBtn.textContent = `Reinvia codice (${seconds}s)`;
+        const interval = setInterval(() => {
+          seconds--;
+          if (seconds <= 0) { clearInterval(interval); resendBtn.disabled = false; resendBtn.textContent = 'Reinvia codice'; }
+          else resendBtn.textContent = `Reinvia codice (${seconds}s)`;
+        }, 1000);
+      } catch (err) {
+        otpErrorEl.textContent = getErrorMessage(err);
+        btn.disabled = false;
+        btn.textContent = 'Invia Codice OTP';
+      }
+    });
+
+    // OTP Validate
+    document.getElementById('relogin-otp-validate-btn').addEventListener('click', async () => {
+      const email = document.getElementById('relogin-otp-email').value.trim();
+      const digits = document.querySelectorAll('.relogin-otp-digit');
+      let otpCode = '';
+      digits.forEach(d => otpCode += d.value);
+
+      otpErrorEl.textContent = '';
+
+      if (!otpCode || otpCode.length !== 6) {
+        otpErrorEl.textContent = 'Inserisci il codice OTP a 6 cifre.';
+        return;
+      }
+
+      const btn = document.getElementById('relogin-otp-validate-btn');
+      btn.disabled = true;
+      btn.textContent = 'Accesso in corso...';
+
+      try {
+        const data = await validateOtpLogin(email, otpCode);
+        saveAuthData(
+          data.accessToken,
+          data.refreshToken,
+          data.accessTokenExpiresAt,
+          data.refreshTokenExpiresAt,
+          '',
+          email,
+          data.userId
+        );
+
+        overlay.remove();
+        _reloginPromise = null;
+        resolve(data.accessToken);
+      } catch (err) {
+        otpErrorEl.textContent = getErrorMessage(err);
+        btn.disabled = false;
+        btn.textContent = 'Accedi';
+      }
+    });
+
+    // OTP Resend
+    document.getElementById('relogin-otp-resend-btn').addEventListener('click', async () => {
+      const email = document.getElementById('relogin-otp-email').value.trim();
+      const resendBtn = document.getElementById('relogin-otp-resend-btn');
+      otpErrorEl.textContent = '';
+      resendBtn.disabled = true;
+
+      try {
+        await requestOtpLogin(email);
+        document.querySelectorAll('.relogin-otp-digit').forEach(d => d.value = '');
+        document.querySelector('.relogin-otp-digit')?.focus();
+        let seconds = 60;
+        resendBtn.textContent = `Reinvia codice (${seconds}s)`;
+        const interval = setInterval(() => {
+          seconds--;
+          if (seconds <= 0) { clearInterval(interval); resendBtn.disabled = false; resendBtn.textContent = 'Reinvia codice'; }
+          else resendBtn.textContent = `Reinvia codice (${seconds}s)`;
+        }, 1000);
+      } catch (err) {
+        otpErrorEl.textContent = getErrorMessage(err);
+        resendBtn.disabled = false;
       }
     });
 

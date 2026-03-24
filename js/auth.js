@@ -175,6 +175,139 @@ async function handleRegister(event) {
   }
 }
 
+// ====== HANDLE OTP REQUEST ======
+async function handleOtpRequest(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('otpEmail').value.trim();
+
+  clearErrors('otpErrorContainer');
+
+  const emailValidation = validateEmail(email);
+  if (!emailValidation.valid) {
+    showError(emailValidation.message, 'otpErrorContainer');
+    return;
+  }
+
+  const button = document.getElementById('otpSendBtn');
+  setLoading(button, true);
+
+  try {
+    await requestOtpLogin(email);
+
+    // Show OTP code input phase
+    document.getElementById('otpRequestPhase').style.display = 'none';
+    document.getElementById('otpValidatePhase').style.display = 'block';
+
+    // Start countdown for resend
+    startOtpResendCountdown();
+
+  } catch (error) {
+    console.error('OTP request error:', error);
+    showError(getErrorMessage(error), 'otpErrorContainer');
+    setLoading(button, false);
+  }
+}
+
+// ====== HANDLE OTP VALIDATE ======
+async function handleOtpValidate(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('otpEmail').value.trim();
+  const otpCode = getOtpCodeFromInputs();
+
+  clearErrors('otpErrorContainer');
+
+  if (!otpCode || otpCode.length !== 6) {
+    showError('Inserisci il codice OTP a 6 cifre.', 'otpErrorContainer');
+    return;
+  }
+
+  const button = document.getElementById('otpValidateBtn');
+  setLoading(button, true);
+
+  try {
+    const response = await validateOtpLogin(email, otpCode);
+
+    console.log('OTP login response:', response);
+
+    const accessToken = response.accessToken;
+    const refreshToken = response.refreshToken;
+    const accessTokenExpiresAt = response.accessTokenExpiresAt;
+    const refreshTokenExpiresAt = response.refreshTokenExpiresAt;
+    const userId = response.userId;
+
+    const saved = saveAuthData(accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt, '', email, userId);
+
+    if (!saved) {
+      showError('Login riuscito ma salvataggio dati fallito. Riprova.', 'otpErrorContainer');
+      setLoading(button, false);
+      return;
+    }
+
+    console.log('OTP login successful, redirecting to dashboard...');
+    window.location.href = 'dashboard.html';
+
+  } catch (error) {
+    console.error('OTP validate error:', error);
+    showError(getErrorMessage(error), 'otpErrorContainer');
+    setLoading(button, false);
+  }
+}
+
+// ====== OTP CODE INPUT HELPERS ======
+function getOtpCodeFromInputs() {
+  const inputs = document.querySelectorAll('.otp-digit');
+  let code = '';
+  inputs.forEach(input => { code += input.value; });
+  return code;
+}
+
+function setupOtpInputs() {
+  const inputs = document.querySelectorAll('.otp-digit');
+  inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      const val = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = val.slice(0, 1);
+      if (val && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !e.target.value && index > 0) {
+        inputs[index - 1].focus();
+      }
+    });
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+      for (let i = 0; i < inputs.length && i < paste.length; i++) {
+        inputs[i].value = paste[i];
+      }
+      const focusIdx = Math.min(paste.length, inputs.length - 1);
+      inputs[focusIdx].focus();
+    });
+  });
+}
+
+function startOtpResendCountdown() {
+  const resendBtn = document.getElementById('otpResendBtn');
+  if (!resendBtn) return;
+  let seconds = 60;
+  resendBtn.disabled = true;
+  resendBtn.textContent = `Reinvia codice (${seconds}s)`;
+  const interval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(interval);
+      resendBtn.disabled = false;
+      resendBtn.textContent = 'Reinvia codice';
+    } else {
+      resendBtn.textContent = `Reinvia codice (${seconds}s)`;
+    }
+  }, 1000);
+}
+
 // ====== REATTACH LISTENERS (called by toggleForm) ======
 function reattachListeners() {
   console.log('Reattaching event listeners...');

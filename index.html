@@ -466,6 +466,52 @@ html>
       align-items: center;
     }
 
+    /* ====== OTP INPUTS ====== */
+    .otp-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .otp-digit {
+      width: 2.8rem !important;
+      height: 3.2rem;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 600;
+      padding: 0.4rem !important;
+      margin-bottom: 0 !important;
+      letter-spacing: 0;
+    }
+
+    .otp-resend-btn {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      background: transparent !important;
+      border: 1px solid rgba(212, 175, 55, 0.2) !important;
+      color: var(--text-muted) !important;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .otp-resend-btn:hover:not(:disabled) {
+      color: var(--gold) !important;
+      border-color: rgba(212, 175, 55, 0.5) !important;
+      background: rgba(212, 175, 55, 0.05) !important;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .otp-resend-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
     /* ====== FORGOT PASSWORD ====== */
     .success-message {
       background: rgba(81, 207, 102, 0.15);
@@ -508,11 +554,46 @@ html>
           <input type="password" id="loginPassword" placeholder="Password" required>
         </div>
         <button id="loginButton" type="button">Sign In</button>
+        <div class="toggle" id="otpLoginBtn">
+          <span>Accedi con OTP</span>
+        </div>
         <div class="toggle" id="forgotPasswordBtn">
           <span>Password dimenticata?</span>
         </div>
         <div class="toggle" onclick="toggleForm()">
           Don't have an account? <span>Register</span>
+        </div>
+      </div>
+      <!-- OTP Login View -->
+      <div id="otpView" style="display: none;">
+        <h3>Login con OTP</h3>
+        <div id="otpErrorContainer"></div>
+        <!-- Phase 1: Request OTP -->
+        <div id="otpRequestPhase">
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; text-align: center;">
+            Inserisci la tua email per ricevere un codice di accesso.
+          </p>
+          <input type="email" id="otpEmail" placeholder="Email" required>
+          <button id="otpSendBtn" type="button">Invia Codice OTP</button>
+        </div>
+        <!-- Phase 2: Validate OTP -->
+        <div id="otpValidatePhase" style="display: none;">
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; text-align: center;">
+            Inserisci il codice a 6 cifre ricevuto via email.
+          </p>
+          <div class="otp-inputs">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          </div>
+          <button id="otpValidateBtn" type="button">Accedi</button>
+          <button id="otpResendBtn" type="button" class="otp-resend-btn">Reinvia codice</button>
+        </div>
+        <div class="toggle" id="backToLoginFromOtpBtn">
+          <span>Torna al login</span>
         </div>
       </div>
       <!-- Forgot Password View -->
@@ -546,11 +627,43 @@ html>
               <input type="password" id="loginPassword" placeholder="Password" required>
             </div>
             <button id="loginButton" type="button">Sign In</button>
+            <div class="toggle" id="otpLoginBtn">
+              <span>Accedi con OTP</span>
+            </div>
             <div class="toggle" id="forgotPasswordBtn">
               <span>Password dimenticata?</span>
             </div>
             <div class="toggle" onclick="toggleForm()">
               Don't have an account? <span>Register</span>
+            </div>
+          </div>
+          <div id="otpView" style="display: none;">
+            <h3>Login con OTP</h3>
+            <div id="otpErrorContainer"></div>
+            <div id="otpRequestPhase">
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; text-align: center;">
+                Inserisci la tua email per ricevere un codice di accesso.
+              </p>
+              <input type="email" id="otpEmail" placeholder="Email" required>
+              <button id="otpSendBtn" type="button">Invia Codice OTP</button>
+            </div>
+            <div id="otpValidatePhase" style="display: none;">
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; text-align: center;">
+                Inserisci il codice a 6 cifre ricevuto via email.
+              </p>
+              <div class="otp-inputs">
+                <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
+                <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+              </div>
+              <button id="otpValidateBtn" type="button">Accedi</button>
+              <button id="otpResendBtn" type="button" class="otp-resend-btn">Reinvia codice</button>
+            </div>
+            <div class="toggle" id="backToLoginFromOtpBtn">
+              <span>Torna al login</span>
             </div>
           </div>
           <div id="forgotView" style="display: none;">
@@ -587,9 +700,10 @@ html>
       attachCapsLockListeners();
       setupPasswordToggle();
 
-      // Re-attach forgot password listeners
+      // Re-attach forgot password and OTP listeners
       if (isLogin) {
         attachForgotPasswordListeners();
+        attachOtpListeners();
       }
     }
 
@@ -726,11 +840,76 @@ html>
       }
     }
 
+    // ====== OTP LOGIN ======
+    function attachOtpListeners() {
+      const otpLoginBtn = document.getElementById('otpLoginBtn');
+      const backFromOtpBtn = document.getElementById('backToLoginFromOtpBtn');
+      const otpSendBtn = document.getElementById('otpSendBtn');
+      const otpValidateBtn = document.getElementById('otpValidateBtn');
+      const otpResendBtn = document.getElementById('otpResendBtn');
+      const loginView = document.getElementById('loginView');
+      const otpView = document.getElementById('otpView');
+
+      if (otpLoginBtn && loginView && otpView) {
+        otpLoginBtn.addEventListener('click', () => {
+          loginView.style.display = 'none';
+          otpView.style.display = 'block';
+          setupOtpInputs();
+        });
+      }
+
+      if (backFromOtpBtn && loginView && otpView) {
+        backFromOtpBtn.addEventListener('click', () => {
+          otpView.style.display = 'none';
+          loginView.style.display = 'block';
+          // Reset OTP state
+          const otpEmail = document.getElementById('otpEmail');
+          const otpRequestPhase = document.getElementById('otpRequestPhase');
+          const otpValidatePhase = document.getElementById('otpValidatePhase');
+          const otpErrorContainer = document.getElementById('otpErrorContainer');
+          if (otpEmail) { otpEmail.value = ''; otpEmail.disabled = false; }
+          if (otpRequestPhase) otpRequestPhase.style.display = 'block';
+          if (otpValidatePhase) otpValidatePhase.style.display = 'none';
+          if (otpErrorContainer) otpErrorContainer.innerHTML = '';
+          document.querySelectorAll('.otp-digit').forEach(d => d.value = '');
+          if (otpSendBtn) { otpSendBtn.disabled = false; otpSendBtn.classList.remove('loading'); }
+        });
+      }
+
+      if (otpSendBtn) {
+        otpSendBtn.addEventListener('click', handleOtpRequest);
+      }
+
+      if (otpValidateBtn) {
+        otpValidateBtn.addEventListener('click', handleOtpValidate);
+      }
+
+      if (otpResendBtn) {
+        otpResendBtn.addEventListener('click', async () => {
+          const email = document.getElementById('otpEmail').value.trim();
+          const otpErrorContainer = document.getElementById('otpErrorContainer');
+          if (otpErrorContainer) otpErrorContainer.innerHTML = '';
+
+          otpResendBtn.disabled = true;
+          try {
+            await requestOtpLogin(email);
+            document.querySelectorAll('.otp-digit').forEach(d => d.value = '');
+            document.querySelector('.otp-digit')?.focus();
+            startOtpResendCountdown();
+          } catch (err) {
+            showError(getErrorMessage(err), 'otpErrorContainer');
+            otpResendBtn.disabled = false;
+          }
+        });
+      }
+    }
+
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
       attachCapsLockListeners();
       setupPasswordToggle();
       attachForgotPasswordListeners();
+      attachOtpListeners();
     });
 
     // ====== MAGIC PARTICLES ======
