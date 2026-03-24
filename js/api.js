@@ -1316,6 +1316,21 @@ async function uploadAssetDocumentsBatch(files, userId) {
   }
 }
 
+async function deleteAssetDocument(documentId) {
+  const url = API_CONFIG.ASSET.BASE_URL + API_CONFIG.ASSET.DOCUMENT.replace('{documentId}', documentId);
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'DELETE'
+    });
+
+    return result;
+  } catch (error) {
+    console.error('Delete document error:', error);
+    throw error;
+  }
+}
+
 async function downloadAssetDocument(documentId) {
   const url = API_CONFIG.ASSET.BASE_URL + API_CONFIG.ASSET.DOCUMENT.replace('{documentId}', documentId);
 
