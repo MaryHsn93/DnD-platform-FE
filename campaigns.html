@@ -20,6 +20,12 @@
       --text-light: #f5f5f5;
       --text-muted: #b5b5b5;
       --sidebar-width: 280px;
+      --arcane: #4a7cc9;
+      --emerald: #3ba55d;
+      --amethyst: #8b5cf6;
+      --ember: #d4853a;
+      --blood: #c43c3c;
+      --silver: #8b95a5;
     }
 
     * {
@@ -231,7 +237,7 @@
     }
 
     .nav-item:hover {
-      background: rgba(212, 175, 55, 0.1);
+      background: rgba(74, 124, 201, 0.1);
     }
 
     .nav-item:hover::before,
@@ -454,27 +460,27 @@
     }
 
     .card-status.active {
-      background: rgba(74, 222, 128, 0.15);
-      border: 1px solid rgba(74, 222, 128, 0.3);
-      color: #4ade80;
+      background: rgba(59, 165, 93, 0.15);
+      border: 1px solid rgba(59, 165, 93, 0.3);
+      color: var(--emerald);
     }
 
     .card-status.completed {
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      color: var(--gold);
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: var(--amethyst);
     }
 
     .card-status.paused {
-      background: rgba(251, 191, 36, 0.15);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      color: #fbbf24;
+      background: rgba(212, 133, 58, 0.15);
+      border: 1px solid rgba(212, 133, 58, 0.3);
+      color: var(--ember);
     }
 
     .card-status.archived {
-      background: rgba(181, 181, 181, 0.15);
-      border: 1px solid rgba(181, 181, 181, 0.3);
-      color: var(--text-muted);
+      background: rgba(139, 149, 165, 0.15);
+      border: 1px solid rgba(139, 149, 165, 0.3);
+      color: var(--silver);
     }
 
     .card-description {

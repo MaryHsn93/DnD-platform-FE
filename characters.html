@@ -21,6 +21,12 @@
       --text-light: #f5f5f5;
       --text-muted: #b5b5b5;
       --sidebar-width: 280px;
+      --arcane: #4a7cc9;
+      --emerald: #3ba55d;
+      --amethyst: #8b5cf6;
+      --ember: #d4853a;
+      --blood: #c43c3c;
+      --silver: #8b95a5;
     }
 
     * {
@@ -232,7 +238,7 @@
     }
 
     .nav-item:hover {
-      background: rgba(212, 175, 55, 0.1);
+      background: rgba(74, 124, 201, 0.1);
     }
 
     .nav-item:hover::before,
@@ -1309,8 +1315,8 @@
     .card-level {
       margin-left: auto;
       text-align: center;
-      background: rgba(212, 175, 55, 0.1);
-      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
       border-radius: 10px;
       padding: 0.4rem 0.7rem;
       flex-shrink: 0;
@@ -1320,7 +1326,7 @@
       font-family: 'Cinzel', serif;
       font-size: 1.3rem;
       font-weight: 700;
-      color: var(--gold);
+      color: var(--amethyst);
       line-height: 1;
     }
 
@@ -1345,7 +1351,7 @@
       font-size: 0.85rem;
     }
 
-    .card-stat svg { width: 16px; height: 16px; color: var(--gold); opacity: 0.7; }
+    .card-stat svg { width: 16px; height: 16px; color: var(--silver); opacity: 0.85; }
 
     .card-stat .stat-val { color: var(--text-light); font-weight: 600; }
     .card-stat .stat-label { color: var(--text-muted); font-size: 0.75rem; }
@@ -1364,9 +1370,9 @@
       transition: width 0.5s ease;
     }
 
-    .hp-bar-fill.hp-high { background: #4ade80; }
-    .hp-bar-fill.hp-mid { background: #fbbf24; }
-    .hp-bar-fill.hp-low { background: #ef4444; }
+    .hp-bar-fill.hp-high { background: var(--emerald); }
+    .hp-bar-fill.hp-mid { background: var(--ember); }
+    .hp-bar-fill.hp-low { background: var(--blood); }
 
     /* Loading & Empty States */
     .loading-state, .empty-state, .error-state {
