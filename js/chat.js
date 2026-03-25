@@ -1138,7 +1138,7 @@ const TavernChat = (function () {
       userIds.forEach(function (uid) {
         var uidStr = uid.toString();
         if (uidStr === _userId) {
-          users.push({ id: parseInt(uidStr, 10), username: _username });
+          // Skip self — online count should only reflect other users
         } else if (_knownUsers[uidStr]) {
           users.push(_knownUsers[uidStr]);
         } else {
