@@ -7,6 +7,8 @@ html>
   <title>D&D Portal – Login & Register</title>
 
   <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
   <!-- Three.js -->
@@ -527,6 +529,16 @@ html>
       box-shadow:
         0 4px 16px rgba(81, 207, 102, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* ====== PERFORMANCE & ACCESSIBILITY ====== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>

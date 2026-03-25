@@ -6,6 +6,8 @@
   <title>Campaigns - The Tavern</title>
 
   <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/chat.css">
 
@@ -1816,6 +1818,42 @@
     .result-value.reveal { animation: resultReveal 0.3s ease; }
     @media (max-width: 768px) { .dice-roller-widget { top: 1rem; right: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } }
 
+
+
+
+
+    /* Ensure minimum touch target size on mobile */
+    @media (max-width: 1024px) {
+      .nav-item {
+        min-height: 44px;
+      }
+      .logout-btn {
+        min-height: 44px;
+      }
+    }
+    /* Constrain content width on ultra-wide screens */
+    @media (min-width: 1600px) {
+      .main-content {
+        max-width: calc(1400px + var(--sidebar-width));
+      }
+    }
+    /* Reduce backdrop-filter blur on mobile for better performance */
+    @media (max-width: 768px) {
+      .sidebar,
+      .sidebar::before {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+    }
+    /* ====== PERFORMANCE & ACCESSIBILITY ====== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body>

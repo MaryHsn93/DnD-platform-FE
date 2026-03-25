@@ -6,6 +6,8 @@
   <title>Documents - The Tavern</title>
 
   <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/chat.css">
 
@@ -1488,6 +1490,42 @@
       color: #ff6b6b !important;
     }
 
+
+
+
+
+    /* Ensure minimum touch target size on mobile */
+    @media (max-width: 1024px) {
+      .nav-item {
+        min-height: 44px;
+      }
+      .logout-btn {
+        min-height: 44px;
+      }
+    }
+    /* Constrain content width on ultra-wide screens */
+    @media (min-width: 1600px) {
+      .main-content {
+        max-width: calc(1400px + var(--sidebar-width));
+      }
+    }
+    /* Reduce backdrop-filter blur on mobile for better performance */
+    @media (max-width: 768px) {
+      .sidebar,
+      .sidebar::before {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+    }
+    /* ====== PERFORMANCE & ACCESSIBILITY ====== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1990,7 +2028,7 @@
 
       // Already cached — show immediately
       if (thumbnailCache.has(doc.id)) {
-        el.innerHTML = `<img src="${thumbnailCache.get(doc.id)}" alt="${doc.fileName}">`;
+        el.innerHTML = `<img src="${thumbnailCache.get(doc.id)}" alt="${doc.fileName}" loading="lazy">`;
         return;
       }
 
@@ -2003,7 +2041,7 @@
         if (isImageExt(doc.fileName)) {
           thumbnailCache.set(doc.id, url);
           const target = document.querySelector(`.doc-preview[data-doc-id="${doc.id}"]`);
-          if (target) target.innerHTML = `<img src="${url}" alt="${doc.fileName}">`;
+          if (target) target.innerHTML = `<img src="${url}" alt="${doc.fileName}" loading="lazy">`;
         } else if (isPDFExt(doc.fileName)) {
           try {
             const arrayBuffer = await blob.arrayBuffer();
@@ -2018,7 +2056,7 @@
             const dataUrl = canvas.toDataURL();
             thumbnailCache.set(doc.id, dataUrl);
             const target = document.querySelector(`.doc-preview[data-doc-id="${doc.id}"]`);
-            if (target) target.innerHTML = `<img src="${dataUrl}" alt="${doc.fileName}">`;
+            if (target) target.innerHTML = `<img src="${dataUrl}" alt="${doc.fileName}" loading="lazy">`;
           } catch (pdfErr) {
             console.warn('PDF thumbnail failed:', pdfErr);
           }
@@ -2074,7 +2112,7 @@
           const cachedUrl = thumbnailCache.get(doc.id);
           let previewHtml;
           if (cachedUrl) {
-            previewHtml = `<img src="${cachedUrl}" alt="${doc.fileName}">`;
+            previewHtml = `<img src="${cachedUrl}" alt="${doc.fileName}" loading="lazy">`;
           } else {
             previewHtml = `<div class="file-icon">${getFileIconSvg()}${ext ? `<span class="file-ext">${ext}</span>` : ''}</div>`;
           }
@@ -2100,7 +2138,7 @@
           const metaHtml = metaParts.length > 0 ? metaParts.join(' &middot; ') : '';
           return `
             <div class="doc-row" onclick="openPreview(documents.find(d=>d.id==='${doc.id}'))">
-              <div class="doc-row-icon doc-preview" data-doc-id="${doc.id}">${thumbnailCache.has(doc.id) ? `<img src="${thumbnailCache.get(doc.id)}" alt="${doc.fileName}">` : (ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg())}</div>
+              <div class="doc-row-icon doc-preview" data-doc-id="${doc.id}">${thumbnailCache.has(doc.id) ? `<img src="${thumbnailCache.get(doc.id)}" alt="${doc.fileName}" loading="lazy">` : (ext ? `<span style="font-size:0.7rem;font-weight:700;text-transform:uppercase">${ext}</span>` : getFileIconSvg())}</div>
               <div class="doc-row-info">
                 <div class="doc-row-name" title="${doc.fileName}">${doc.fileName}</div>
                 ${metaHtml ? `<div class="doc-row-meta">${metaHtml}</div>` : ''}
