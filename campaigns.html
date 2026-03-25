@@ -1025,6 +1025,149 @@
       border-color: rgba(239, 68, 68, 0.3);
     }
 
+    /* ====== QUEST LIST ====== */
+    .quest-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      border-radius: 10px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .quest-item:hover {
+      border-color: rgba(212, 175, 55, 0.3);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .quest-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .quest-title {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .quest-priority {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quest-priority.main {
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold);
+    }
+
+    .quest-priority.side {
+      background: rgba(147, 130, 220, 0.15);
+      color: #9382dc;
+    }
+
+    .quest-status-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quest-status-badge.active {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+    }
+
+    .quest-status-badge.completed {
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold);
+    }
+
+    .quest-status-badge.failed {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+
+    .quest-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .quest-description-preview {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .quest-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .quest-btn {
+      padding: 0.3rem 0.6rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quest-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+    }
+
+    .quest-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .quest-filter-bar {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .quest-filter-btn {
+      padding: 0.2rem 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .quest-filter-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+    }
+
+    .quest-filter-btn.active {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold);
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+
     /* ====== DETAIL ACTIONS ====== */
     .detail-actions {
       display: flex;
@@ -1875,6 +2018,50 @@
     </div>
   </div>
 
+  <!-- Create/Edit Quest Modal -->
+  <div class="modal-overlay" id="questModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="questModalTitle">Create Quest</h2>
+        <button class="modal-close" onclick="closeQuestModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form onsubmit="submitQuest(event)">
+        <div class="form-error" id="questError"></div>
+        <div class="form-group">
+          <label>Title <span class="required">*</span></label>
+          <input type="text" id="questTitle" maxlength="100" required placeholder="e.g. Find the Lost Artifact">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="questDescription" placeholder="The party must locate the ancient artifact hidden in the ruins..." style="min-height:120px"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Status</label>
+            <select id="questStatus">
+              <option value="ACTIVE">Active</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="FAILED">Failed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="questPriority">
+              <option value="MAIN">Main</option>
+              <option value="SIDE">Side</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeQuestModal()">Cancel</button>
+          <button type="submit" class="btn-submit" id="submitQuestBtn">Create Quest</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Delete Confirmation Modal -->
   <div class="modal-overlay" id="deleteModal">
     <div class="modal" style="max-width:400px">
@@ -2019,10 +2206,13 @@
     let cachedCampaigns = [];
     let editingCampaignId = null;
     let deleteCampaignId = null;
-    let deleteItemType = null; // 'campaign', 'note'
+    let deleteItemType = null; // 'campaign', 'note', 'quest'
     let deleteNoteId = null;
+    let deleteQuestId = null;
     let currentDetailCampaign = null;
     let editingNoteId = null;
+    let editingQuestId = null;
+    let questFilterStatus = null;
 
     // ====== HELPERS ======
     function escapeHtml(text) {
@@ -2236,17 +2426,19 @@
 
         var members = [];
         var notes = [];
+        var quests = [];
         try { members = await getCampaignMembers(campaignId); } catch(e) { console.error('Members load error:', e); }
         try { notes = await getCampaignNotes(campaignId, currentUserId); } catch(e) { console.error('Notes load error:', e); }
+        try { quests = await getCampaignQuests(campaignId, currentUserId, questFilterStatus); } catch(e) { console.error('Quests load error:', e); }
 
-        renderCampaignDetail(campaign, members, notes);
+        renderCampaignDetail(campaign, members, notes, quests);
       } catch (error) {
         document.getElementById('detailContent').innerHTML =
           '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
       }
     }
 
-    function renderCampaignDetail(campaign, members, notes) {
+    function renderCampaignDetail(campaign, members, notes, quests) {
       var isDM = campaign.dungeonMasterId === currentUserId;
       var html = '';
 
@@ -2332,6 +2524,45 @@
       }
       html += '</div>';
 
+      // Quests
+      html += '<div class="detail-block full-width">' +
+        '<h4>Quests' +
+          ' <button class="btn-add-small" onclick="openQuestModal()">+ New Quest</button>' +
+        '</h4>';
+
+      // Quest filter bar
+      html += '<div class="quest-filter-bar">' +
+        '<button class="quest-filter-btn' + (!questFilterStatus ? ' active' : '') + '" onclick="filterQuests(null)">All</button>' +
+        '<button class="quest-filter-btn' + (questFilterStatus === 'ACTIVE' ? ' active' : '') + '" onclick="filterQuests(\'ACTIVE\')">Active</button>' +
+        '<button class="quest-filter-btn' + (questFilterStatus === 'COMPLETED' ? ' active' : '') + '" onclick="filterQuests(\'COMPLETED\')">Completed</button>' +
+        '<button class="quest-filter-btn' + (questFilterStatus === 'FAILED' ? ' active' : '') + '" onclick="filterQuests(\'FAILED\')">Failed</button>' +
+      '</div>';
+
+      if (!quests || quests.length === 0) {
+        html += '<p style="font-size:0.8rem;color:var(--text-muted)">No quests yet. Track your party\'s objectives and adventures!</p>';
+      } else {
+        quests.forEach(function(q) {
+          var isAuthor = q.authorId === currentUserId;
+          var qStatus = (q.status || 'ACTIVE').toLowerCase();
+          var qPriority = (q.priority || 'MAIN').toLowerCase();
+          html += '<div class="quest-item">' +
+            '<div class="quest-header">' +
+              '<span class="quest-title">' + escapeHtml(q.title) + '</span>' +
+              '<span class="quest-priority ' + qPriority + '">' + escapeHtml(q.priority || 'MAIN') + '</span>' +
+              '<span class="quest-status-badge ' + qStatus + '">' + escapeHtml(q.status || 'ACTIVE') + '</span>' +
+            '</div>' +
+            '<div class="quest-meta">By User #' + q.authorId + ' &middot; ' + formatDate(q.createdAt) + '</div>' +
+            (q.description ? '<div class="quest-description-preview">' + escapeHtml(q.description) + '</div>' : '') +
+            '<div class="quest-actions">';
+          if (isAuthor || isDM) {
+            html += '<button class="quest-btn" onclick="editQuest(' + q.id + ')">Edit</button>';
+            html += '<button class="quest-btn delete" onclick="deleteQuest(' + q.id + ', \'' + escapeHtml(q.title).replace(/'/g, "\\'") + '\')">Delete</button>';
+          }
+          html += '</div></div>';
+        });
+      }
+      html += '</div>';
+
       html += '</div>'; // close detail-grid
 
       // Actions
@@ -2371,6 +2602,7 @@
       document.getElementById('deleteModal').classList.remove('active');
       deleteCampaignId = null;
       deleteNoteId = null;
+      deleteQuestId = null;
       deleteItemType = null;
     }
 
@@ -2390,6 +2622,11 @@
           await deleteCampaignNote(currentDetailCampaign.id, deleteNoteId, currentUserId);
           closeDeleteModal();
           showToast('Note deleted successfully!', 'success');
+          loadCampaignDetail(currentDetailCampaign.id);
+        } else if (deleteItemType === 'quest') {
+          await deleteCampaignQuest(currentDetailCampaign.id, deleteQuestId, currentUserId);
+          closeDeleteModal();
+          showToast('Quest deleted successfully!', 'success');
           loadCampaignDetail(currentDetailCampaign.id);
         }
       } catch (error) {
@@ -2551,6 +2788,108 @@
         } finally {
           btn.disabled = false;
           btn.textContent = 'Create Note';
+        }
+      }
+    }
+
+    // ====== QUESTS ======
+    function filterQuests(status) {
+      questFilterStatus = status;
+      if (currentDetailCampaign) loadCampaignDetail(currentDetailCampaign.id);
+    }
+
+    function openQuestModal(quest) {
+      editingQuestId = null;
+      document.getElementById('questError').textContent = '';
+      document.getElementById('questTitle').value = '';
+      document.getElementById('questDescription').value = '';
+      document.getElementById('questStatus').value = 'ACTIVE';
+      document.getElementById('questPriority').value = 'MAIN';
+      document.getElementById('questModalTitle').textContent = 'Create Quest';
+      document.getElementById('submitQuestBtn').textContent = 'Create Quest';
+
+      if (quest) {
+        editingQuestId = quest.id;
+        document.getElementById('questModalTitle').textContent = 'Edit Quest';
+        document.getElementById('submitQuestBtn').textContent = 'Save Quest';
+        document.getElementById('questTitle').value = quest.title || '';
+        document.getElementById('questDescription').value = quest.description || '';
+        document.getElementById('questStatus').value = quest.status || 'ACTIVE';
+        document.getElementById('questPriority').value = quest.priority || 'MAIN';
+      }
+
+      document.getElementById('questModal').classList.add('active');
+    }
+
+    function closeQuestModal() {
+      document.getElementById('questModal').classList.remove('active');
+      editingQuestId = null;
+    }
+
+    async function editQuest(questId) {
+      try {
+        var quest = await getCampaignQuest(currentDetailCampaign.id, questId, currentUserId);
+        openQuestModal(quest);
+      } catch (error) {
+        showToast('Failed to load quest: ' + getErrorMessage(error), 'error');
+      }
+    }
+
+    function deleteQuest(questId, questTitle) {
+      deleteQuestId = questId;
+      deleteItemType = 'quest';
+      document.getElementById('deleteItemName').textContent = questTitle;
+      document.getElementById('deleteModal').querySelector('h3').textContent = 'Delete Quest';
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    async function submitQuest(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitQuestBtn');
+      var errorEl = document.getElementById('questError');
+      errorEl.textContent = '';
+
+      var title = document.getElementById('questTitle').value.trim();
+      if (!title) {
+        errorEl.textContent = 'Quest title is required.';
+        return;
+      }
+
+      var payload = {
+        userId: currentUserId,
+        title: title,
+        description: document.getElementById('questDescription').value.trim() || undefined,
+        status: document.getElementById('questStatus').value,
+        priority: document.getElementById('questPriority').value
+      };
+
+      btn.disabled = true;
+
+      if (editingQuestId) {
+        btn.textContent = 'Saving...';
+        try {
+          await updateCampaignQuest(currentDetailCampaign.id, editingQuestId, payload);
+          closeQuestModal();
+          showToast('Quest updated!', 'success');
+          loadCampaignDetail(currentDetailCampaign.id);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Save Quest';
+        }
+      } else {
+        btn.textContent = 'Creating...';
+        try {
+          await createCampaignQuest(currentDetailCampaign.id, payload);
+          closeQuestModal();
+          showToast('Quest created!', 'success');
+          loadCampaignDetail(currentDetailCampaign.id);
+        } catch (error) {
+          errorEl.textContent = getErrorMessage(error);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Create Quest';
         }
       }
     }

@@ -74,7 +74,9 @@ const API_CONFIG = {
     MEMBERS: '/campaigns/{campaignId}/members',
     MEMBER: '/campaigns/{campaignId}/members/{userId}',
     NOTES: '/campaigns/{campaignId}/notes',
-    NOTE: '/campaigns/{campaignId}/notes/{noteId}'
+    NOTE: '/campaigns/{campaignId}/notes/{noteId}',
+    QUESTS: '/campaigns/{campaignId}/quests',
+    QUEST: '/campaigns/{campaignId}/quests/{questId}'
   },
   ASSET: {
     BASE_URL: `http://${ENV.API_HOST}:${ENV.ASSET_PORT}`,
@@ -1160,6 +1162,91 @@ async function deleteCampaignNote(campaignId, noteId, userId) {
     return result.data;
   } catch (error) {
     console.error('Delete campaign note error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CAMPAIGN QUESTS ======
+async function getCampaignQuests(campaignId, userId, status) {
+  let url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.QUESTS.replace('{campaignId}', campaignId)
+    + '?userId=' + userId;
+  if (status) url += '&status=' + encodeURIComponent(status);
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'GET' });
+    console.log('Campaign quests fetched successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Get campaign quests error:', error);
+    throw error;
+  }
+}
+
+// ====== CREATE CAMPAIGN QUEST ======
+async function createCampaignQuest(campaignId, questData) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.QUESTS.replace('{campaignId}', campaignId);
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(questData)
+    });
+    console.log('Campaign quest created successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Create campaign quest error:', error);
+    throw error;
+  }
+}
+
+// ====== GET CAMPAIGN QUEST ======
+async function getCampaignQuest(campaignId, questId, userId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.QUEST.replace('{campaignId}', campaignId).replace('{questId}', questId)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'GET' });
+    console.log('Campaign quest fetched successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Get campaign quest error:', error);
+    throw error;
+  }
+}
+
+// ====== UPDATE CAMPAIGN QUEST ======
+async function updateCampaignQuest(campaignId, questId, questData) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.QUEST.replace('{campaignId}', campaignId).replace('{questId}', questId);
+
+  try {
+    const result = await authenticatedRequest(url, {
+      method: 'PUT',
+      body: JSON.stringify(questData)
+    });
+    console.log('Campaign quest updated successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Update campaign quest error:', error);
+    throw error;
+  }
+}
+
+// ====== DELETE CAMPAIGN QUEST ======
+async function deleteCampaignQuest(campaignId, questId, userId) {
+  const url = API_CONFIG.CAMPAIGN.BASE_URL
+    + API_CONFIG.CAMPAIGN.QUEST.replace('{campaignId}', campaignId).replace('{questId}', questId)
+    + '?userId=' + userId;
+
+  try {
+    const result = await authenticatedRequest(url, { method: 'DELETE' });
+    console.log('Campaign quest deleted successfully:', result);
+    return result.data;
+  } catch (error) {
+    console.error('Delete campaign quest error:', error);
     throw error;
   }
 }
