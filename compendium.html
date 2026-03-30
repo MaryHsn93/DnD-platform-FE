@@ -443,7 +443,6 @@
     }
 
     .sidebar-overlay {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -451,6 +450,16 @@
       height: 100%;
       background: rgba(0, 0, 0, 0.6);
       z-index: 99;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
     }
 
     @media (max-width: 1024px) {
@@ -461,7 +470,6 @@
       }
       .sidebar.active { transform: translateX(0); }
       .main-content { margin-left: 0; }
-      .sidebar-overlay.active { display: block; }
     }
 
     @media (max-width: 768px) {
@@ -877,7 +885,7 @@
     .dice-btn.rolling .dice-shape { animation: diceShake 0.5s ease; }
     .result-value.reveal { animation: resultReveal 0.3s ease; }
     @media (max-width: 768px) { .dice-roller-widget { top: 1rem; right: 1rem; } .dice-toggle-btn { width: 50px; height: 50px; } .dice-toggle-btn svg { width: 26px; height: 26px; } .dice-roller-panel { top: 60px; padding: 0.75rem; } .dice-shape { width: 35px; height: 35px; } .dice-value { font-size: 0.8rem; } .result-value { font-size: 1.25rem; } .chat-window { width: 320px; height: 480px; right: -0.5rem; } }
-    @media (max-width: 480px) { .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; } .chat-widget { right: 1rem; bottom: 1rem; } .chat-toggle-btn { width: 55px; height: 55px; } }
+    @media (max-width: 480px) { .chat-window { width: calc(100vw - 2rem); right: 0; bottom: 70px; height: 450px; } .chat-widget { right: 1rem; bottom: 1rem; } .chat-toggle-btn { width: 55px; height: 55px; } }
 
     /* ====== COMPENDIUM CATEGORIES BOX ====== */
     .page-section { width: 100%; }

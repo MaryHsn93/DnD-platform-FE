@@ -444,7 +444,6 @@
     }
 
     .sidebar-overlay {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -452,6 +451,16 @@
       height: 100%;
       background: rgba(0, 0, 0, 0.6);
       z-index: 99;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
     }
 
     @media (max-width: 1024px) {
@@ -462,7 +471,6 @@
       }
       .sidebar.active { transform: translateX(0); }
       .main-content { margin-left: 0; }
-      .sidebar-overlay.active { display: block; }
     }
 
     @media (max-width: 768px) {
@@ -1167,7 +1175,7 @@
     }
 
     @media (max-width: 480px) {
-      .chat-window { width: calc(100vw - 2rem); right: -1rem; bottom: 70px; height: 450px; }
+      .chat-window { width: calc(100vw - 2rem); right: 0; bottom: 70px; height: 450px; }
       .chat-widget { right: 1rem; bottom: 1rem; }
       .chat-toggle-btn { width: 55px; height: 55px; }
     }
