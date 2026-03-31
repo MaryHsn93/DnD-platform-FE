@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>My Characters - The Tavern</title>
+  <title>I Miei Personaggi - The Tavern</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2148,29 +2148,29 @@
       <div class="sidebar-user">
         <div class="user-avatar" id="userAvatar">A</div>
         <div class="user-info">
-          <div class="user-name" id="userName">Adventurer</div>
-          <div class="user-role">Hero</div>
+          <div class="user-name" id="userName">Avventuriero</div>
+          <div class="user-role">Eroe</div>
         </div>
       </div>
 
       <nav class="nav-menu">
         <div class="nav-section">
-          <div class="nav-section-title">Adventure</div>
+          <div class="nav-section-title">Avventura</div>
           <a href="characters.html" class="nav-item active">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <span class="nav-text">My Characters</span>
+            <span class="nav-text">I Miei Personaggi</span>
           </a>
           <a href="campaigns.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
-            <span class="nav-text">Campaigns</span>
+            <span class="nav-text">Campagne</span>
           </a>
           <a href="documents.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <span class="nav-text">Documents</span>
+            <span class="nav-text">Documenti</span>
           </a>
           <a href="compendium.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
-            <span class="nav-text">Compendium</span>
+            <span class="nav-text">Compendio</span>
           </a>
         </div>
       </nav>
@@ -2178,27 +2178,27 @@
       <div class="sidebar-footer">
         <button class="logout-btn" id="logoutButton">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Logout
+          Esci
         </button>
       </div>
     </aside>
 
     <main class="main-content">
       <div class="page-header">
-        <h1 class="page-title">My Characters</h1>
-        <p class="page-subtitle">Manage your heroes and their stories</p>
+        <h1 class="page-title">I Miei Personaggi</h1>
+        <p class="page-subtitle">Gestisci i tuoi eroi e le loro storie</p>
         <div class="page-actions">
           <button class="action-btn" id="createCharBtn" onclick="openCreateModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Create Character
+            Crea Personaggio
           </button>
           <button class="action-btn secondary" id="importCharBtn" onclick="openImportModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Import PDF
+            Importa PDF
           </button>
-          <button class="action-btn secondary" onclick="PDFSheetViewer.openSheet(null, 'New Character')">
+          <button class="action-btn secondary" onclick="PDFSheetViewer.openSheet(null, 'Nuovo Personaggio')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            Character Sheet
+            Scheda Personaggio
           </button>
         </div>
       </div>
@@ -2207,7 +2207,7 @@
         <div id="charactersContent">
           <div class="loading-state" id="loadingState">
             <div class="loading-spinner"></div>
-            <p style="color: var(--text-muted);">Summoning your heroes...</p>
+            <p style="color: var(--text-muted);">Evocazione dei tuoi eroi...</p>
           </div>
         </div>
         <div id="paginationContainer" class="pagination" style="display:none;"></div>
@@ -2225,18 +2225,18 @@
         <span id="pdfCharName" class="pdf-char-name"></span>
       </div>
       <div class="pdf-toolbar-center">
-        <button class="pdf-tool-btn" id="pdfZoomOut" title="Zoom Out">&minus;</button>
+        <button class="pdf-tool-btn" id="pdfZoomOut" title="Riduci Zoom">&minus;</button>
         <span id="pdfZoomLevel" class="pdf-zoom-level">150%</span>
-        <button class="pdf-tool-btn" id="pdfZoomIn" title="Zoom In">+</button>
+        <button class="pdf-tool-btn" id="pdfZoomIn" title="Aumenta Zoom">+</button>
       </div>
       <div class="pdf-toolbar-right">
         <button class="pdf-tool-btn pdf-save-btn" id="pdfSaveBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Save
+          Salva
         </button>
         <button class="pdf-tool-btn pdf-download-btn" id="pdfDownloadBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download
+          Scarica
         </button>
         <button class="pdf-tool-btn pdf-close-btn" id="pdfCloseBtn">&times;</button>
       </div>
@@ -2248,7 +2248,7 @@
   <div class="modal-overlay" id="createModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="createModalTitle">Forge a New Hero</h2>
+        <h2 id="createModalTitle">Forgia un Nuovo Eroe</h2>
         <button class="modal-close" onclick="closeCreateModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2267,58 +2267,58 @@
         <!-- Step 1: Basic Info -->
         <div class="form-step active" data-step="1">
           <div class="form-section">
-            <div class="form-section-title">Basic Information</div>
+            <div class="form-section-title">Informazioni Base</div>
             <div class="form-row">
               <div class="form-group">
-                <label>Name <span class="required">*</span></label>
+                <label>Nome <span class="required">*</span></label>
                 <input type="text" id="charName" placeholder="Thorin Ironforge" maxlength="100" required>
               </div>
               <div class="form-group">
-                <label>Level <span class="required">*</span></label>
+                <label>Livello <span class="required">*</span></label>
                 <input type="number" id="charLevel" min="1" max="20" value="1" required>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Species <span class="required">*</span></label>
-                <select id="charSpecies" required><option value="">Select species...</option></select>
+                <label>Specie <span class="required">*</span></label>
+                <select id="charSpecies" required><option value="">Seleziona specie...</option></select>
               </div>
               <div class="form-group">
-                <label>Subrace</label>
+                <label>Sottorazza</label>
                 <input type="text" id="charSubrace" placeholder="Hill Dwarf" maxlength="50">
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Class <span class="required">*</span></label>
-                <select id="charClass" required><option value="">Select class...</option></select>
+                <label>Classe <span class="required">*</span></label>
+                <select id="charClass" required><option value="">Seleziona classe...</option></select>
               </div>
               <div class="form-group">
-                <label>Subclass</label>
+                <label>Sottoclasse</label>
                 <input type="text" id="charSubclass" placeholder="Life Domain" maxlength="50">
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label>Background</label>
-                <select id="charBackground"><option value="">Select background...</option></select>
+                <select id="charBackground"><option value="">Seleziona background...</option></select>
               </div>
               <div class="form-group">
-                <label>Alignment</label>
-                <select id="charAlignment"><option value="">Select alignment...</option></select>
+                <label>Allineamento</label>
+                <select id="charAlignment"><option value="">Seleziona allineamento...</option></select>
               </div>
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="closeCreateModal()">Cancel</button>
-            <button type="button" class="btn-submit" onclick="goToStep(2)">Next</button>
+            <button type="button" class="btn-cancel" onclick="closeCreateModal()">Annulla</button>
+            <button type="button" class="btn-submit" onclick="goToStep(2)">Avanti</button>
           </div>
         </div>
 
         <!-- Step 2: Ability Scores -->
         <div class="form-step" data-step="2">
           <div class="form-section">
-            <div class="form-section-title">Ability Scores</div>
+            <div class="form-section-title">Punteggi Caratteristica</div>
             <div class="ability-scores-grid">
               <div class="ability-input">
                 <label>STR <span class="required">*</span></label>
@@ -2347,7 +2347,7 @@
             </div>
           </div>
           <div class="form-section">
-            <div class="form-section-title">Saving Throw Proficiencies</div>
+            <div class="form-section-title">Competenze nei Tiri Salvezza</div>
             <div class="form-row three-col">
               <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="STR" class="save-prof-cb"> STR</label>
               <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-light);cursor:pointer"><input type="checkbox" value="DEX" class="save-prof-cb"> DEX</label>
@@ -2358,89 +2358,89 @@
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="goToStep(1)">Back</button>
-            <button type="button" class="btn-submit" onclick="goToStep(3)">Next</button>
+            <button type="button" class="btn-cancel" onclick="goToStep(1)">Indietro</button>
+            <button type="button" class="btn-submit" onclick="goToStep(3)">Avanti</button>
           </div>
         </div>
 
         <!-- Step 3: Skills, Languages, Proficiencies -->
         <div class="form-step" data-step="3">
           <div class="form-section">
-            <div class="form-section-title">Skill Proficiencies</div>
+            <div class="form-section-title">Competenze nelle Abilit&agrave;</div>
             <div class="form-group">
               <div class="tag-input-wrapper" id="skillsWrapper">
-                <input type="text" class="tag-input" id="skillInput" placeholder="Type a skill and press Enter...">
+                <input type="text" class="tag-input" id="skillInput" placeholder="Digita un'abilità e premi Invio...">
               </div>
               <div id="skillSuggestions" style="font-size:0.75rem;color:var(--text-muted);margin-top:0.3rem;"></div>
             </div>
           </div>
           <div class="form-section">
-            <div class="form-section-title">Languages</div>
+            <div class="form-section-title">Lingue</div>
             <div class="form-group">
               <div class="tag-input-wrapper" id="languagesWrapper">
-                <input type="text" class="tag-input" id="languageInput" placeholder="Type a language and press Enter...">
+                <input type="text" class="tag-input" id="languageInput" placeholder="Digita una lingua e premi Invio...">
               </div>
             </div>
           </div>
           <div class="form-section">
-            <div class="form-section-title">Spells</div>
+            <div class="form-section-title">Incantesimi</div>
             <div class="form-group">
               <div class="tag-input-wrapper" id="spellsWrapper">
-                <input type="text" class="tag-input" id="spellInput" placeholder="Type a spell name and press Enter...">
+                <input type="text" class="tag-input" id="spellInput" placeholder="Digita il nome di un incantesimo e premi Invio...">
               </div>
             </div>
           </div>
           <div class="form-section">
-            <div class="form-section-title">Equipment</div>
+            <div class="form-section-title">Equipaggiamento</div>
             <div id="equipmentList"></div>
             <button type="button" class="action-btn secondary" onclick="addEquipmentRow()" style="margin-top:0.5rem;font-size:0.8rem;padding:0.5rem 1rem;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Item
+              Aggiungi Oggetto
             </button>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="goToStep(2)">Back</button>
-            <button type="button" class="btn-submit" onclick="goToStep(4)">Next</button>
+            <button type="button" class="btn-cancel" onclick="goToStep(2)">Indietro</button>
+            <button type="button" class="btn-submit" onclick="goToStep(4)">Avanti</button>
           </div>
         </div>
 
         <!-- Step 4: Personality & Physical -->
         <div class="form-step" data-step="4">
           <div class="form-section">
-            <div class="form-section-title">Personality</div>
+            <div class="form-section-title">Personalit&agrave;</div>
             <div class="form-group" style="margin-bottom:0.75rem">
-              <label>Personality Traits</label>
-              <textarea id="charTraits" placeholder="I quote sacred texts in almost every situation." rows="2"></textarea>
+              <label>Tratti della Personalit&agrave;</label>
+              <textarea id="charTraits" placeholder="Cito testi sacri in quasi ogni situazione." rows="2"></textarea>
             </div>
             <div class="form-group" style="margin-bottom:0.75rem">
-              <label>Ideals</label>
-              <textarea id="charIdeals" placeholder="Faith. I trust that my deity will guide my actions." rows="2"></textarea>
+              <label>Ideali</label>
+              <textarea id="charIdeals" placeholder="Fede. Confido che la mia divinità guiderà le mie azioni." rows="2"></textarea>
             </div>
             <div class="form-group" style="margin-bottom:0.75rem">
-              <label>Bonds</label>
-              <textarea id="charBonds" placeholder="I will do anything to protect the temple where I served." rows="2"></textarea>
+              <label>Legami</label>
+              <textarea id="charBonds" placeholder="Farò qualsiasi cosa per proteggere il tempio dove ho servito." rows="2"></textarea>
             </div>
             <div class="form-group">
-              <label>Flaws</label>
-              <textarea id="charFlaws" placeholder="I judge others harshly, and myself even more severely." rows="2"></textarea>
+              <label>Difetti</label>
+              <textarea id="charFlaws" placeholder="Giudico gli altri duramente, e me stesso ancora più severamente." rows="2"></textarea>
             </div>
           </div>
           <div class="form-section">
-            <div class="form-section-title">Physical Characteristics</div>
+            <div class="form-section-title">Caratteristiche Fisiche</div>
             <div class="form-row three-col">
-              <div class="form-group"><label>Age</label><input type="text" id="physAge" placeholder="45"></div>
-              <div class="form-group"><label>Height</label><input type="text" id="physHeight" placeholder="4'5&quot;"></div>
-              <div class="form-group"><label>Weight</label><input type="text" id="physWeight" placeholder="150 lbs"></div>
+              <div class="form-group"><label>Et&agrave;</label><input type="text" id="physAge" placeholder="45"></div>
+              <div class="form-group"><label>Altezza</label><input type="text" id="physHeight" placeholder="135 cm"></div>
+              <div class="form-group"><label>Peso</label><input type="text" id="physWeight" placeholder="68 kg"></div>
             </div>
             <div class="form-row three-col">
-              <div class="form-group"><label>Eyes</label><input type="text" id="physEyes" placeholder="Brown"></div>
-              <div class="form-group"><label>Hair</label><input type="text" id="physHair" placeholder="Black"></div>
-              <div class="form-group"><label>Skin</label><input type="text" id="physSkin" placeholder="Tan"></div>
+              <div class="form-group"><label>Occhi</label><input type="text" id="physEyes" placeholder="Marroni"></div>
+              <div class="form-group"><label>Capelli</label><input type="text" id="physHair" placeholder="Neri"></div>
+              <div class="form-group"><label>Pelle</label><input type="text" id="physSkin" placeholder="Olivastra"></div>
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="goToStep(3)">Back</button>
-            <button type="button" class="btn-submit" id="submitCharBtn" onclick="submitCharacter()">Create Hero</button>
+            <button type="button" class="btn-cancel" onclick="goToStep(3)">Indietro</button>
+            <button type="button" class="btn-submit" id="submitCharBtn" onclick="submitCharacter()">Crea Eroe</button>
           </div>
         </div>
       </form>
@@ -2451,7 +2451,7 @@
   <div class="modal-overlay" id="importModal">
     <div class="modal">
       <div class="modal-header">
-        <h2>Import Character Sheet</h2>
+        <h2>Importa Scheda Personaggio</h2>
         <button class="modal-close" onclick="closeImportModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2459,14 +2459,14 @@
       <div class="form-error" id="importError"></div>
       <div class="import-drop-area" id="importDropArea">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
-        <p>Drag & drop your D&D character sheet PDF here</p>
-        <p style="font-size:0.8rem;margin-top:0.25rem;">or click to browse</p>
+        <p>Trascina e rilascia il PDF della tua scheda personaggio D&D qui</p>
+        <p style="font-size:0.8rem;margin-top:0.25rem;">oppure clicca per sfogliare</p>
         <p class="file-name" id="importFileName"></p>
         <input type="file" id="importFileInput" accept=".pdf" style="display:none;">
       </div>
       <div class="form-actions">
-        <button type="button" class="btn-cancel" onclick="closeImportModal()">Cancel</button>
-        <button type="button" class="btn-submit" id="importSubmitBtn" onclick="submitImport()" disabled>Import</button>
+        <button type="button" class="btn-cancel" onclick="closeImportModal()">Annulla</button>
+        <button type="button" class="btn-submit" id="importSubmitBtn" onclick="submitImport()" disabled>Importa</button>
       </div>
     </div>
   </div>
@@ -2475,13 +2475,13 @@
   <div class="modal-overlay" id="detailModal">
     <div class="modal detail-modal">
       <div class="modal-header">
-        <h2>Character Details</h2>
+        <h2>Dettagli Personaggio</h2>
         <button class="modal-close" onclick="closeDetailModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div id="detailContent">
-        <div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Loading details...</p></div>
+        <div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Caricamento dettagli...</p></div>
       </div>
     </div>
   </div>
@@ -2490,18 +2490,18 @@
   <div class="modal-overlay" id="deleteModal">
     <div class="modal" style="max-width:420px">
       <div class="modal-header">
-        <h2>Delete Character</h2>
+        <h2>Elimina Personaggio</h2>
         <button class="modal-close" onclick="closeDeleteModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="confirm-dialog">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5" style="margin-bottom:0.75rem"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-        <h3>Are you sure?</h3>
-        <p>You are about to delete <strong id="deleteCharName"></strong>. This action cannot be undone.</p>
+        <h3>Sei sicuro?</h3>
+        <p>Stai per eliminare <strong id="deleteCharName"></strong>. Questa azione non può essere annullata.</p>
         <div class="confirm-actions">
-          <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-          <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
+          <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Annulla</button>
+          <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">Elimina</button>
         </div>
       </div>
     </div>
@@ -2544,7 +2544,7 @@
       </div>
       <div class="dice-actions">
         <button class="roll-all-btn" id="rollAllBtn" disabled>Lancia</button>
-        <button class="clear-btn" id="clearBtn">Reset</button>
+        <button class="clear-btn" id="clearBtn">Azzera</button>
       </div>
       <div class="dice-result" id="diceResult">
         <div class="result-total">
@@ -2570,19 +2570,19 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="chat-header-info">
-          <h4>Party Chat</h4>
-          <span>Talk with fellow adventurers</span>
+          <h4>Chat del Gruppo</h4>
+          <span>Parla con i tuoi compagni d'avventura</span>
         </div>
         <div class="online-count">
           <span class="online-dot"></span>
-          <span id="onlineCountText">0 online</span>
+          <span id="onlineCountText">0 in linea</span>
         </div>
       </div>
 
       <!-- Sub-header and conversation list injected dynamically by chat.js --><div class="chat-messages" id="chatMessages"></div>
 
       <div class="chat-input-area">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="TavernChat.handleKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Scrivi un messaggio..." onkeypress="TavernChat.handleKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
         <button class="chat-send-btn" onclick="TavernChat.sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
         </button>
@@ -2615,7 +2615,7 @@
     if (!token) { window.location.href = 'index.html'; }
 
     // User Info
-    const username = localStorage.getItem('username') || 'Adventurer';
+    const username = localStorage.getItem('username') || 'Avventuriero';
     document.getElementById('userName').textContent = username;
     document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
 
@@ -2804,7 +2804,7 @@
     // ====== LOAD CHARACTERS ======
     async function loadCharacters(page) {
       const container = document.getElementById('charactersContent');
-      container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Summoning your heroes...</p></div>';
+      container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Evocazione dei tuoi eroi...</p></div>';
       document.getElementById('paginationContainer').style.display = 'none';
 
       try {
@@ -2818,8 +2818,8 @@
         if (!data.content || data.content.length === 0) {
           container.innerHTML = '<div class="empty-state">' +
             '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
-            '<h3>No Heroes Yet</h3>' +
-            '<p>Your party awaits! Create your first character to begin your adventure.</p>' +
+            '<h3>Nessun Eroe</h3>' +
+            '<p>Il tuo gruppo ti aspetta! Crea il tuo primo personaggio per iniziare l\'avventura.</p>' +
             '</div>';
           return;
         }
@@ -2829,7 +2829,7 @@
           const hpPct = ch.hitPointsMax > 0 ? Math.round((ch.hitPointsCurrent / ch.hitPointsMax) * 100) : 100;
           const hpColor = hpClass(ch.hitPointsCurrent, ch.hitPointsMax);
           html += '<div class="character-card" onclick="openDetailModal(' + ch.id + ')">' +
-            '<button class="card-sheet-btn" onclick="event.stopPropagation(); PDFSheetViewer.openSheet(' + ch.id + ', \'' + escapeHtml(ch.name).replace(/'/g, "\\'") + '\')" title="Character Sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></button>' +
+            '<button class="card-sheet-btn" onclick="event.stopPropagation(); PDFSheetViewer.openSheet(' + ch.id + ', \'' + escapeHtml(ch.name).replace(/'/g, "\\'") + '\')" title="Scheda Personaggio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></button>' +
             '<div class="card-top">' +
               '<div class="char-avatar">' + (ch.name ? ch.name.charAt(0).toUpperCase() : '?') + '</div>' +
               '<div class="card-identity">' +
@@ -2838,7 +2838,7 @@
               '</div>' +
               '<div class="card-level">' +
                 '<div class="level-num">' + (ch.level || 1) + '</div>' +
-                '<div class="level-label">Level</div>' +
+                '<div class="level-label">Livello</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-stats">' +
@@ -2862,9 +2862,9 @@
       } catch (error) {
         console.error('Failed to load characters:', error);
         container.innerHTML = '<div class="error-state">' +
-          '<h3>Failed to Load Characters</h3>' +
+          '<h3>Impossibile Caricare i Personaggi</h3>' +
           '<p>' + getErrorMessage(error) + '</p>' +
-          '<button class="action-btn" onclick="loadCharacters(' + page + ')">Try Again</button>' +
+          '<button class="action-btn" onclick="loadCharacters(' + page + ')">Riprova</button>' +
           '</div>';
       }
     }
@@ -2897,7 +2897,7 @@
     // ====== DETAIL MODAL ======
     function openDetailModal(characterId) {
       document.getElementById('detailModal').classList.add('active');
-      document.getElementById('detailContent').innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Loading details...</p></div>';
+      document.getElementById('detailContent').innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Caricamento dettagli...</p></div>';
       loadCharacterDetail(characterId);
     }
 
@@ -2915,13 +2915,13 @@
           const data = await getCharacters(currentPage, PAGE_SIZE);
           found = data.content.find(function(c) { return c.id === characterId; });
         } catch (error) {
-          document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
+          document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Errore</h3><p>' + getErrorMessage(error) + '</p></div>';
           return;
         }
       }
 
       if (!found) {
-        document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Character Not Found</h3><p>Could not find the character details.</p></div>';
+        document.getElementById('detailContent').innerHTML = '<div class="error-state"><h3>Personaggio Non Trovato</h3><p>Impossibile trovare i dettagli del personaggio.</p></div>';
         return;
       }
 
@@ -2943,7 +2943,7 @@
         '</div>' +
         '<div class="detail-level-badge">' +
           '<div class="level-num">' + (ch.level || 1) + '</div>' +
-          '<div class="level-label">Level</div>' +
+          '<div class="level-label">Livello</div>' +
         '</div>' +
       '</div>';
 
@@ -2951,29 +2951,29 @@
 
       // Combat Stats
       html += '<div class="detail-block">' +
-        '<h4>Combat</h4>' +
-        '<div class="stat-row"><span class="stat-name">Hit Points</span><span class="stat-val">' + ch.hitPointsCurrent + ' / ' + ch.hitPointsMax + '</span></div>' +
+        '<h4>Combattimento</h4>' +
+        '<div class="stat-row"><span class="stat-name">Punti Ferita</span><span class="stat-val">' + ch.hitPointsCurrent + ' / ' + ch.hitPointsMax + '</span></div>' +
         '<div style="margin:0.4rem 0"><div class="hp-bar" style="height:8px"><div class="hp-bar-fill ' + hpColor + '" style="width:' + hpPct + '%"></div></div></div>' +
-        '<div class="stat-row"><span class="stat-name">Armor Class</span><span class="stat-value">' + (ch.armorClass || '--') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Classe Armatura</span><span class="stat-value">' + (ch.armorClass || '--') + '</span></div>' +
       '</div>';
 
       // Info
       html += '<div class="detail-block">' +
         '<h4>Info</h4>' +
-        '<div class="stat-row"><span class="stat-name">Species</span><span class="stat-value">' + escapeHtml(ch.species || '--') + '</span></div>' +
-        '<div class="stat-row"><span class="stat-name">Class</span><span class="stat-value">' + escapeHtml(ch.characterClass || '--') + '</span></div>' +
-        '<div class="stat-row"><span class="stat-name">Level</span><span class="stat-value">' + (ch.level || '--') + '</span></div>' +
-        (ch.subrace ? '<div class="stat-row"><span class="stat-name">Subrace</span><span class="stat-value">' + escapeHtml(ch.subrace) + '</span></div>' : '') +
-        (ch.subclass ? '<div class="stat-row"><span class="stat-name">Subclass</span><span class="stat-value">' + escapeHtml(ch.subclass) + '</span></div>' : '') +
+        '<div class="stat-row"><span class="stat-name">Specie</span><span class="stat-value">' + escapeHtml(ch.species || '--') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Classe</span><span class="stat-value">' + escapeHtml(ch.characterClass || '--') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Livello</span><span class="stat-value">' + (ch.level || '--') + '</span></div>' +
+        (ch.subrace ? '<div class="stat-row"><span class="stat-name">Sottorazza</span><span class="stat-value">' + escapeHtml(ch.subrace) + '</span></div>' : '') +
+        (ch.subclass ? '<div class="stat-row"><span class="stat-name">Sottoclasse</span><span class="stat-value">' + escapeHtml(ch.subclass) + '</span></div>' : '') +
         (ch.background ? '<div class="stat-row"><span class="stat-name">Background</span><span class="stat-value">' + escapeHtml(ch.background) + '</span></div>' : '') +
-        (ch.alignment ? '<div class="stat-row"><span class="stat-name">Alignment</span><span class="stat-value">' + escapeHtml(ch.alignment) + '</span></div>' : '') +
+        (ch.alignment ? '<div class="stat-row"><span class="stat-name">Allineamento</span><span class="stat-value">' + escapeHtml(ch.alignment) + '</span></div>' : '') +
       '</div>';
 
       // Ability Scores
       if (ch.abilityScores) {
         var as = ch.abilityScores;
         html += '<div class="detail-block full-width">' +
-          '<h4>Ability Scores</h4>' +
+          '<h4>Punteggi Caratteristica</h4>' +
           '<div class="ability-grid">' +
             '<div class="ability-box"><div class="ability-label">STR</div><div class="ability-val">' + (as.strength || 10) + '</div><div class="ability-mod">' + abilityMod(as.strength || 10) + '</div></div>' +
             '<div class="ability-box"><div class="ability-label">DEX</div><div class="ability-val">' + (as.dexterity || 10) + '</div><div class="ability-mod">' + abilityMod(as.dexterity || 10) + '</div></div>' +
@@ -2991,15 +2991,15 @@
       html += '<div class="detail-actions">' +
         '<button class="btn-sheet" onclick="closeDetailModal(); PDFSheetViewer.openSheet(' + ch.id + ', \'' + escapeHtml(ch.name).replace(/'/g, "\\'") + '\')">' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' +
-          'Character Sheet' +
+          'Scheda Personaggio' +
         '</button>' +
         '<button class="btn-edit" onclick="editCharacter(' + ch.id + ')">' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-          'Edit Character' +
+          'Modifica Personaggio' +
         '</button>' +
         '<button class="btn-delete" onclick="openDeleteModal(' + ch.id + ', \'' + escapeHtml(ch.name).replace(/'/g, "\\'") + '\')">' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
-          'Delete' +
+          'Elimina' +
         '</button>' +
       '</div>';
 
@@ -3009,8 +3009,8 @@
     // ====== CREATE CHARACTER MODAL ======
     function openCreateModal() {
       editingCharacterId = null;
-      document.getElementById('createModalTitle').textContent = 'Forge a New Hero';
-      document.getElementById('submitCharBtn').textContent = 'Create Hero';
+      document.getElementById('createModalTitle').textContent = 'Forgia un Nuovo Eroe';
+      document.getElementById('submitCharBtn').textContent = 'Crea Eroe';
       document.getElementById('createModal').classList.add('active');
       document.getElementById('createError').textContent = '';
       currentStep = 1;
@@ -3043,7 +3043,7 @@
           const charClass = document.getElementById('charClass').value;
           const level = document.getElementById('charLevel').value;
           if (!name || !species || !charClass || !level) {
-            document.getElementById('createError').textContent = 'Please fill in all required fields (Name, Species, Class, Level).';
+            document.getElementById('createError').textContent = 'Compila tutti i campi obbligatori (Nome, Specie, Classe, Livello).';
             return;
           }
         }
@@ -3088,7 +3088,7 @@
         // Show skill suggestions
         if (Array.isArray(skillsData)) {
           const names = skillsData.map(function(s) { return s.name || s; });
-          document.getElementById('skillSuggestions').textContent = 'Available: ' + names.join(', ');
+          document.getElementById('skillSuggestions').textContent = 'Disponibili: ' + names.join(', ');
         }
       } catch (error) {
         console.error('Failed to load compendium data:', error);
@@ -3158,9 +3158,9 @@
       const row = document.createElement('div');
       row.className = 'form-row';
       row.style.alignItems = 'end';
-      row.innerHTML = '<div class="form-group"><label>Item Name</label><input type="text" class="eq-name" placeholder="Longsword"></div>' +
-        '<div class="form-group" style="max-width:80px"><label>Qty</label><input type="number" class="eq-qty" min="1" value="1"></div>' +
-        '<div class="form-group" style="max-width:80px;align-items:center"><label>Equipped</label><input type="checkbox" class="eq-equipped" style="width:20px;height:20px"></div>' +
+      row.innerHTML = '<div class="form-group"><label>Nome Oggetto</label><input type="text" class="eq-name" placeholder="Spada Lunga"></div>' +
+        '<div class="form-group" style="max-width:80px"><label>Qtà</label><input type="number" class="eq-qty" min="1" value="1"></div>' +
+        '<div class="form-group" style="max-width:80px;align-items:center"><label>Equipaggiato</label><input type="checkbox" class="eq-equipped" style="width:20px;height:20px"></div>' +
         '<button type="button" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;padding:0.5rem" onclick="this.parentElement.remove()">&times;</button>';
       list.appendChild(row);
     }
@@ -3177,7 +3177,7 @@
       const level = parseInt(document.getElementById('charLevel').value);
 
       if (!name || !species || !charClass || !level) {
-        errorEl.textContent = 'Please fill in all required fields.';
+        errorEl.textContent = 'Compila tutti i campi obbligatori.';
         goToStep(1);
         return;
       }
@@ -3262,12 +3262,12 @@
       btn.disabled = true;
 
       if (editingCharacterId) {
-        btn.textContent = 'Saving...';
+        btn.textContent = 'Salvataggio...';
         try {
           await updateCharacter(editingCharacterId, payload);
           closeCreateModal();
           closeDetailModal();
-          showToast('Character updated successfully!', 'success');
+          showToast('Personaggio aggiornato con successo!', 'success');
           loadCharacters(currentPage);
         } catch (error) {
           var msg = getErrorMessage(error);
@@ -3275,14 +3275,14 @@
           showToast(msg, 'error');
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Save Changes';
+          btn.textContent = 'Salva Modifiche';
         }
       } else {
-        btn.textContent = 'Forging...';
+        btn.textContent = 'Creazione...';
         try {
           await createCharacter(payload);
           closeCreateModal();
-          showToast('Hero created successfully!', 'success');
+          showToast('Eroe creato con successo!', 'success');
           loadCharacters(0);
         } catch (error) {
           var msg = getErrorMessage(error);
@@ -3290,7 +3290,7 @@
           showToast(msg, 'error');
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Create Hero';
+          btn.textContent = 'Crea Eroe';
         }
       }
     }
@@ -3303,8 +3303,8 @@
       closeDetailModal();
 
       editingCharacterId = characterId;
-      document.getElementById('createModalTitle').textContent = 'Edit Character';
-      document.getElementById('submitCharBtn').textContent = 'Save Changes';
+      document.getElementById('createModalTitle').textContent = 'Modifica Personaggio';
+      document.getElementById('submitCharBtn').textContent = 'Salva Modifiche';
       document.getElementById('createModal').classList.add('active');
       document.getElementById('createError').textContent = '';
       currentStep = 1;
@@ -3395,20 +3395,20 @@
       if (!deleteCharacterId) return;
       const btn = document.getElementById('confirmDeleteBtn');
       btn.disabled = true;
-      btn.textContent = 'Deleting...';
+      btn.textContent = 'Eliminazione...';
 
       try {
         await deleteCharacter(deleteCharacterId);
         closeDeleteModal();
         closeDetailModal();
-        showToast('Character deleted successfully!', 'success');
+        showToast('Personaggio eliminato con successo!', 'success');
         loadCharacters(currentPage);
       } catch (error) {
         closeDeleteModal();
-        showToast('Failed to delete: ' + getErrorMessage(error), 'error');
+        showToast('Eliminazione fallita: ' + getErrorMessage(error), 'error');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Delete';
+        btn.textContent = 'Elimina';
       }
     }
 
@@ -3449,7 +3449,7 @@
 
     function handleImportFile(file) {
       if (!file.name.toLowerCase().endsWith('.pdf')) {
-        document.getElementById('importError').textContent = 'Please select a PDF file.';
+        document.getElementById('importError').textContent = 'Seleziona un file PDF.';
         return;
       }
       selectedImportFile = file;
@@ -3465,20 +3465,20 @@
       const errorEl = document.getElementById('importError');
       errorEl.textContent = '';
       btn.disabled = true;
-      btn.textContent = 'Importing...';
+      btn.textContent = 'Importazione...';
       const statusId = TransferStatus.show('upload', selectedImportFile.name);
 
       try {
         await importCharacterSheet(selectedImportFile);
         closeImportModal();
-        showToast('Character imported successfully!', 'success');
+        showToast('Personaggio importato con successo!', 'success');
         loadCharacters(0);
       } catch (error) {
         errorEl.textContent = getErrorMessage(error);
       } finally {
         TransferStatus.hide(statusId);
         btn.disabled = false;
-        btn.textContent = 'Import';
+        btn.textContent = 'Importa';
       }
     }
 

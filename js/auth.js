@@ -75,7 +75,7 @@ async function handleLogin(event) {
     const saved = saveAuthData(accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt, finalUsername, finalEmail, userId);
 
     if (!saved) {
-      showError('Failed to save authentication data. Please try again.', 'loginErrorContainer');
+      showError('Salvataggio dei dati di autenticazione fallito. Riprova.', 'loginErrorContainer');
       setLoading(button, false);
       return;
     }
@@ -154,7 +154,7 @@ async function handleRegister(event) {
     const saved = saveAuthData(accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt, username, email, userId);
 
     if (!saved) {
-      showError('Registration successful but failed to save data. Please login.', 'registerErrorContainer');
+      showError('Registrazione riuscita ma salvataggio dati fallito. Effettua il login.', 'registerErrorContainer');
       setLoading(button, false);
       return;
     }

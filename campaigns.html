@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>Campaigns - The Tavern</title>
+  <title>Campagne - The Tavern</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1891,35 +1891,35 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <a href="dashboard.html" class="sidebar-logo">The Tavern</a>
-        <p class="sidebar-subtitle">D&D Platform</p>
+        <p class="sidebar-subtitle">Piattaforma D&D</p>
       </div>
 
       <div class="sidebar-user">
         <div class="user-avatar" id="userAvatar">A</div>
         <div class="user-info">
-          <div class="user-name" id="userName">Adventurer</div>
-          <div class="user-role">Hero</div>
+          <div class="user-name" id="userName">Avventuriero</div>
+          <div class="user-role">Eroe</div>
         </div>
       </div>
 
       <nav class="nav-menu">
         <div class="nav-section">
-          <div class="nav-section-title">Adventure</div>
+          <div class="nav-section-title">Avventura</div>
           <a href="characters.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <span class="nav-text">My Characters</span>
+            <span class="nav-text">I Miei Personaggi</span>
           </a>
           <a href="campaigns.html" class="nav-item active">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
-            <span class="nav-text">Campaigns</span>
+            <span class="nav-text">Campagne</span>
           </a>
           <a href="documents.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <span class="nav-text">Documents</span>
+            <span class="nav-text">Documenti</span>
           </a>
           <a href="compendium.html" class="nav-item">
             <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg></div>
-            <span class="nav-text">Compendium</span>
+            <span class="nav-text">Compendio</span>
           </a>
         </div>
       </nav>
@@ -1927,21 +1927,21 @@
       <div class="sidebar-footer">
         <button class="logout-btn" id="logoutButton">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Logout
+          Esci
         </button>
       </div>
     </aside>
 
     <main class="main-content">
       <div class="page-header">
-        <h1 class="page-title">Campaigns</h1>
-        <p class="page-subtitle">Join epic quests and forge your legend</p>
+        <h1 class="page-title">Campagne</h1>
+        <p class="page-subtitle">Unisciti a missioni epiche e forgia la tua leggenda</p>
       </div>
 
       <div class="toolbar">
         <button class="btn-create" onclick="openCreateModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Campaign
+          Nuova Campagna
         </button>
       </div>
 
@@ -1954,7 +1954,7 @@
   <div class="modal-overlay" id="createModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="createModalTitle">Create Campaign</h2>
+        <h2 id="createModalTitle">Crea Campagna</h2>
         <button class="modal-close" onclick="closeCreateModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -1962,35 +1962,35 @@
       <form id="createCampaignForm" onsubmit="submitCampaign(event)">
         <div class="form-error" id="createError"></div>
         <div class="form-group">
-          <label>Name <span class="required">*</span></label>
-          <input type="text" id="campName" maxlength="100" required placeholder="e.g. Curse of Strahd">
+          <label>Nome <span class="required">*</span></label>
+          <input type="text" id="campName" maxlength="100" required placeholder="es. Curse of Strahd">
         </div>
         <div class="form-group">
-          <label>Description</label>
-          <textarea id="campDescription" placeholder="A gothic horror adventure in the land of Barovia..."></textarea>
+          <label>Descrizione</label>
+          <textarea id="campDescription" placeholder="Un'avventura gotica horror nella terra di Barovia..."></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Max Players</label>
+            <label>Giocatori Max</label>
             <input type="number" id="campMaxPlayers" min="1" max="20" value="6" placeholder="6">
           </div>
           <div class="form-group">
-            <label>Status</label>
+            <label>Stato</label>
             <select id="campStatus">
-              <option value="ACTIVE">Active</option>
-              <option value="PAUSED">Paused</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="ARCHIVED">Archived</option>
+              <option value="ACTIVE">Attiva</option>
+              <option value="PAUSED">In Pausa</option>
+              <option value="COMPLETED">Completata</option>
+              <option value="ARCHIVED">Archiviata</option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <label>Image URL</label>
-          <input type="url" id="campImageUrl" maxlength="255" placeholder="https://example.com/banner.jpg">
+          <label>URL Immagine</label>
+          <input type="url" id="campImageUrl" maxlength="255" placeholder="https://esempio.com/banner.jpg">
         </div>
         <div class="form-actions">
-          <button type="button" class="btn-cancel" onclick="closeCreateModal()">Cancel</button>
-          <button type="submit" class="btn-submit" id="submitCampBtn">Create Campaign</button>
+          <button type="button" class="btn-cancel" onclick="closeCreateModal()">Annulla</button>
+          <button type="submit" class="btn-submit" id="submitCampBtn">Crea Campagna</button>
         </div>
       </form>
     </div>
@@ -2000,7 +2000,7 @@
   <div class="modal-overlay" id="detailModal">
     <div class="modal detail-modal">
       <div class="modal-header">
-        <h2>Campaign Details</h2>
+        <h2>Dettagli Campagna</h2>
         <button class="modal-close" onclick="closeDetailModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2013,7 +2013,7 @@
   <div class="modal-overlay" id="addMemberModal">
     <div class="modal">
       <div class="modal-header">
-        <h2>Add Member</h2>
+        <h2>Aggiungi Membro</h2>
         <button class="modal-close" onclick="closeAddMemberModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2021,16 +2021,16 @@
       <form onsubmit="submitAddMember(event)">
         <div class="form-error" id="addMemberError"></div>
         <div class="form-group">
-          <label>User ID <span class="required">*</span></label>
-          <input type="number" id="memberUserId" required placeholder="Enter the player's user ID">
+          <label>ID Utente <span class="required">*</span></label>
+          <input type="number" id="memberUserId" required placeholder="Inserisci l'ID utente del giocatore">
         </div>
         <div class="form-group">
-          <label>Character ID (optional)</label>
-          <input type="number" id="memberCharId" placeholder="Link a character to this membership">
+          <label>ID Personaggio (opzionale)</label>
+          <input type="number" id="memberCharId" placeholder="Collega un personaggio a questa iscrizione">
         </div>
         <div class="form-actions">
-          <button type="button" class="btn-cancel" onclick="closeAddMemberModal()">Cancel</button>
-          <button type="submit" class="btn-submit" id="submitMemberBtn">Add Member</button>
+          <button type="button" class="btn-cancel" onclick="closeAddMemberModal()">Annulla</button>
+          <button type="submit" class="btn-submit" id="submitMemberBtn">Aggiungi Membro</button>
         </div>
       </form>
     </div>
@@ -2040,7 +2040,7 @@
   <div class="modal-overlay" id="noteModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="noteModalTitle">Create Note</h2>
+        <h2 id="noteModalTitle">Crea Nota</h2>
         <button class="modal-close" onclick="closeNoteModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2048,23 +2048,23 @@
       <form onsubmit="submitNote(event)">
         <div class="form-error" id="noteError"></div>
         <div class="form-group">
-          <label>Title <span class="required">*</span></label>
-          <input type="text" id="noteTitle" maxlength="100" required placeholder="e.g. Session 1 Recap">
+          <label>Titolo <span class="required">*</span></label>
+          <input type="text" id="noteTitle" maxlength="100" required placeholder="es. Riepilogo Sessione 1">
         </div>
         <div class="form-group">
-          <label>Content</label>
-          <textarea id="noteContent" placeholder="The party arrived at the village of Barovia..." style="min-height:120px"></textarea>
+          <label>Contenuto</label>
+          <textarea id="noteContent" placeholder="Il gruppo e' arrivato al villaggio di Barovia..." style="min-height:120px"></textarea>
         </div>
         <div class="form-group">
-          <label>Visibility</label>
+          <label>Visibilita'</label>
           <select id="noteVisibility">
-            <option value="PUBLIC">Public</option>
-            <option value="PRIVATE">Private</option>
+            <option value="PUBLIC">Pubblica</option>
+            <option value="PRIVATE">Privata</option>
           </select>
         </div>
         <div class="form-actions">
-          <button type="button" class="btn-cancel" onclick="closeNoteModal()">Cancel</button>
-          <button type="submit" class="btn-submit" id="submitNoteBtn">Create Note</button>
+          <button type="button" class="btn-cancel" onclick="closeNoteModal()">Annulla</button>
+          <button type="submit" class="btn-submit" id="submitNoteBtn">Crea Nota</button>
         </div>
       </form>
     </div>
@@ -2074,7 +2074,7 @@
   <div class="modal-overlay" id="questModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="questModalTitle">Create Quest</h2>
+        <h2 id="questModalTitle">Crea Missione</h2>
         <button class="modal-close" onclick="closeQuestModal()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -2082,33 +2082,33 @@
       <form onsubmit="submitQuest(event)">
         <div class="form-error" id="questError"></div>
         <div class="form-group">
-          <label>Title <span class="required">*</span></label>
-          <input type="text" id="questTitle" maxlength="100" required placeholder="e.g. Find the Lost Artifact">
+          <label>Titolo <span class="required">*</span></label>
+          <input type="text" id="questTitle" maxlength="100" required placeholder="es. Trova l'Artefatto Perduto">
         </div>
         <div class="form-group">
-          <label>Description</label>
-          <textarea id="questDescription" placeholder="The party must locate the ancient artifact hidden in the ruins..." style="min-height:120px"></textarea>
+          <label>Descrizione</label>
+          <textarea id="questDescription" placeholder="Il gruppo deve trovare l'antico artefatto nascosto nelle rovine..." style="min-height:120px"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Status</label>
+            <label>Stato</label>
             <select id="questStatus">
-              <option value="ACTIVE">Active</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="FAILED">Failed</option>
+              <option value="ACTIVE">Attiva</option>
+              <option value="COMPLETED">Completata</option>
+              <option value="FAILED">Fallita</option>
             </select>
           </div>
           <div class="form-group">
-            <label>Priority</label>
+            <label>Priorita'</label>
             <select id="questPriority">
-              <option value="MAIN">Main</option>
-              <option value="SIDE">Side</option>
+              <option value="MAIN">Principale</option>
+              <option value="SIDE">Secondaria</option>
             </select>
           </div>
         </div>
         <div class="form-actions">
-          <button type="button" class="btn-cancel" onclick="closeQuestModal()">Cancel</button>
-          <button type="submit" class="btn-submit" id="submitQuestBtn">Create Quest</button>
+          <button type="button" class="btn-cancel" onclick="closeQuestModal()">Annulla</button>
+          <button type="submit" class="btn-submit" id="submitQuestBtn">Crea Missione</button>
         </div>
       </form>
     </div>
@@ -2118,11 +2118,11 @@
   <div class="modal-overlay" id="deleteModal">
     <div class="modal" style="max-width:400px">
       <div class="confirm-dialog">
-        <h3>Delete Campaign</h3>
-        <p>Are you sure you want to delete <strong id="deleteItemName"></strong>? This action cannot be undone.</p>
+        <h3>Elimina Campagna</h3>
+        <p>Sei sicuro di voler eliminare <strong id="deleteItemName"></strong>? Questa azione non puo' essere annullata.</p>
         <div class="confirm-actions">
-          <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-          <button class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
+          <button class="btn-cancel" onclick="closeDeleteModal()">Annulla</button>
+          <button class="btn-confirm-delete" id="confirmDeleteBtn" onclick="confirmDelete()">Elimina</button>
         </div>
       </div>
     </div>
@@ -2165,7 +2165,7 @@
       </div>
       <div class="dice-actions">
         <button class="roll-all-btn" id="rollAllBtn" disabled>Lancia</button>
-        <button class="clear-btn" id="clearBtn">Reset</button>
+        <button class="clear-btn" id="clearBtn">Azzera</button>
       </div>
       <div class="dice-result" id="diceResult">
         <div class="result-total">
@@ -2191,12 +2191,12 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="chat-header-info">
-          <h4>Party Chat</h4>
-          <span>Talk with fellow adventurers</span>
+          <h4>Chat del Gruppo</h4>
+          <span>Parla con i tuoi compagni d'avventura</span>
         </div>
         <div class="online-count">
           <span class="online-dot"></span>
-          <span id="onlineCountText">0 online</span>
+          <span id="onlineCountText">0 in linea</span>
         </div>
       </div>
 
@@ -2205,7 +2205,7 @@
       <div class="chat-messages" id="chatMessages"></div>
 
       <div class="chat-input-area">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="TavernChat.handleKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Scrivi un messaggio..." onkeypress="TavernChat.handleKeypress(event)" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="true" enterkeyhint="send">
         <button class="chat-send-btn" onclick="TavernChat.sendMessage()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
         </button>
@@ -2227,7 +2227,7 @@
     if (!token) { window.location.href = 'index.html'; }
 
     // ====== USER INFO ======
-    const username = localStorage.getItem('username') || 'Adventurer';
+    const username = localStorage.getItem('username') || 'Avventuriero';
     const currentUserId = parseInt(localStorage.getItem('userId'), 10);
     document.getElementById('userName').textContent = username;
     document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
@@ -2301,7 +2301,7 @@
     // ====== LOAD CAMPAIGNS ======
     async function loadCampaigns(page) {
       var container = document.getElementById('campaignsContent');
-      container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Gathering your quests...</p></div>';
+      container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Caricamento delle tue missioni...</p></div>';
       document.getElementById('paginationContainer').style.display = 'none';
 
       try {
@@ -2314,8 +2314,8 @@
         if (!data.content || data.content.length === 0) {
           container.innerHTML = '<div class="empty-state">' +
             '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-            '<h3>No Campaigns Yet</h3>' +
-            '<p>Create your first campaign and begin your epic adventure!</p>' +
+            '<h3>Nessuna Campagna</h3>' +
+            '<p>Crea la tua prima campagna e inizia la tua avventura epica!</p>' +
             '</div>';
           return;
         }
@@ -2333,7 +2333,7 @@
             '<div class="card-footer">' +
               '<div class="card-stat">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
-                '<span>' + (c.playerCount || 0) + ' players</span>' +
+                '<span>' + (c.playerCount || 0) + ' giocatori</span>' +
               '</div>' +
             '</div>' +
           '</div>';
@@ -2344,9 +2344,9 @@
       } catch (error) {
         console.error('Failed to load campaigns:', error);
         container.innerHTML = '<div class="error-state">' +
-          '<h3>Failed to Load Campaigns</h3>' +
+          '<h3>Impossibile Caricare le Campagne</h3>' +
           '<p>' + getErrorMessage(error) + '</p>' +
-          '<button class="action-btn" onclick="loadCampaigns(' + page + ')">Try Again</button>' +
+          '<button class="action-btn" onclick="loadCampaigns(' + page + ')">Riprova</button>' +
           '</div>';
       }
     }
@@ -2375,8 +2375,8 @@
     // ====== CREATE/EDIT CAMPAIGN MODAL ======
     function openCreateModal() {
       editingCampaignId = null;
-      document.getElementById('createModalTitle').textContent = 'Create Campaign';
-      document.getElementById('submitCampBtn').textContent = 'Create Campaign';
+      document.getElementById('createModalTitle').textContent = 'Crea Campagna';
+      document.getElementById('submitCampBtn').textContent = 'Crea Campagna';
       document.getElementById('createCampaignForm').reset();
       document.getElementById('createError').textContent = '';
       document.getElementById('campStatus').parentElement.style.display = 'none';
@@ -2385,8 +2385,8 @@
 
     function openEditModal(campaign) {
       editingCampaignId = campaign.id;
-      document.getElementById('createModalTitle').textContent = 'Edit Campaign';
-      document.getElementById('submitCampBtn').textContent = 'Save Changes';
+      document.getElementById('createModalTitle').textContent = 'Modifica Campagna';
+      document.getElementById('submitCampBtn').textContent = 'Salva Modifiche';
       document.getElementById('createError').textContent = '';
       document.getElementById('campName').value = campaign.name || '';
       document.getElementById('campDescription').value = campaign.description || '';
@@ -2411,7 +2411,7 @@
 
       var name = document.getElementById('campName').value.trim();
       if (!name) {
-        errorEl.textContent = 'Campaign name is required.';
+        errorEl.textContent = 'Il nome della campagna e\' obbligatorio.';
         return;
       }
 
@@ -2427,33 +2427,33 @@
 
       if (editingCampaignId) {
         payload.status = document.getElementById('campStatus').value;
-        btn.textContent = 'Saving...';
+        btn.textContent = 'Salvataggio...';
         try {
           await updateCampaign(editingCampaignId, payload);
           closeCreateModal();
           closeDetailModal();
-          showToast('Campaign updated successfully!', 'success');
+          showToast('Campagna aggiornata con successo!', 'success');
           loadCampaigns(currentPage);
         } catch (error) {
           errorEl.textContent = getErrorMessage(error);
           showToast(getErrorMessage(error), 'error');
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Save Changes';
+          btn.textContent = 'Salva Modifiche';
         }
       } else {
-        btn.textContent = 'Creating...';
+        btn.textContent = 'Creazione...';
         try {
           await createCampaign(payload);
           closeCreateModal();
-          showToast('Campaign created successfully!', 'success');
+          showToast('Campagna creata con successo!', 'success');
           loadCampaigns(0);
         } catch (error) {
           errorEl.textContent = getErrorMessage(error);
           showToast(getErrorMessage(error), 'error');
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Create Campaign';
+          btn.textContent = 'Crea Campagna';
         }
       }
     }
@@ -2462,7 +2462,7 @@
     function openDetailModal(campaignId) {
       document.getElementById('detailModal').classList.add('active');
       document.getElementById('detailContent').innerHTML =
-        '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Loading campaign...</p></div>';
+        '<div class="loading-state"><div class="loading-spinner"></div><p style="color:var(--text-muted)">Caricamento campagna...</p></div>';
       loadCampaignDetail(campaignId);
     }
 
@@ -2486,7 +2486,7 @@
         renderCampaignDetail(campaign, members, notes, quests);
       } catch (error) {
         document.getElementById('detailContent').innerHTML =
-          '<div class="error-state"><h3>Error</h3><p>' + getErrorMessage(error) + '</p></div>';
+          '<div class="error-state"><h3>Errore</h3><p>' + getErrorMessage(error) + '</p></div>';
       }
     }
 
@@ -2508,39 +2508,39 @@
 
       // Description
       html += '<div class="detail-block full-width">' +
-        '<h4>Description</h4>' +
+        '<h4>Descrizione</h4>' +
         '<p style="font-size:0.85rem;color:var(--text-muted);line-height:1.5">' +
-          (campaign.description ? escapeHtml(campaign.description) : '<em>No description provided</em>') +
+          (campaign.description ? escapeHtml(campaign.description) : '<em>Nessuna descrizione fornita</em>') +
         '</p>' +
       '</div>';
 
       // Info
       html += '<div class="detail-block">' +
         '<h4>Info</h4>' +
-        '<div class="stat-row"><span class="stat-name">DM ID</span><span class="stat-value">' + (campaign.dungeonMasterId || '-') + '</span></div>' +
-        '<div class="stat-row"><span class="stat-name">Max Players</span><span class="stat-value">' + (campaign.maxPlayers || '-') + '</span></div>' +
-        '<div class="stat-row"><span class="stat-name">Created</span><span class="stat-value">' + formatDate(campaign.createdAt) + '</span></div>' +
-        '<div class="stat-row"><span class="stat-name">Updated</span><span class="stat-value">' + formatDate(campaign.updatedAt) + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">ID DM</span><span class="stat-value">' + (campaign.dungeonMasterId || '-') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Giocatori Max</span><span class="stat-value">' + (campaign.maxPlayers || '-') + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Creata</span><span class="stat-value">' + formatDate(campaign.createdAt) + '</span></div>' +
+        '<div class="stat-row"><span class="stat-name">Aggiornata</span><span class="stat-value">' + formatDate(campaign.updatedAt) + '</span></div>' +
       '</div>';
 
       // Members
       html += '<div class="detail-block">' +
-        '<h4>Members (' + members.length + ')' +
-          (isDM ? ' <button class="btn-add-small" onclick="openAddMemberModal()">+ Add</button>' : '') +
+        '<h4>Membri (' + members.length + ')' +
+          (isDM ? ' <button class="btn-add-small" onclick="openAddMemberModal()">+ Aggiungi</button>' : '') +
         '</h4>';
       if (members.length === 0) {
-        html += '<p style="font-size:0.8rem;color:var(--text-muted)">No members yet</p>';
+        html += '<p style="font-size:0.8rem;color:var(--text-muted)">Nessun membro ancora</p>';
       } else {
         members.forEach(function(m) {
           var isDMRole = m.role === 'DM' || m.role === 'DUNGEON_MASTER';
           html += '<div class="member-item">' +
             '<div class="member-avatar">' + (m.userId || '?') + '</div>' +
             '<div class="member-info">' +
-              '<div class="member-name">User #' + m.userId + (m.characterId ? ' (Char #' + m.characterId + ')' : '') + '</div>' +
+              '<div class="member-name">Utente #' + m.userId + (m.characterId ? ' (Personaggio #' + m.characterId + ')' : '') + '</div>' +
               '<div class="member-role' + (isDMRole ? ' dm' : '') + '">' + escapeHtml(m.role || 'PLAYER') + '</div>' +
             '</div>';
           if (isDM && !isDMRole) {
-            html += '<button class="member-remove" onclick="removeMember(' + m.userId + ')" title="Remove">&times;</button>';
+            html += '<button class="member-remove" onclick="removeMember(' + m.userId + ')" title="Rimuovi">&times;</button>';
           }
           html += '</div>';
         });
@@ -2549,11 +2549,11 @@
 
       // Notes
       html += '<div class="detail-block full-width">' +
-        '<h4>Notes' +
-          ' <button class="btn-add-small" onclick="openNoteModal()">+ New Note</button>' +
+        '<h4>Note' +
+          ' <button class="btn-add-small" onclick="openNoteModal()">+ Nuova Nota</button>' +
         '</h4>';
       if (!notes || notes.length === 0) {
-        html += '<p style="font-size:0.8rem;color:var(--text-muted)">No notes yet. Add session recaps, lore, or private notes!</p>';
+        html += '<p style="font-size:0.8rem;color:var(--text-muted)">Nessuna nota ancora. Aggiungi riepiloghi di sessione, lore o note private!</p>';
       } else {
         notes.forEach(function(n) {
           var isAuthor = n.authorId === currentUserId;
@@ -2562,14 +2562,14 @@
               '<span class="note-title">' + escapeHtml(n.title) + '</span>' +
               '<span class="note-visibility ' + (n.visibility || 'PUBLIC').toLowerCase() + '">' + escapeHtml(n.visibility || 'PUBLIC') + '</span>' +
             '</div>' +
-            '<div class="note-meta">By User #' + n.authorId + ' &middot; ' + formatDate(n.createdAt) + '</div>' +
+            '<div class="note-meta">Di Utente #' + n.authorId + ' &middot; ' + formatDate(n.createdAt) + '</div>' +
             (n.content ? '<div class="note-content-preview">' + escapeHtml(n.content) + '</div>' : '') +
             '<div class="note-actions">';
           if (isAuthor) {
-            html += '<button class="note-btn" onclick="editNote(' + n.id + ')">Edit</button>';
+            html += '<button class="note-btn" onclick="editNote(' + n.id + ')">Modifica</button>';
           }
           if (isAuthor || isDM) {
-            html += '<button class="note-btn delete" onclick="deleteNote(' + n.id + ', \'' + escapeHtml(n.title).replace(/'/g, "\\'") + '\')">Delete</button>';
+            html += '<button class="note-btn delete" onclick="deleteNote(' + n.id + ', \'' + escapeHtml(n.title).replace(/'/g, "\\'") + '\')">Elimina</button>';
           }
           html += '</div></div>';
         });
@@ -2578,20 +2578,20 @@
 
       // Quests
       html += '<div class="detail-block full-width">' +
-        '<h4>Quests' +
-          ' <button class="btn-add-small" onclick="openQuestModal()">+ New Quest</button>' +
+        '<h4>Missioni' +
+          ' <button class="btn-add-small" onclick="openQuestModal()">+ Nuova Missione</button>' +
         '</h4>';
 
       // Quest filter bar
       html += '<div class="quest-filter-bar">' +
-        '<button class="quest-filter-btn' + (!questFilterStatus ? ' active' : '') + '" onclick="filterQuests(null)">All</button>' +
-        '<button class="quest-filter-btn' + (questFilterStatus === 'ACTIVE' ? ' active' : '') + '" onclick="filterQuests(\'ACTIVE\')">Active</button>' +
-        '<button class="quest-filter-btn' + (questFilterStatus === 'COMPLETED' ? ' active' : '') + '" onclick="filterQuests(\'COMPLETED\')">Completed</button>' +
-        '<button class="quest-filter-btn' + (questFilterStatus === 'FAILED' ? ' active' : '') + '" onclick="filterQuests(\'FAILED\')">Failed</button>' +
+        '<button class="quest-filter-btn' + (!questFilterStatus ? ' active' : '') + '" onclick="filterQuests(null)">Tutte</button>' +
+        '<button class="quest-filter-btn' + (questFilterStatus === 'ACTIVE' ? ' active' : '') + '" onclick="filterQuests(\'ACTIVE\')">Attive</button>' +
+        '<button class="quest-filter-btn' + (questFilterStatus === 'COMPLETED' ? ' active' : '') + '" onclick="filterQuests(\'COMPLETED\')">Completate</button>' +
+        '<button class="quest-filter-btn' + (questFilterStatus === 'FAILED' ? ' active' : '') + '" onclick="filterQuests(\'FAILED\')">Fallite</button>' +
       '</div>';
 
       if (!quests || quests.length === 0) {
-        html += '<p style="font-size:0.8rem;color:var(--text-muted)">No quests yet. Track your party\'s objectives and adventures!</p>';
+        html += '<p style="font-size:0.8rem;color:var(--text-muted)">Nessuna missione ancora. Tieni traccia degli obiettivi e delle avventure del tuo gruppo!</p>';
       } else {
         quests.forEach(function(q) {
           var isAuthor = q.authorId === currentUserId;
@@ -2603,12 +2603,12 @@
               '<span class="quest-priority ' + qPriority + '">' + escapeHtml(q.priority || 'MAIN') + '</span>' +
               '<span class="quest-status-badge ' + qStatus + '">' + escapeHtml(q.status || 'ACTIVE') + '</span>' +
             '</div>' +
-            '<div class="quest-meta">By User #' + q.authorId + ' &middot; ' + formatDate(q.createdAt) + '</div>' +
+            '<div class="quest-meta">Di Utente #' + q.authorId + ' &middot; ' + formatDate(q.createdAt) + '</div>' +
             (q.description ? '<div class="quest-description-preview">' + escapeHtml(q.description) + '</div>' : '') +
             '<div class="quest-actions">';
           if (isAuthor || isDM) {
-            html += '<button class="quest-btn" onclick="editQuest(' + q.id + ')">Edit</button>';
-            html += '<button class="quest-btn delete" onclick="deleteQuest(' + q.id + ', \'' + escapeHtml(q.title).replace(/'/g, "\\'") + '\')">Delete</button>';
+            html += '<button class="quest-btn" onclick="editQuest(' + q.id + ')">Modifica</button>';
+            html += '<button class="quest-btn delete" onclick="deleteQuest(' + q.id + ', \'' + escapeHtml(q.title).replace(/'/g, "\\'") + '\')">Elimina</button>';
           }
           html += '</div></div>';
         });
@@ -2622,11 +2622,11 @@
         html += '<div class="detail-actions">' +
           '<button class="btn-edit" onclick="editCampaign()">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-            'Edit Campaign' +
+            'Modifica Campagna' +
           '</button>' +
           '<button class="btn-delete" onclick="openDeleteCampaignModal()">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
-            'Delete' +
+            'Elimina' +
           '</button>' +
         '</div>';
       }
@@ -2646,7 +2646,7 @@
       deleteCampaignId = currentDetailCampaign.id;
       deleteItemType = 'campaign';
       document.getElementById('deleteItemName').textContent = currentDetailCampaign.name;
-      document.getElementById('deleteModal').querySelector('h3').textContent = 'Delete Campaign';
+      document.getElementById('deleteModal').querySelector('h3').textContent = 'Elimina Campagna';
       document.getElementById('deleteModal').classList.add('active');
     }
 
@@ -2661,32 +2661,32 @@
     async function confirmDelete() {
       var btn = document.getElementById('confirmDeleteBtn');
       btn.disabled = true;
-      btn.textContent = 'Deleting...';
+      btn.textContent = 'Eliminazione...';
 
       try {
         if (deleteItemType === 'campaign') {
           await deleteCampaign(deleteCampaignId, currentUserId);
           closeDeleteModal();
           closeDetailModal();
-          showToast('Campaign deleted successfully!', 'success');
+          showToast('Campagna eliminata con successo!', 'success');
           loadCampaigns(currentPage);
         } else if (deleteItemType === 'note') {
           await deleteCampaignNote(currentDetailCampaign.id, deleteNoteId, currentUserId);
           closeDeleteModal();
-          showToast('Note deleted successfully!', 'success');
+          showToast('Nota eliminata con successo!', 'success');
           loadCampaignDetail(currentDetailCampaign.id);
         } else if (deleteItemType === 'quest') {
           await deleteCampaignQuest(currentDetailCampaign.id, deleteQuestId, currentUserId);
           closeDeleteModal();
-          showToast('Quest deleted successfully!', 'success');
+          showToast('Missione eliminata con successo!', 'success');
           loadCampaignDetail(currentDetailCampaign.id);
         }
       } catch (error) {
         closeDeleteModal();
-        showToast('Failed to delete: ' + getErrorMessage(error), 'error');
+        showToast('Impossibile eliminare: ' + getErrorMessage(error), 'error');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Delete';
+        btn.textContent = 'Elimina';
       }
     }
 
@@ -2710,7 +2710,7 @@
 
       var userId = parseInt(document.getElementById('memberUserId').value);
       if (!userId) {
-        errorEl.textContent = 'User ID is required.';
+        errorEl.textContent = 'L\'ID utente e\' obbligatorio.';
         return;
       }
 
@@ -2723,18 +2723,18 @@
       if (charId) payload.characterId = charId;
 
       btn.disabled = true;
-      btn.textContent = 'Adding...';
+      btn.textContent = 'Aggiunta...';
 
       try {
         await addCampaignMember(currentDetailCampaign.id, payload);
         closeAddMemberModal();
-        showToast('Member added successfully!', 'success');
+        showToast('Membro aggiunto con successo!', 'success');
         loadCampaignDetail(currentDetailCampaign.id);
       } catch (error) {
         errorEl.textContent = getErrorMessage(error);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Add Member';
+        btn.textContent = 'Aggiungi Membro';
       }
     }
 
@@ -2743,10 +2743,10 @@
       if (!currentDetailCampaign) return;
       try {
         await removeCampaignMember(currentDetailCampaign.id, userId, currentUserId);
-        showToast('Member removed!', 'success');
+        showToast('Membro rimosso!', 'success');
         loadCampaignDetail(currentDetailCampaign.id);
       } catch (error) {
-        showToast('Failed to remove member: ' + getErrorMessage(error), 'error');
+        showToast('Impossibile rimuovere il membro: ' + getErrorMessage(error), 'error');
       }
     }
 
@@ -2757,13 +2757,13 @@
       document.getElementById('noteTitle').value = '';
       document.getElementById('noteContent').value = '';
       document.getElementById('noteVisibility').value = 'PUBLIC';
-      document.getElementById('noteModalTitle').textContent = 'Create Note';
-      document.getElementById('submitNoteBtn').textContent = 'Create Note';
+      document.getElementById('noteModalTitle').textContent = 'Crea Nota';
+      document.getElementById('submitNoteBtn').textContent = 'Crea Nota';
 
       if (note) {
         editingNoteId = note.id;
-        document.getElementById('noteModalTitle').textContent = 'Edit Note';
-        document.getElementById('submitNoteBtn').textContent = 'Save Note';
+        document.getElementById('noteModalTitle').textContent = 'Modifica Nota';
+        document.getElementById('submitNoteBtn').textContent = 'Salva Nota';
         document.getElementById('noteTitle').value = note.title || '';
         document.getElementById('noteContent').value = note.content || '';
         document.getElementById('noteVisibility').value = note.visibility || 'PUBLIC';
@@ -2782,7 +2782,7 @@
         var note = await getCampaignNote(currentDetailCampaign.id, noteId, currentUserId);
         openNoteModal(note);
       } catch (error) {
-        showToast('Failed to load note: ' + getErrorMessage(error), 'error');
+        showToast('Impossibile caricare la nota: ' + getErrorMessage(error), 'error');
       }
     }
 
@@ -2790,7 +2790,7 @@
       deleteNoteId = noteId;
       deleteItemType = 'note';
       document.getElementById('deleteItemName').textContent = noteTitle;
-      document.getElementById('deleteModal').querySelector('h3').textContent = 'Delete Note';
+      document.getElementById('deleteModal').querySelector('h3').textContent = 'Elimina Nota';
       document.getElementById('deleteModal').classList.add('active');
     }
 
@@ -2802,7 +2802,7 @@
 
       var title = document.getElementById('noteTitle').value.trim();
       if (!title) {
-        errorEl.textContent = 'Note title is required.';
+        errorEl.textContent = 'Il titolo della nota e\' obbligatorio.';
         return;
       }
 
@@ -2816,30 +2816,30 @@
       btn.disabled = true;
 
       if (editingNoteId) {
-        btn.textContent = 'Saving...';
+        btn.textContent = 'Salvataggio...';
         try {
           await updateCampaignNote(currentDetailCampaign.id, editingNoteId, payload);
           closeNoteModal();
-          showToast('Note updated!', 'success');
+          showToast('Nota aggiornata!', 'success');
           loadCampaignDetail(currentDetailCampaign.id);
         } catch (error) {
           errorEl.textContent = getErrorMessage(error);
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Save Note';
+          btn.textContent = 'Salva Nota';
         }
       } else {
-        btn.textContent = 'Creating...';
+        btn.textContent = 'Creazione...';
         try {
           await createCampaignNote(currentDetailCampaign.id, payload);
           closeNoteModal();
-          showToast('Note created!', 'success');
+          showToast('Nota creata!', 'success');
           loadCampaignDetail(currentDetailCampaign.id);
         } catch (error) {
           errorEl.textContent = getErrorMessage(error);
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Create Note';
+          btn.textContent = 'Crea Nota';
         }
       }
     }
@@ -2857,13 +2857,13 @@
       document.getElementById('questDescription').value = '';
       document.getElementById('questStatus').value = 'ACTIVE';
       document.getElementById('questPriority').value = 'MAIN';
-      document.getElementById('questModalTitle').textContent = 'Create Quest';
-      document.getElementById('submitQuestBtn').textContent = 'Create Quest';
+      document.getElementById('questModalTitle').textContent = 'Crea Missione';
+      document.getElementById('submitQuestBtn').textContent = 'Crea Missione';
 
       if (quest) {
         editingQuestId = quest.id;
-        document.getElementById('questModalTitle').textContent = 'Edit Quest';
-        document.getElementById('submitQuestBtn').textContent = 'Save Quest';
+        document.getElementById('questModalTitle').textContent = 'Modifica Missione';
+        document.getElementById('submitQuestBtn').textContent = 'Salva Missione';
         document.getElementById('questTitle').value = quest.title || '';
         document.getElementById('questDescription').value = quest.description || '';
         document.getElementById('questStatus').value = quest.status || 'ACTIVE';
@@ -2883,7 +2883,7 @@
         var quest = await getCampaignQuest(currentDetailCampaign.id, questId, currentUserId);
         openQuestModal(quest);
       } catch (error) {
-        showToast('Failed to load quest: ' + getErrorMessage(error), 'error');
+        showToast('Impossibile caricare la missione: ' + getErrorMessage(error), 'error');
       }
     }
 
@@ -2891,7 +2891,7 @@
       deleteQuestId = questId;
       deleteItemType = 'quest';
       document.getElementById('deleteItemName').textContent = questTitle;
-      document.getElementById('deleteModal').querySelector('h3').textContent = 'Delete Quest';
+      document.getElementById('deleteModal').querySelector('h3').textContent = 'Elimina Missione';
       document.getElementById('deleteModal').classList.add('active');
     }
 
@@ -2903,7 +2903,7 @@
 
       var title = document.getElementById('questTitle').value.trim();
       if (!title) {
-        errorEl.textContent = 'Quest title is required.';
+        errorEl.textContent = 'Il titolo della missione e\' obbligatorio.';
         return;
       }
 
@@ -2918,30 +2918,30 @@
       btn.disabled = true;
 
       if (editingQuestId) {
-        btn.textContent = 'Saving...';
+        btn.textContent = 'Salvataggio...';
         try {
           await updateCampaignQuest(currentDetailCampaign.id, editingQuestId, payload);
           closeQuestModal();
-          showToast('Quest updated!', 'success');
+          showToast('Missione aggiornata!', 'success');
           loadCampaignDetail(currentDetailCampaign.id);
         } catch (error) {
           errorEl.textContent = getErrorMessage(error);
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Save Quest';
+          btn.textContent = 'Salva Missione';
         }
       } else {
-        btn.textContent = 'Creating...';
+        btn.textContent = 'Creazione...';
         try {
           await createCampaignQuest(currentDetailCampaign.id, payload);
           closeQuestModal();
-          showToast('Quest created!', 'success');
+          showToast('Missione creata!', 'success');
           loadCampaignDetail(currentDetailCampaign.id);
         } catch (error) {
           errorEl.textContent = getErrorMessage(error);
         } finally {
           btn.disabled = false;
-          btn.textContent = 'Create Quest';
+          btn.textContent = 'Crea Missione';
         }
       }
     }

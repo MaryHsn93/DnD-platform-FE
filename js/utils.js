@@ -2,14 +2,14 @@
 
 function validateEmail(email) {
   if (!email || email.trim() === '') {
-    return { valid: false, message: 'Email is required.' };
+    return { valid: false, message: 'L\'email è obbligatoria.' };
   }
 
   // RFC 5322 basic email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!emailRegex.test(email)) {
-    return { valid: false, message: 'Please enter a valid email address.' };
+    return { valid: false, message: 'Inserisci un indirizzo email valido.' };
   }
 
   return { valid: true };
@@ -17,11 +17,11 @@ function validateEmail(email) {
 
 function validatePassword(password) {
   if (!password || password.trim() === '') {
-    return { valid: false, message: 'Password is required.' };
+    return { valid: false, message: 'La password è obbligatoria.' };
   }
 
   if (password.length < 8) {
-    return { valid: false, message: 'Password must be at least 8 characters long.' };
+    return { valid: false, message: 'La password deve contenere almeno 8 caratteri.' };
   }
 
   return { valid: true };
@@ -29,11 +29,11 @@ function validatePassword(password) {
 
 function validateUsername(username) {
   if (!username || username.trim() === '') {
-    return { valid: false, message: 'Username is required.' };
+    return { valid: false, message: 'L\'username è obbligatorio.' };
   }
 
   if (username.length < 2) {
-    return { valid: false, message: 'Username must be at least 2 characters long.' };
+    return { valid: false, message: 'L\'username deve contenere almeno 2 caratteri.' };
   }
 
   return { valid: true };
@@ -752,12 +752,12 @@ function setLoading(button, isLoading) {
 function getErrorMessage(error) {
   // Timeout error
   if (error.isTimeout) {
-    return 'The spell took too long to cast. Please try again.';
+    return 'L\'incantesimo ha impiegato troppo tempo. Riprova.';
   }
 
   // Network error
   if (error.isNetworkError) {
-    return 'Cannot reach the tavern. Check your connection.';
+    return 'Impossibile raggiungere la taverna. Controlla la connessione.';
   }
 
   // HTTP status errors
@@ -767,16 +767,16 @@ function getErrorMessage(error) {
       if (error.data?.violations?.length > 0) {
         return error.data.violations[0].message;
       }
-      return error.data?.message || 'Invalid request. Please check your input.';
+      return error.data?.message || 'Richiesta non valida. Controlla i dati inseriti.';
     case 401:
-      return 'Invalid credentials. Check your Email/Username and Password.';
+      return 'Credenziali non valide. Controlla Email/Username e Password.';
     case 404:
-      return 'The requested resource was not found. Please check your input.';
+      return 'La risorsa richiesta non è stata trovata. Controlla i dati inseriti.';
     case 409:
-      return 'A hero with this email already exists. Try logging in instead.';
+      return 'Un eroe con questa email esiste già. Prova ad accedere.';
     case 500:
-      return 'The tavern keeper is unavailable. Please try again later.';
+      return 'Il taverniere non è disponibile. Riprova più tardi.';
     default:
-      return 'An unexpected error occurred. Please try again.';
+      return 'Si è verificato un errore imprevisto. Riprova.';
   }
 }
